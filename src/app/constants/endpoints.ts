@@ -15,7 +15,8 @@ const PORT_MAPPING: Record<MICROSERVICE_NAME, number> = {
   [MICROSERVICE_NAME.USER]: 8087,
   [MICROSERVICE_NAME.LIVENESS]: 8088,
   [MICROSERVICE_NAME.SANCTION]: 8089,
-  [MICROSERVICE_NAME.S3]: 8090
+  [MICROSERVICE_NAME.S3]: 8091,
+  [MICROSERVICE_NAME.DOCTOR]: 8092
 };
 
 export const Endpoints: APIEndpoints = {
@@ -36,7 +37,9 @@ export const Endpoints: APIEndpoints = {
   },
   [MICROSERVICE_NAME.ADMIN]: {
     getDashboard: "dashboard",
-    getUsers: "users"
+    getAllAdmins: "getAll",
+    toggleAdminStatus: "toggle-status",
+    getAdminDetails: "details"
   },
   [MICROSERVICE_NAME.CHAT]: {
     getMessages: "messages",
@@ -59,6 +62,9 @@ export const Endpoints: APIEndpoints = {
   },
   [MICROSERVICE_NAME.LIVENESS]: {
     healthCheck: "health"
+  },
+  [MICROSERVICE_NAME.DOCTOR]: {
+    getAllDoctors: "doctors",
   }
 };
 
