@@ -1,0 +1,91 @@
+<div class="seller-list-container">
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Search by name..."
+        (input)="onSearch($event)"
+        class="search-input"
+      >
+    </div>
+
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label>Show Inactive:</label>
+        <input
+          type="checkbox"
+          [(ngModel)]="filterParams.showInActive"
+          (change)="onFilterChange()"
+        >
+      </div>
+
+      <div class="filter-group">
+        <label>Date Range:</label>
+        <select
+          [(ngModel)]="filterParams.dateRangeType"
+          (change)="onFilterChange()"
+        >
+          <option value="">All Time</option>
+          <option value="last7days">Last 7 Days</option>
+          <option value="last30days">Last 30 Days</option>
+          <option value="last90days">Last 90 Days</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seller List Section -->
+  <div class="seller-list" #scrollContainer>
+    <table class="seller-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Store Name</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let seller of sellers">
+          <td>{{ seller.fullName }}</td>
+          <td>{{ seller.storeName }}</td>
+          <td>
+            <span [class]="seller.isActive ? 'status-active' : 'status-inactive'">
+              {{ seller.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="actions">
+            <button
+              class="btn-view"
+              (click)="viewSellerProfile(seller.id)"
+            >
+              View Profile
+            </button>
+            <button
+              [class]="seller.isActive ? 'btn-deactivate' : 'btn-activate'"
+              (click)="toggleSellerStatus(seller)"
+            >
+              {{ seller.isActive ? 'Deactivate' : 'Activate' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Loading Indicator -->
+    <div class="loading-indicator" *ngIf="loading">
+      Loading...
+    </div>
+
+    <!-- No More Data Indicator -->
+    <div class="no-more-data" *ngIf="!hasMore && sellers.length > 0">
+      No more sellers to load
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!loading && sellers.length === 0">
+      No sellers found
+    </div>
+  </div>
+</div>
