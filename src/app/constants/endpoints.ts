@@ -33,7 +33,8 @@ export const Endpoints: APIEndpoints = {
   },
   [MICROSERVICE_NAME.USER]: {
     getProfile: "profile",
-    updateProfile: "update"
+    updateProfile: "update",
+    getUsers: "customer/getAll"
   },
   [MICROSERVICE_NAME.ADMIN]: {
     getDashboard: "dashboard",

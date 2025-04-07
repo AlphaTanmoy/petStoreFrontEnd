@@ -28,7 +28,7 @@ export class UserService {
       'Alpha': `Bearer ${token}`
     });
 
-    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.USER, 'getAllUsers');
+    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.USER, 'getUsers');
 
     return this.http.get<UserResponse>(endpoint, {
       params: httpParams,

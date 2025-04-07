@@ -37,6 +37,7 @@ import { MasterLoginComponent } from './login/master-login/master-login.componen
 import { AuthGuard } from './login/guards/auth.guard';
 import { USER_ROLE } from './constants/Enums';
 import { MyProfileComponent } from './login/my-profile/my-profile.component';
+import { UserListComponent } from './user/user-list/user-list.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -64,7 +65,7 @@ export const routes: Routes = [
 
   // Master routes (protected)
   {
-    path: 'master',
+    path: '',
     canActivate: [AuthGuard],
     data: { roles: [USER_ROLE.ROLE_MASTER] },
     children: [
@@ -76,7 +77,7 @@ export const routes: Routes = [
       { path: 'seller-profile-control', component: ProfileControlForSellerComponent },
       { path: 'view-seller', component: ViewSellerComponent },
       { path: 'user-profile-control', component: ProfileControlForUserComponent },
-      { path: 'view-user', component: ViewUsersComponent }
+      { path: 'view-users', component: UserListComponent }
     ]
   },
 

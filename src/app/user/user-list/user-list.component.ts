@@ -5,7 +5,7 @@ import { UserService } from '../../service/user.service';
 import { User } from '../../interfaces/user.interface';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-
+import {DEFAULT_PAGE_SIZE} from '../../constants/KeywordsAndConstrants'
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
@@ -21,7 +21,7 @@ export class UserListComponent implements OnInit, AfterViewInit {
   offsetToken: string | null = null;
   hasMore = true;
   filterParams: any = {
-    limit: 20,
+    limit: DEFAULT_PAGE_SIZE,
     showInActive: false
   };
 

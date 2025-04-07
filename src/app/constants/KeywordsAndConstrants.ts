@@ -6,3 +6,4 @@ export const RESPONSE_TYPE_COLOR = {
 }
 
 export const AUTH_TOKEN = 'authToken'
+export const DEFAULT_PAGE_SIZE = 15
