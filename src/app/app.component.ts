@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { SideNavbarComponent } from './layout/side-navbar/side-navbar.component';
-import { LoaderComponent } from './common-component/loader/loader.component';
+import { LoaderComponent } from './components/loader/loader.component';
 import { LoaderService } from './service/loader/loader.service';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
