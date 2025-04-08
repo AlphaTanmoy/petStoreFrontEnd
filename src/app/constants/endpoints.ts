@@ -7,66 +7,68 @@ export const EndpointType = {
 
 const PORT_MAPPING: Record<MICROSERVICE_NAME, number> = {
   [MICROSERVICE_NAME.ADMIN]: 8081,
-  [MICROSERVICE_NAME.AUTHENTICATION]: 8082,
-  [MICROSERVICE_NAME.CHAT]: 8083,
-  [MICROSERVICE_NAME.CORE]: 8084,
-  [MICROSERVICE_NAME.PAYMENT]: 8085,
-  [MICROSERVICE_NAME.SELLER]: 8086,
-  [MICROSERVICE_NAME.USER]: 8087,
-  [MICROSERVICE_NAME.LIVENESS]: 8088,
+  [MICROSERVICE_NAME.AUTH]: 8082,
+  [MICROSERVICE_NAME.CORE]: 8083,
+  [MICROSERVICE_NAME.DOC]: 8084,
+  [MICROSERVICE_NAME.LIVENESS]: 8085,
+  [MICROSERVICE_NAME.MANAGEMENT]: 8086,
+  [MICROSERVICE_NAME.S3]: 8087,
+  [MICROSERVICE_NAME.SELLER]: 8088,
   [MICROSERVICE_NAME.SANCTION]: 8089,
-  [MICROSERVICE_NAME.S3]: 8091,
-  [MICROSERVICE_NAME.DOCTOR]: 8092
+  [MICROSERVICE_NAME.USER]: 8090,
 };
 
 export const Endpoints: APIEndpoints = {
-  [MICROSERVICE_NAME.CORE]: {
-    getNavbar: "navbar/get",
-    getProducts: "products/all"
+  [MICROSERVICE_NAME.ADMIN]: {
+    healthCheck: "health",
+    getDashboard: "dashboard",
+    getAllAdmins: "getAll",
+    toggleAdminStatus: "toggle-status",
+    getAdminDetails: "details"
   },
-  [MICROSERVICE_NAME.AUTHENTICATION]: {
+  [MICROSERVICE_NAME.AUTH]: {
+    healthCheck: "health",
     login: "login",
     register: "register",
     logout: "logout",
     refresh: "refresh",
     getProfile: "getProfile"
   },
-  [MICROSERVICE_NAME.USER]: {
-    getProfile: "profile",
-    updateProfile: "update",
-    getUsers: "customer/getAll"
+  [MICROSERVICE_NAME.CORE]: {
+    healthCheck: "health",
+    getNavbar: "navbar/get",
+    getProducts: "products/all"
   },
-  [MICROSERVICE_NAME.ADMIN]: {
-    getDashboard: "dashboard",
-    getAllAdmins: "getAll",
-    toggleAdminStatus: "toggle-status",
-    getAdminDetails: "details"
-  },
-  [MICROSERVICE_NAME.CHAT]: {
-    getMessages: "messages",
-    sendMessage: "send"
-  },
-  [MICROSERVICE_NAME.PAYMENT]: {
-    createPayment: "create",
-    getPaymentStatus: "status"
-  },
-  [MICROSERVICE_NAME.S3]: {
-    uploadFile: "upload",
-    getFile: "get"
-  },
-  [MICROSERVICE_NAME.SANCTION]: {
-    checkStatus: "check"
-  },
-  [MICROSERVICE_NAME.SELLER]: {
-    getProducts: "products",
-    addProduct: "product/add"
+  [MICROSERVICE_NAME.DOC]: {
+    healthCheck: "health",
+    getAllDoctors: "doctors",
   },
   [MICROSERVICE_NAME.LIVENESS]: {
     healthCheck: "health"
   },
-  [MICROSERVICE_NAME.DOCTOR]: {
-    getAllDoctors: "doctors",
-  }
+  [MICROSERVICE_NAME.MANAGEMENT]: {
+    healthCheck: "health"
+  },
+  [MICROSERVICE_NAME.USER]: {
+    healthCheck: "health",
+    getProfile: "profile",
+    updateProfile: "update",
+    getUsers: "customer/getAll"
+  },
+  [MICROSERVICE_NAME.S3]: {
+    healthCheck: "health",
+    uploadFile: "upload",
+    getFile: "get"
+  },
+  [MICROSERVICE_NAME.SANCTION]: {
+    healthCheck: "health",
+    checkStatus: "check"
+  },
+  [MICROSERVICE_NAME.SELLER]: {
+    healthCheck: "health",
+    getProducts: "products",
+    addProduct: "product/add"
+  },
 };
 
 
