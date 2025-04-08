@@ -30,7 +30,7 @@ export class ProfileService {
         case USER_ROLE.ROLE_ADMIN:
           return MICROSERVICE_NAME.ADMIN;
         case USER_ROLE.ROLE_MASTER:
-          return MICROSERVICE_NAME.AUTHENTICATION;
+          return MICROSERVICE_NAME.AUTH;
         case USER_ROLE.ROLE_SELLER:
           return MICROSERVICE_NAME.SELLER;
         case USER_ROLE.ROLE_DOCTOR:
@@ -68,7 +68,7 @@ export class ProfileService {
     try {
       const microservice = this.getMicroserviceByRole(userRole);
       const endpoint = GetAPIEndpoint(microservice, 'getProfile');
-      
+
       console.log('API Call Details:');
       console.log('- Full endpoint:', endpoint);
       console.log('- Microservice:', microservice);

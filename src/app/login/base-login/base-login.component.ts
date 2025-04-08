@@ -53,15 +53,15 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
   userEmail = '';
   otpValue: string = '';
   hidePassword = true;
-  
+
   // Login method selection
   loginMethod: 'password' | 'otp' = 'password';
-  
+
   // Timer properties
   otpTimer: number = 60; // 60 seconds
   timerInterval: any;
   canResendOtp: boolean = false;
-  
+
   // JWT helper
   private jwtHelper = new JwtHelperService();
 
@@ -131,7 +131,7 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
     if (this.loginForm.invalid) return;
 
     this.isLoading = true;
-    
+
     if (this.loginMethod === 'password') {
       if (!this.otpSent) {
         this.loginWithEmailPassword();
@@ -154,7 +154,7 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
     this.userEmail = email;
 
     // First, try to login with email and password
-    this.http.post<any>(this.signInEndpoint, { 
+    this.http.post<any>(this.signInEndpoint, {
       email: email,
       password: password
     }).subscribe({
@@ -186,7 +186,7 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
       this.showWaitDialog();
       return;
     }
-    
+
     const email = this.loginForm.get('email')?.value;
     this.userEmail = email;
 
@@ -205,7 +205,7 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           return;
         }
-        
+
         // If successful, proceed with OTP flow
         this.otpSent = true;
         this.loginForm.get('otp')?.enable();
@@ -223,10 +223,10 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
 
   private verifyOtp(): void {
     const otp = this.otpValue;
-    
-    this.http.post<any>(this.signInEndpoint, { 
+
+    this.http.post<any>(this.signInEndpoint, {
       email: this.userEmail,
-      otp: otp 
+      otp: otp
     }).subscribe({
       next: (response) => {
         if (response.status && response.role === this.role) {
@@ -247,10 +247,10 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
   private completeLogin(response: any): void {
     this.authService.saveTokens(response.jwt, response.refreshToken);
     this.authService.saveUserRole(response.role);
-    
+
     // Show success dialog
     this.showSuccessDialog();
-    
+
     // Navigate based on role
     switch(response.role) {
       case USER_ROLE.ROLE_MASTER:
@@ -280,7 +280,7 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
       default:
         this.router.navigate(['/']);
     }
-    
+
     // Force reload to ensure navbar updates
     setTimeout(() => {
       window.location.reload();
@@ -298,26 +298,26 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
   onOtpChange(otp: string): void {
     console.log('OTP changed:', otp); // Add logging to debug
     this.otpValue = otp;
-    
+
     // Update the form control value
     this.loginForm.patchValue({ otp: otp });
-    
+
     // Log the form state
     console.log('Form valid:', this.loginForm.valid);
     console.log('OTP length:', otp.length);
     console.log('OTP value:', otp);
   }
-  
+
   // Timer methods
   startOtpTimer(): void {
     this.canResendOtp = false;
     this.otpTimer = 60;
-    
+
     // Clear any existing timer
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
-    
+
     // Start new timer
     this.timerInterval = setInterval(() => {
       this.otpTimer--;
@@ -327,7 +327,7 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
       }
     }, 1000);
   }
-  
+
   // Dialog methods
   showWaitDialog(): void {
     this.dialog.open(OtpDialogComponent, {
@@ -338,7 +338,7 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   showWrongOtpDialog(): void {
     this.dialog.open(OtpDialogComponent, {
       width: '300px',
@@ -348,7 +348,7 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   showSuccessDialog(): void {
     this.dialog.open(OtpDialogComponent, {
       width: '300px',

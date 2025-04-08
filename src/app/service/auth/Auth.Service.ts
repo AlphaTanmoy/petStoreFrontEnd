@@ -21,7 +21,7 @@ export class AuthService {
   private loginStatusSubject = new BehaviorSubject<boolean>(this.isUserLoggedIn());
   private userRoleSubject = new BehaviorSubject<string>(this.getStoredUserRole());
   private usernameSubject = new BehaviorSubject<string>(this.getStoredUsername());
-  
+
   loginStatus$ = this.loginStatusSubject.asObservable();
   userRole$ = this.userRoleSubject.asObservable();
   username$ = this.usernameSubject.asObservable();
@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   masterLogin(email: string, password: string): Observable<LoginResponse> {
-    return this.login(email, password, MICROSERVICE_NAME.AUTHENTICATION, USER_ROLE.ROLE_MASTER);
+    return this.login(email, password, MICROSERVICE_NAME.AUTH, USER_ROLE.ROLE_MASTER);
   }
 
   adminLogin(email: string, password: string): Observable<LoginResponse> {
@@ -78,11 +78,11 @@ export class AuthService {
   private handleLoginResponse(response: LoginResponse, expectedRole: string): void {
     if (response?.jwt && response?.refreshToken) {
       this.saveTokens(response.jwt, response.refreshToken);
-      
+
       const decodedToken = this.jwtHelper.decodeToken<TokenPayload>(response.jwt);
       const actualRole = decodedToken?.role || '';
       const email = decodedToken?.email || '';
-      
+
       if (actualRole && actualRole.toUpperCase() === expectedRole.toUpperCase()) {
         this.saveUserRole(actualRole);
         this.saveUsername(email);
@@ -159,7 +159,7 @@ export class AuthService {
     }
 
     const refreshRequest: RefreshTokenRequest = { refreshToken };
-    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.AUTHENTICATION, 'refresh');
+    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.AUTH, 'refresh');
 
     return this.http.post<LoginResponse>(endpoint, refreshRequest)
       .pipe(
@@ -184,22 +184,22 @@ export class AuthService {
     console.log('Logout method called');
     const token = this.getToken();
     console.log('Token exists:', !!token);
-    
+
     // Clear session immediately
     this.clearSession();
     console.log('Session cleared immediately');
-    
+
     if (token) {
-      const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.AUTHENTICATION, 'logout');
+      const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.AUTH, 'logout');
       console.log('Logout endpoint:', endpoint);
-      
+
       // Make the API call but don't wait for it to complete
       this.http.post<void>(endpoint, {}).subscribe({
         next: () => console.log('Logout API call successful'),
         error: (error) => console.error('Logout API call failed:', error)
       });
     }
-    
+
     // Redirect immediately without waiting for the API call
     console.log('Redirecting to login page immediately');
     window.location.href = '/login';
@@ -212,14 +212,14 @@ export class AuthService {
     // Clear all session storage
     sessionStorage.clear();
     console.log('Session storage cleared');
-    
+
     // Also explicitly remove our specific keys
     sessionStorage.removeItem(ACCESS_TOKEN_KEY);
     sessionStorage.removeItem(REFRESH_TOKEN_KEY);
     sessionStorage.removeItem(USER_ROLE_KEY);
     sessionStorage.removeItem(USERNAME_KEY);
     console.log('Specific keys removed from session storage');
-    
+
     // Update behavior subjects
     this.loginStatusSubject.next(false);
     this.userRoleSubject.next(USER_ROLE.GUEST);
