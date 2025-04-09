@@ -103,5 +103,6 @@ export function GetAPIEndpoint(
 }
 
 export function ngRock_CORE(endpointKey: string) : string {
-  return ' https://880f-150-129-132-93.ngrok-free.app/${endpoint}'
+  const endpoint = Endpoints[MICROSERVICE_NAME.CORE]?.[endpointKey]; // ✅ no error now
+  return `https://880f-150-129-132-93.ngrok-free.app/${endpoint}`
 }
