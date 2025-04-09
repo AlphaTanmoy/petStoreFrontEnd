@@ -101,8 +101,3 @@ export function GetAPIEndpoint(
   const port = PORT_MAPPING[microServiceName];
   return `${EndpointType.dev}${port}/${endpoint}`;
 }
-
-export function ngRock_CORE(endpointKey: string) : string {
-  const endpoint = Endpoints[MICROSERVICE_NAME.CORE]?.[endpointKey]; // ✅ no error now
-  return `https://880f-150-129-132-93.ngrok-free.app/${endpoint}`
-}

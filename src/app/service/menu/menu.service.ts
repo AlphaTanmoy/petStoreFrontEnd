@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MenuItem } from '../../interfaces/menu.interface';
 import { AuthService } from '../auth/Auth.Service';
-import { GetAPIEndpoint, ngRock_CORE } from '../../constants/endpoints';
+import { GetAPIEndpoint } from '../../constants/endpoints';
 import { MICROSERVICE_NAME } from '../../constants/Enums';
 
 @Injectable({
@@ -12,8 +12,7 @@ import { MICROSERVICE_NAME } from '../../constants/Enums';
 })
 export class MenuService {
   // Use the GetAPIEndpoint function to get the correct endpoint
-  //private apiUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'getNavbar');
-  private apiUrl = ngRock_CORE('getNavbar');
+  private apiUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'getNavbar');
 
   constructor(
     private http: HttpClient,
