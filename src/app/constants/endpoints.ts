@@ -103,5 +103,5 @@ export function GetAPIEndpoint(
 }
 
 export function ngRock_CORE(endpointKey: string) : string {
-  return 'https://877e-150-129-132-124.ngrok-free.app/${endpoint}'
+  return ' https://880f-150-129-132-93.ngrok-free.app/${endpoint}'
 }
