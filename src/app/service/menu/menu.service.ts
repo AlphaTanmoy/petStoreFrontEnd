@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MenuItem } from '../../interfaces/menu.interface';
 import { AuthService } from '../auth/Auth.Service';
-import { GetAPIEndpoint } from '../../constants/endpoints';
+import { GetAPIEndpoint, ngRock_CORE } from '../../constants/endpoints';
 import { MICROSERVICE_NAME } from '../../constants/Enums';
 
 @Injectable({
@@ -12,7 +12,8 @@ import { MICROSERVICE_NAME } from '../../constants/Enums';
 })
 export class MenuService {
   // Use the GetAPIEndpoint function to get the correct endpoint
-  private apiUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'getNavbar');
+  //private apiUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'getNavbar');
+  private apiUrl = ngRock_CORE('getNavbar');
 
   constructor(
     private http: HttpClient,
@@ -29,18 +30,18 @@ export class MenuService {
   private filterMenuItemsByRole(menuItems: MenuItem[]): MenuItem[] {
     const userRole = this.authService.getStoredUserRole();
     const isLoggedIn = this.authService.isUserLoggedIn();
-    
+
     return menuItems.filter(item => {
       // First, check if the item itself should be visible
       let hasAccess = this.checkAccess(item, userRole, isLoggedIn);
-      
+
       // If the item has submenus, filter them
       if (item.listOfSubMenu && item.listOfSubMenu.length > 0) {
         item.listOfSubMenu = this.filterMenuItemsByRole(item.listOfSubMenu);
         // Keep parent if it has visible submenu items, even if parent itself doesn't have access
         hasAccess = hasAccess || item.listOfSubMenu.length > 0;
       }
-      
+
       return hasAccess;
     });
   }
@@ -79,7 +80,7 @@ export class MenuService {
       default:
         hasAccess = false;
     }
-    
+
     return hasAccess;
   }
-} 
+}
