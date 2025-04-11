@@ -8,6 +8,7 @@ import { LoaderService } from './service/loader/loader.service';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './service/auth/Auth.Service';
+import { FooterComponent } from './layout/footer/footer.component';
 
 @Component({
   selector: 'app-root',
@@ -17,14 +18,15 @@ import { AuthService } from './service/auth/Auth.Service';
     RouterOutlet,
     NavbarComponent,
     SideNavbarComponent,
-    LoaderComponent
+    LoaderComponent,
+    FooterComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
   title = 'petStoreFrontEnd';
-  useSideNavbar = false;
+  useSideNavbar = true;
   isLoggedIn = false;
   isLoading$: Observable<boolean>;
   isSidebarCollapsed = false;

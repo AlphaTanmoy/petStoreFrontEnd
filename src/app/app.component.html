@@ -12,8 +12,11 @@
 </div>
 
 <!-- Main content -->
-<main [class.with-side-navbar]="useSideNavbar" [class.collapsed]="isSidebarCollapsed">
-  <router-outlet></router-outlet>
-</main>
+<div class="app-container">
+  <main [class.with-side-navbar]="useSideNavbar" [class.collapsed]="isSidebarCollapsed">
+    <router-outlet></router-outlet>
+  </main>
+  <app-footer></app-footer>
+</div>
 
 

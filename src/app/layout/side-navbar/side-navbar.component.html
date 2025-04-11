@@ -61,4 +61,22 @@
       </a>
     </ng-container>
   </div>
+
+  <div class="sidebar-footer">
+    <div class="social-links">
+      <a *ngFor="let link of socialLinks" 
+         [href]="link.url" 
+         target="_blank" 
+         class="social-link">
+        <i [class]="link.icon"></i>
+        <span class="link-text">{{ link.name }}</span>
+      </a>
+    </div>
+    <div class="docs-button">
+      <a href="/docs" class="docs-link">
+        <i class="fas fa-book"></i>
+        <span class="link-text">Documentation</span>
+      </a>
+    </div>
+  </div>
 </aside>

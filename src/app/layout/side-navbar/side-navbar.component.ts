@@ -6,6 +6,12 @@ import { MenuItem } from '../../interfaces/menu.interface';
 import { AuthService } from '../../service/auth/Auth.Service';
 import { Subscription } from 'rxjs';
 
+interface SocialLink {
+  name: string;
+  url: string;
+  icon: string;
+}
+
 @Component({
   selector: 'app-side-navbar',
   standalone: true,
@@ -21,6 +27,34 @@ export class SideNavbarComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   @Output() sidebarCollapsed = new EventEmitter<boolean>();
+
+  socialLinks: SocialLink[] = [
+    {
+      name: 'GitHub',
+      url: 'https://github.com',
+      icon: 'fab fa-github'
+    },
+    {
+      name: 'Facebook',
+      url: 'https://facebook.com',
+      icon: 'fab fa-facebook'
+    },
+    {
+      name: 'Instagram',
+      url: 'https://instagram.com',
+      icon: 'fab fa-instagram'
+    },
+    {
+      name: 'LinkedIn',
+      url: 'https://linkedin.com',
+      icon: 'fab fa-linkedin'
+    },
+    {
+      name: 'LeetCode',
+      url: 'https://leetcode.com',
+      icon: 'fas fa-code'
+    }
+  ];
 
   constructor(
     private menuService: MenuService,
