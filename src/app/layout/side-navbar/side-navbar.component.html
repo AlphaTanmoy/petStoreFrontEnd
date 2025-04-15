@@ -1,81 +1,72 @@
 <aside class="side-navbar" [class.expanded]="isExpanded">
-  <div class="side-navbar-header">
+  <!-- Sidebar Header -->
+  <div class="sidebar-header">
     <div class="brand">
-      <a routerLink="/home">
-        <img src="https://img.icons8.com/color/48/000000/dog.png" alt="Pet Store Logo" class="brand-logo">
-        <span class="brand-text">PetStore</span>
-      </a>
+      <img src="https://img.icons8.com/color/48/000000/dog.png" alt="Logo" class="brand-logo" />
+      <span class="brand-text" *ngIf="isExpanded">Pet Store</span>
     </div>
     <button class="toggle-btn" (click)="toggleExpand()">
-      <span class="toggle-icon"></span>
+      <i class="fas fa-ellipsis-v"></i>
     </button>
   </div>
   
-  <div class="side-navbar-content">
-    <ul class="side-navbar-menu">
-      <li *ngFor="let item of menuItems" class="menu-item" [class.has-submenu]="item.listOfSubMenu && item.listOfSubMenu.length > 0">
-        <ng-container *ngIf="!item.isASubMenu">
-          <a *ngIf="item.doHaveRedirectionLink && item.menuLink" [routerLink]="item.menuLink" class="menu-link">
-            <img *ngIf="item.svgFileBase64" [src]="item.svgFileBase64" alt="icon" class="menu-icon">
-            <span class="menu-text">{{ item.menuName }}</span>
-            <span *ngIf="item.listOfSubMenu && item.listOfSubMenu.length > 0" class="dropdown-arrow">▼</span>
-          </a>
-          <span *ngIf="!item.doHaveRedirectionLink || !item.menuLink" class="menu-link">
-            <img *ngIf="item.svgFileBase64" [src]="item.svgFileBase64" alt="icon" class="menu-icon">
-            <span class="menu-text">{{ item.menuName }}</span>
-            <span *ngIf="item.listOfSubMenu && item.listOfSubMenu.length > 0" class="dropdown-arrow">▼</span>
-          </span>
-          
-          <!-- Submenu -->
-          <ul *ngIf="item.listOfSubMenu && item.listOfSubMenu.length > 0" class="submenu">
+  <!-- Sidebar Content -->
+  <div class="sidebar-content">
+    <ul class="menu-list">
+      <ng-container *ngFor="let item of menuItems">
+        <!-- Menu Item with Submenu -->
+        <li *ngIf="item.listOfSubMenu?.length" class="menu-item" [class.expanded]="isMenuItemExpanded(item.id)">
+          <div class="menu-link" (click)="toggleMenuItem(item.id)">
+            <i [class]="item.svgFileBase64"></i>
+            <span class="menu-text" *ngIf="isExpanded">{{ item.menuName }}</span>
+            <i class="fas fa-chevron-down submenu-icon" *ngIf="isExpanded"></i>
+          </div>
+          <ul class="submenu" [class.show]="isMenuItemExpanded(item.id)">
             <li *ngFor="let subItem of item.listOfSubMenu" class="submenu-item">
-              <a *ngIf="subItem.doHaveRedirectionLink && subItem.menuLink" [routerLink]="subItem.menuLink" class="submenu-link">
-                <img *ngIf="subItem.svgFileBase64" [src]="subItem.svgFileBase64" alt="icon" class="menu-icon">
-                <span class="menu-text">{{ subItem.menuName }}</span>
+              <a [routerLink]="subItem.menuLink" class="submenu-link" routerLinkActive="active">
+                <i [class]="subItem.svgFileBase64"></i>
+                <span class="menu-text" *ngIf="isExpanded">{{ subItem.menuName }}</span>
               </a>
-              <span *ngIf="!subItem.doHaveRedirectionLink || !subItem.menuLink" class="submenu-link">
-                <img *ngIf="subItem.svgFileBase64" [src]="subItem.svgFileBase64" alt="icon" class="menu-icon">
-                <span class="menu-text">{{ subItem.menuName }}</span>
-              </span>
             </li>
           </ul>
-        </ng-container>
-      </li>
+        </li>
+        
+        <!-- Regular Menu Item -->
+        <li *ngIf="!item.listOfSubMenu?.length" class="menu-item">
+          <a [routerLink]="item.menuLink" class="menu-link" routerLinkActive="active">
+            <i [class]="item.svgFileBase64"></i>
+            <span class="menu-text" *ngIf="isExpanded">{{ item.menuName }}</span>
+          </a>
+        </li>
+      </ng-container>
     </ul>
   </div>
   
-  <div class="side-navbar-footer">
-    <ng-container *ngIf="isLoggedIn">
-      <div class="user-info">
-        <span class="user-role">{{ userRole }}</span>
-        <button routerLink="/my-profile" class="profile-btn">
-          <i class="material-icons profile-icon">account_circle</i>
-          <span class="profile-text">My Profile</span>
-        </button>
-      </div>
-    </ng-container>
-    <ng-container *ngIf="!isLoggedIn">
-      <a routerLink="/login" class="login-btn">
-        <i class="material-icons login-icon">login</i>
-        <span class="login-text">Login</span>
-      </a>
-    </ng-container>
-  </div>
-
+  <!-- Sidebar Footer with Social Links -->
   <div class="sidebar-footer">
+    <!-- User Profile/Login Section -->
+    <div *ngIf="isLoggedIn" class="user-info">
+      <a [routerLink]="['/my-profile']" class="profile-link">
+        <i class="fas fa-user"></i>
+        <span *ngIf="isExpanded">My Profile</span>
+      </a>
+    </div>
+    <div *ngIf="!isLoggedIn" class="login-section">
+      <a [routerLink]="['/login']" class="login-link">
+        <i class="fas fa-sign-in-alt"></i>
+        <span *ngIf="isExpanded">Login</span>
+      </a>
+    </div>
+
+    <!-- Social Links -->
     <div class="social-links">
       <a *ngFor="let link of socialLinks" 
          [href]="link.url" 
          target="_blank" 
-         class="social-link">
+         class="social-link"
+         [title]="link.name">
         <i [class]="link.icon"></i>
-        <span class="link-text">{{ link.name }}</span>
-      </a>
-    </div>
-    <div class="docs-button">
-      <a href="/docs" class="docs-link">
-        <i class="fas fa-book"></i>
-        <span class="link-text">Documentation</span>
+        <span class="link-text" *ngIf="isExpanded">{{ link.name }}</span>
       </a>
     </div>
   </div>

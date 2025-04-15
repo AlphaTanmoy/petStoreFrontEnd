@@ -15,51 +15,49 @@
     <div class="navbar-menu" [class.is-active]="isMobileMenuOpen">
       <ul class="navbar-nav">
         <li *ngFor="let item of menuItems" class="nav-item" [class.has-submenu]="hasSubmenu(item)">
-          <ng-container *ngIf="!item.isASubMenu">
-            <!-- Menu item with link and no submenu -->
-            <a *ngIf="item.doHaveRedirectionLink && item.menuLink && !hasSubmenu(item)" 
-               [routerLink]="item.menuLink" 
-               class="nav-link"
-               (click)="closeMenu()">
-              <div>
-                <img *ngIf="item.svgFileBase64" [src]="item.svgFileBase64" alt="icon" class="menu-icon">
-                {{ item.menuName }}
-              </div>
-            </a>
+          <!-- Menu item with link and no submenu -->
+          <a *ngIf="item.doHaveRedirectionLink && item.menuLink && !hasSubmenu(item)" 
+             [routerLink]="item.menuLink" 
+             class="nav-link"
+             (click)="closeMenu()">
+            <div>
+              <img *ngIf="item.svgFileBase64" [src]="item.svgFileBase64" alt="icon" class="menu-icon">
+              {{ item.menuName }}
+            </div>
+          </a>
 
-            <!-- Menu item with submenu -->
-            <a *ngIf="hasSubmenu(item)"
-               [routerLink]="item.doHaveRedirectionLink ? item.menuLink : null"
-               [attr.href]="!item.doHaveRedirectionLink ? '#' : null"
-               class="nav-link"
-               (click)="toggleSubmenu($event, item.id)">
-              <div>
-                <img *ngIf="item.svgFileBase64" [src]="item.svgFileBase64" alt="icon" class="menu-icon">
-                {{ item.menuName }}
-              </div>
-              <span class="dropdown-icon" [class.active]="isSubmenuActive(item.id)"></span>
-            </a>
-            
-            <!-- Submenu -->
-            <ul *ngIf="hasSubmenu(item)" class="submenu" 
-                [class.active]="isSubmenuActive(item.id)" role="menu">
-              <li *ngFor="let subItem of item.listOfSubMenu" class="submenu-item" role="menuitem">
-                <a *ngIf="subItem.doHaveRedirectionLink && subItem.menuLink" 
-                   [routerLink]="subItem.menuLink" 
-                   class="submenu-link"
-                   (click)="closeMenu()">
-                  <div>
-                    <img *ngIf="subItem.svgFileBase64" [src]="subItem.svgFileBase64" alt="icon" class="menu-icon">
-                    {{ subItem.menuName }}
-                  </div>
-                </a>
-                <span *ngIf="!subItem.doHaveRedirectionLink || !subItem.menuLink" class="submenu-link">
+          <!-- Menu item with submenu -->
+          <a *ngIf="hasSubmenu(item)"
+             [routerLink]="item.doHaveRedirectionLink ? item.menuLink : null"
+             [attr.href]="!item.doHaveRedirectionLink ? '#' : null"
+             class="nav-link"
+             (click)="toggleSubmenu($event, item.id)">
+            <div>
+              <img *ngIf="item.svgFileBase64" [src]="item.svgFileBase64" alt="icon" class="menu-icon">
+              {{ item.menuName }}
+            </div>
+            <span class="dropdown-icon" [class.active]="isSubmenuActive(item.id)"></span>
+          </a>
+          
+          <!-- Submenu -->
+          <ul *ngIf="hasSubmenu(item)" class="submenu" 
+              [class.active]="isSubmenuActive(item.id)" role="menu">
+            <li *ngFor="let subItem of item.listOfSubMenu" class="submenu-item">
+              <a *ngIf="subItem.doHaveRedirectionLink && subItem.menuLink" 
+                 [routerLink]="subItem.menuLink" 
+                 class="submenu-link"
+                 (click)="closeMenu()">
+                <div>
                   <img *ngIf="subItem.svgFileBase64" [src]="subItem.svgFileBase64" alt="icon" class="menu-icon">
                   {{ subItem.menuName }}
-                </span>
-              </li>
-            </ul>
-          </ng-container>
+                </div>
+              </a>
+              <span *ngIf="!subItem.doHaveRedirectionLink || !subItem.menuLink" class="submenu-link">
+                <img *ngIf="subItem.svgFileBase64" [src]="subItem.svgFileBase64" alt="icon" class="menu-icon">
+                {{ subItem.menuName }}
+              </span>
+            </li>
+          </ul>
         </li>
         <!-- Mobile Auth Menu Items -->
         <li class="nav-item mobile-auth">

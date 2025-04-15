@@ -1,23 +1,36 @@
-main {
+.app-container {
+  display: flex;
   min-height: 100vh;
-  margin: 0;
-  padding: 60px 0 0 0;
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1rem;
+  transition: margin-left 0.3s ease;
+  background-color: var(--bg-secondary);
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s ease;
 }
 
-main.with-side-navbar {
-  margin-left: 280px;
+.main-content.with-sidebar {
+  margin-left: 250px;
 }
 
-main.with-side-navbar.collapsed {
+.main-content.with-sidebar.sidebar-collapsed {
   margin-left: 60px;
 }
 
+/* When not using sidebar */
+.main-content:not(.with-sidebar) {
+  margin-left: 0;
+  margin-top: 60px; /* Height of the top navbar */
+}
+
 @media (max-width: 768px) {
-  main.with-side-navbar {
-    margin-left: 60px;
+  .main-content.with-sidebar,
+  .main-content.with-sidebar.sidebar-collapsed {
+    margin-left: 0;
   }
 }
 

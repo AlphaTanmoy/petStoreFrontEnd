@@ -20,34 +20,60 @@ export class MenuService {
   ) { }
 
   getMenuItems(): Observable<MenuItem[]> {
+    console.log('MenuService: Fetching menu items from:', this.apiUrl);
     return this.http.get<MenuItem[]>(this.apiUrl).pipe(
+      tap(items => console.log('MenuService: Raw menu items:', items)),
       map(menuItems => this.filterMenuItemsByRole(menuItems)),
-      catchError(error => of([]))
+      tap(filteredItems => console.log('MenuService: Filtered menu items:', filteredItems)),
+      catchError(error => {
+        console.error('MenuService: Error fetching menu items:', error);
+        return of([]);
+      })
     );
   }
 
   private filterMenuItemsByRole(menuItems: MenuItem[]): MenuItem[] {
     const userRole = this.authService.getStoredUserRole();
     const isLoggedIn = this.authService.isUserLoggedIn();
+    
+    console.log('MenuService: Filtering menu items - User Role:', userRole, 'Is Logged In:', isLoggedIn);
 
     return menuItems.filter(item => {
-      // First, check if the item itself should be visible
+      // For guest users, only show items that are explicitly marked as available while logged out
+      if (!isLoggedIn) {
+        const guestAccess = item.isAvailableWhileLoggedOut === true;
+        console.log('MenuService: Guest access check for', item.menuName, '- Has Access:', guestAccess, {
+          isAvailableWhileLoggedOut: item.isAvailableWhileLoggedOut
+        });
+        return guestAccess;
+      }
+
+      // For logged-in users, check role-based access
       let hasAccess = this.checkAccess(item, userRole, isLoggedIn);
 
       // If the item has submenus, filter them
       if (item.listOfSubMenu && item.listOfSubMenu.length > 0) {
-        item.listOfSubMenu = this.filterMenuItemsByRole(item.listOfSubMenu);
-        // Keep parent if it has visible submenu items, even if parent itself doesn't have access
-        hasAccess = hasAccess || item.listOfSubMenu.length > 0;
+        const filteredSubMenu = this.filterMenuItemsByRole(item.listOfSubMenu);
+        item.listOfSubMenu = filteredSubMenu;
+        // Keep parent if it has visible submenu items
+        hasAccess = hasAccess || filteredSubMenu.length > 0;
       }
+
+      console.log('MenuService: Item access check -', {
+        name: item.menuName,
+        hasAccess,
+        isSubMenu: item.isASubMenu,
+        subMenuCount: item.listOfSubMenu?.length || 0
+      });
 
       return hasAccess;
     });
   }
 
   private checkAccess(item: MenuItem, userRole: string, isLoggedIn: boolean): boolean {
+    // If not logged in, only show items marked as available while logged out
     if (!isLoggedIn) {
-      return item.isAvailableWhileLoggedOut && item.isVisibleToGuest;
+      return item.isAvailableWhileLoggedOut === true;
     }
 
     let hasAccess = false;
@@ -71,15 +97,16 @@ export class MenuService {
         hasAccess = item.canRiderAccess;
         break;
       case 'ROLE_DELIVERY_BOY':
-        hasAccess = item.canRiderAccess; // Assuming delivery boys have the same access as raiders
+        hasAccess = item.canRiderAccess;
         break;
       case 'ROLE_CUSTOMER_CARE':
-        hasAccess = item.canUserAccess; // Assuming customer care has the same access as users
+        hasAccess = item.canUserAccess;
         break;
       default:
         hasAccess = false;
     }
 
+    console.log('MenuService: Role-based access check for', item.menuName, '- Role:', userRole, 'Has Access:', hasAccess);
     return hasAccess;
   }
 }

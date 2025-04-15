@@ -5,7 +5,8 @@ import { MenuService } from '../../service/menu/menu.service';
 import { MenuItem } from '../../interfaces/menu.interface';
 import { AuthService } from '../../service/auth/Auth.Service';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
+import { skip } from 'rxjs/operators';
 
 @Component({
   selector: 'app-navbar',
@@ -53,32 +54,29 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // Check initial login state
+    // Initial state setup
     this.isLoggedIn = this.authService.isUserLoggedIn();
     this.userRole = this.authService.getUserRole();
     this.username = this.authService.getUsername() || this.userRole;
     
+    // Initial menu load
     this.loadMenuItems();
     
-    // Subscribe to login status changes
+    // Subscribe to subsequent auth changes
     this.subscriptions.push(
-      this.authService.loginStatus$.subscribe(status => {
+      combineLatest([
+        this.authService.loginStatus$,
+        this.authService.userRole$
+      ]).pipe(
+        skip(1) // Skip the first emission to avoid double loading
+      ).subscribe(([status, role]) => {
+        console.log('Auth status changed - Status:', status, 'Role:', role);
         this.isLoggedIn = status;
+        this.userRole = role;
         if (status) {
-          this.username = this.authService.getUsername() || this.userRole;
+          this.username = this.authService.getUsername() || role;
         } else {
           this.username = '';
-        }
-        this.loadMenuItems();
-      })
-    );
-    
-    // Subscribe to user role changes
-    this.subscriptions.push(
-      this.authService.userRole$.subscribe(role => {
-        this.userRole = role;
-        if (this.isLoggedIn) {
-          this.username = this.authService.getUsername() || role;
         }
         this.loadMenuItems();
       })
@@ -91,13 +89,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   loadMenuItems(): void {
+    console.log('NavbarComponent: Loading menu items...');
     this.menuService.getMenuItems().subscribe({
       next: (items) => {
-        console.log('Received menu items:', items);
+        console.log('NavbarComponent: Received menu items:', items);
         this.menuItems = items;
       },
       error: (error) => {
-        console.error('Error loading menu items:', error);
+        console.error('NavbarComponent: Error loading menu items:', error);
       }
     });
   }

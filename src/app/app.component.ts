@@ -1,24 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { LoaderComponent } from './components/loader/loader.component';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { SideNavbarComponent } from './layout/side-navbar/side-navbar.component';
-import { LoaderComponent } from './components/loader/loader.component';
+import { FooterComponent } from './layout/footer/footer.component';
+import { AuthService } from './service/auth/Auth.Service';
 import { LoaderService } from './service/loader/loader.service';
 import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { AuthService } from './service/auth/Auth.Service';
-import { FooterComponent } from './layout/footer/footer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     CommonModule,
-    RouterOutlet,
+    RouterModule,
+    LoaderComponent,
     NavbarComponent,
     SideNavbarComponent,
-    LoaderComponent,
     FooterComponent
   ],
   templateUrl: './app.component.html',
@@ -26,53 +25,28 @@ import { FooterComponent } from './layout/footer/footer.component';
 })
 export class AppComponent implements OnInit {
   title = 'petStoreFrontEnd';
-  useSideNavbar = true;
-  isLoggedIn = false;
-  isLoading$: Observable<boolean>;
+  useSideNavbar = false;
   isSidebarCollapsed = false;
+  isLoading$: Observable<boolean>;
 
   constructor(
-    private router: Router,
-    private loaderService: LoaderService,
-    private authService: AuthService
+    private authService: AuthService,
+    private loaderService: LoaderService
   ) {
     this.isLoading$ = this.loaderService.isLoading$;
-    
-    // Subscribe to router events to show/hide loader
-    this.router.events
-      .pipe(
-        filter(event => 
-          event instanceof NavigationStart ||
-          event instanceof NavigationEnd ||
-          event instanceof NavigationCancel ||
-          event instanceof NavigationError
-        )
-      )
-      .subscribe(event => {
-        if (event instanceof NavigationStart) {
-          this.loaderService.show();
-        } else {
-          this.loaderService.hide();
-        }
-      });
   }
 
   ngOnInit(): void {
-    this.authService.loginStatus$.subscribe((status: boolean) => {
-      this.isLoggedIn = status;
+    // Check if user is logged in to determine which navbar to show
+    this.useSideNavbar = this.authService.isUserLoggedIn();
+    
+    // Subscribe to auth changes to update navbar type
+    this.authService.loginStatus$.subscribe(status => {
       this.useSideNavbar = status;
     });
-
-    // Example: Show loader when component initializes
-    this.loaderService.show();
-    
-    // Hide loader after delay
-    setTimeout(() => {
-      this.loaderService.hide();
-    }, 500);
   }
 
-  onSidebarCollapsed(collapsed: boolean) {
+  onSidebarCollapsed(collapsed: boolean): void {
     this.isSidebarCollapsed = collapsed;
   }
 }

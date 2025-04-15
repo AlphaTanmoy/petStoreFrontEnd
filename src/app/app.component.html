@@ -6,17 +6,13 @@
   <app-navbar></app-navbar>
 </div>
 
-<!-- Side Navbar for logged-in users -->
-<div *ngIf="useSideNavbar">
-  <app-side-navbar (sidebarCollapsed)="onSidebarCollapsed($event)"></app-side-navbar>
-</div>
-
-<!-- Main content -->
+<!-- Main content with side navbar for logged-in users -->
 <div class="app-container">
-  <main [class.with-side-navbar]="useSideNavbar" [class.collapsed]="isSidebarCollapsed">
+  <app-side-navbar *ngIf="useSideNavbar" (sidebarCollapsed)="onSidebarCollapsed($event)"></app-side-navbar>
+  <div class="main-content" [class.sidebar-collapsed]="isSidebarCollapsed" [class.with-sidebar]="useSideNavbar">
     <router-outlet></router-outlet>
-  </main>
-  <app-footer></app-footer>
+    <app-footer></app-footer>
+  </div>
 </div>
 
 
