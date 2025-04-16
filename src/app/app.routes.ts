@@ -1,3 +1,4 @@
+import { CustomerCareProfileControlComponent } from './users/customerCare/customer-care-profile-control/customer-care-profile-control.component';
 import { UnAuthorizeComponent } from './components/un-authorize/un-authorize.component';
 import { HomeComponent } from './components/home/home.component';
 import { Routes } from '@angular/router';
@@ -12,31 +13,35 @@ import { MasterLoginComponent } from './auth/login/master-login/master-login.com
 import { AuthGuard } from './auth/guards/auth.guard';
 import { USER_ROLE } from './constants/Enums';
 import { MyProfileComponent } from './auth/my-profile/my-profile.component';
-import { ProfileControlForAdminComponent } from './users/admin/profile-control-for-admin/profile-control-for-admin.component';
 import { MasterDashboardComponent } from './users/master/master-dashboard/master-dashboard.component';
-import { ProfileControlForDoctorsComponent } from './users/doctor/profile-control-for-doctors/profile-control-for-doctors.component';
-import { ViewAdminsComponent } from './users/admin/view-admins/view-admins.component';
-import { ViewDoctorsComponent } from './users/doctor/view-doctors/view-doctors.component';
-import { ProfileControlForSellerComponent } from './users/seller/profile-control-for-seller/profile-control-for-seller.component';
-import { ViewSellerComponent } from './users/seller/view-seller/view-seller.component';
-import { ProfileControlForUserComponent } from './users/user/profile-control-for-user/profile-control-for-user.component';
-import { UserListComponent } from './users/user/user-list/user-list.component';
-import { AdminDashboardComponent } from './users/admin/admin-dashboard/admin-dashboard.component';
-import { DoctorDashboardComponent } from './users/doctor/doctor-dashboard/doctor-dashboard.component';
-import { RegisterDoctorComponent } from './users/doctor/register-doctor/register-doctor.component';
-import { LivenessActionsComponent } from './microservices/livensess/liveness-actions/liveness-actions.component';
-import { LivenessProfileViewComponent } from './microservices/livensess/liveness-profile-view/liveness-profile-view.component';
-import { ViewLivenessComponent } from './microservices/livensess/view-liveness/view-liveness.component';
-import { SellerDashboardComponent } from './users/seller/seller-dashboard/seller-dashboard.component';
-import { RegisterSellerComponent } from './users/seller/register-seller/register-seller.component';
-import { UserDashboardComponent } from './users/user/user-dashboard/user-dashboard.component';
-import { RegisterUserComponent } from './auth/register-user/register-user.component';
-import { SanctionActionsComponent } from './microservices/sanctions/sanction-actions/sanction-actions.component';
-import { SanctionProfileViewComponent } from './microservices/sanctions/sanction-profile-view/sanction-profile-view.component';
-import { ViewSanctionComponent } from './microservices/sanctions/view-sanction/view-sanction.component';
 import { ControllS3Component } from './microservices/s3/controll-s3/controll-s3.component';
 import { ViewS3Component } from './microservices/s3/view-s3/view-s3.component';
 import { AdminLoginComponent } from './auth/login/admin-login/admin-login.component';
+import { AdminDashboardComponent } from './users/admin/admin-dashboard/admin-dashboard.component';
+import { DoctorDashboardComponent } from './users/doctor/doctor-dashboard/doctor-dashboard.component';
+import { SellerDashboardComponent } from './users/seller/seller-dashboard/seller-dashboard.component';
+import { JwtDetailsComponent } from './users/master/jwt-details/jwt-details.component';
+import { JwtLogsComponent } from './users/master/jwt-logs/jwt-logs.component';
+import { NotificationLogComponent } from './users/master/notification-log/notification-log.component';
+import { AdminDetailsComponent } from './users/admin/admin-details/admin-details.component';
+import { ViewLivenessComponent } from './microservices/kyc/liveness/view-liveness/view-liveness.component';
+import { SanctionDetailsComponent } from './microservices/kyc/sanction-details/sanction-details.component';
+import { ViewSanctionComponent } from './microservices/kyc/view-sanction/view-sanction.component';
+import { LivenessDetailsComponent } from './microservices/kyc/liveness/liveness-details/liveness-details.component';
+import { CustomerDetailsComponent } from './users/customer/customer-details/customer-details.component';
+import { ViewAdminsComponent } from './users/admin/view-admins/view-admins.component';
+import { CustomerRegisterComponent } from './users/customer/customer-register/customer-register.component';
+import { ViewCustomersComponent } from './users/customer/view-customers/view-customers.component';
+import { CustomerProfileControlComponent } from './users/customer/customer-profile-control/cutomer-profile-control.component';
+import { CustomerCareDashboardComponent } from './users/customerCare/customer-care-dashboard/customer-care-dashboard.component';
+import { CustomerCareDetailsComponent } from './users/customerCare/customer-care-details/customer-care-details.component';
+import { ViewCustomerCaresComponent } from './users/customerCare/view-customer-cares/view-customer-cares.component';
+import { DoctorDetailsComponent } from './users/doctor/doctor-details/doctor-details.component';
+import { ViewDoctorsComponent } from './users/doctor/view-doctors/view-doctors.component';
+import { DoctorProfileControlComponent } from './users/doctor/doctor-profile-control/doctor-profile-control.component';
+import { SellerDetailsComponent } from './users/seller/seller-details/seller-details.component';
+import { ViewSellesComponent } from './users/seller/view-selles/view-selles.component';
+import { SellerProfileControlComponent } from './users/seller/seller-profile-control/seller-profile-control.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -64,63 +69,27 @@ export const routes: Routes = [
 
   // Master routes (protected)
   {
-    path: '',
+    path: 'master',
     canActivate: [AuthGuard],
     data: { roles: [USER_ROLE.ROLE_MASTER] },
     children: [
       { path: 'dashboard', component: MasterDashboardComponent },
-      { path: 'admin-profile-control', component: ProfileControlForAdminComponent },
-      { path: 'view-admins', component: ViewAdminsComponent },
-      { path: 'doctor-profile-control', component: ProfileControlForDoctorsComponent },
-      { path: 'view-doctors', component: ViewDoctorsComponent },
-      { path: 'seller-profile-control', component: ProfileControlForSellerComponent },
-      { path: 'view-seller', component: ViewSellerComponent },
-      { path: 'user-profile-control', component: ProfileControlForUserComponent },
-      { path: 'view-users', component: UserListComponent }
+      { path: 'jwt-details', component: JwtDetailsComponent },
+      { path: 'jwt-logs', component: JwtLogsComponent },
+      { path: 'notification-log', component: NotificationLogComponent }
     ]
   },
 
   // Admin routes (protected)
   {
-    path: 'admin',
+    path: 'admins',
     canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_ADMIN] },
+    data: { roles: [USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
     children: [
-      { path: 'dashboard', component: AdminDashboardComponent }
-    ]
-  },
-
-  // Doctor routes (protected)
-  {
-    path: 'doctor',
-    canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_DOCTOR] },
-    children: [
-      { path: 'dashboard', component: DoctorDashboardComponent },
-      { path: 'register', component: RegisterDoctorComponent }
-    ]
-  },
-
-  // Liveness routes (protected)
-  {
-    path: 'liveness',
-    canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_MASTER, USER_ROLE.ROLE_ADMIN] },
-    children: [
-      { path: 'actions', component: LivenessActionsComponent },
-      { path: 'profile-view', component: LivenessProfileViewComponent },
-      { path: 'view', component: ViewLivenessComponent }
-    ]
-  },
-
-  // Seller routes (protected)
-  {
-    path: 'seller',
-    canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_SELLER] },
-    children: [
-      { path: 'dashboard', component: SellerDashboardComponent },
-      { path: 'register', component: RegisterSellerComponent }
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'details', component: AdminDetailsComponent },
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'view-all', component: ViewAdminsComponent }
     ]
   },
 
@@ -128,22 +97,67 @@ export const routes: Routes = [
   {
     path: 'customer',
     canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_CUSTOMER] },
+    data: { roles: [USER_ROLE.ROLE_CUSTOMER,USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
     children: [
-      { path: 'dashboard', component: UserDashboardComponent },
-      { path: 'register', component: RegisterUserComponent }
+      { path: 'details', component: CustomerDetailsComponent },
+      { path: 'register', component: CustomerRegisterComponent },
+      { path: 'view-all', component: ViewCustomersComponent },
+      { path: 'profile-control', component: CustomerProfileControlComponent },
     ]
   },
 
-  // Sanction routes (protected)
+  // Customer Care routes (protected)
   {
-    path: 'sanction',
+    path: 'customer-care',
+    canActivate: [AuthGuard],
+    data: { roles: [USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
+    children: [
+      { path: 'dashboard', component: CustomerCareDashboardComponent },
+      { path: 'details', component: CustomerCareDetailsComponent },
+      { path: 'dashboard', component: CustomerCareDashboardComponent },
+      { path: 'view-all', component: ViewCustomerCaresComponent },
+      { path: 'profile-control', component: CustomerCareProfileControlComponent },
+    ]
+  },
+
+  // Doctor routes (protected)
+  {
+    path: 'doctor',
+    canActivate: [AuthGuard],
+    data: { roles: [USER_ROLE.ROLE_DOCTOR,USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
+    children: [
+      { path: 'dashboard', component: DoctorDashboardComponent },
+      { path: 'details', component: DoctorDetailsComponent },
+      { path: 'dashboard', component: DoctorDashboardComponent },
+      { path: 'view-all', component: ViewDoctorsComponent },
+      { path: 'profile-control', component: DoctorProfileControlComponent },
+    ]
+  },
+
+  // Seller routes (protected)
+  {
+    path: 'seller',
+    canActivate: [AuthGuard],
+    data: { roles: [USER_ROLE.ROLE_SELLER,USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
+    children: [
+      { path: 'dashboard', component: SellerDashboardComponent },
+      { path: 'details', component: SellerDetailsComponent },
+      { path: 'dashboard', component: SellerDashboardComponent },
+      { path: 'view-all', component: ViewSellesComponent },
+      { path: 'profile-control', component: SellerProfileControlComponent },
+    ]
+  },
+
+  // kyc routes (protected)
+  {
+    path: 'kyc',
     canActivate: [AuthGuard],
     data: { roles: [USER_ROLE.ROLE_MASTER, USER_ROLE.ROLE_ADMIN] },
     children: [
-      { path: 'actions', component: SanctionActionsComponent },
-      { path: 'profile-view', component: SanctionProfileViewComponent },
-      { path: 'view', component: ViewSanctionComponent }
+      { path: 'view-liveness', component: ViewLivenessComponent },
+      { path: 'liveness-details', component: LivenessDetailsComponent },
+      { path: 'view-sanctions', component: ViewSanctionComponent },
+      { path: 'sanction-details', component: SanctionDetailsComponent }
     ]
   },
 
