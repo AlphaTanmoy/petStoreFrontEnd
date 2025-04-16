@@ -75,14 +75,22 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
-      otp: [{ value: '', disabled: true }, [Validators.required]]
+      password: [''],
+      otp: [{ value: '', disabled: true }]
     });
+
+    // Update password field validation based on login method
+    this.loginForm.get('password')?.setValidators(Validators.required);
+    this.loginForm.get('password')?.updateValueAndValidity();
   }
 
   ngOnInit(): void {
     // Set endpoints based on role
     this.setEndpointsByRole();
+
+    // Subscribe to login method changes
+    this.loginForm.get('password')?.setValidators(this.loginMethod === 'password' ? Validators.required : null);
+    this.loginForm.get('password')?.updateValueAndValidity();
   }
 
   private setEndpointsByRole(): void {
@@ -357,6 +365,18 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
         message: 'OTP verified successfully!'
       }
     });
+  }
+
+  // Add method to handle login method changes
+  onLoginMethodChange(): void {
+    const passwordControl = this.loginForm.get('password');
+    if (this.loginMethod === 'password') {
+      passwordControl?.setValidators(Validators.required);
+    } else {
+      passwordControl?.clearValidators();
+      passwordControl?.setValue('');
+    }
+    passwordControl?.updateValueAndValidity();
   }
 
   ngOnDestroy(): void {

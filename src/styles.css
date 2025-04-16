@@ -10,7 +10,7 @@
   overflow-x: hidden;
   transition: all 0.3s ease;
   z-index: 1000;
-  padding-top: 50px;
+  padding-top: 0px;
 }
 
 .sidebar.expanded {
@@ -113,6 +113,7 @@
 @media (max-width: 768px) {
   .sidebar {
     width: 60px;
+    color: white;
   }
 
   .sidebar.expanded {
@@ -149,31 +150,31 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   --primary-color: #2c3e50;
   --primary-light: #34495e;
   --primary-dark: #1a252f;
-  
+
   /* Secondary colors */
   --secondary-color: #3498db;
   --secondary-light: #5dade2;
   --secondary-dark: #2980b9;
-  
+
   /* Accent colors */
   --accent-color: #e74c3c;
   --accent-light: #ec7063;
   --accent-dark: #c0392b;
-  
+
   /* Text colors */
   --text-light: #ecf0f1;
   --text-dark: #2c3e50;
   --text-muted: #95a5a6;
-  
+
   /* Background colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --bg-dark: #2c3e50;
-  
+
   /* Border colors */
   --border-color: #dcdfe6;
   --border-light: #ebeef5;
-  
+
   /* Status colors */
   --success-color: #2ecc71;
   --warning-color: #f1c40f;

@@ -29,7 +29,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   onResize() {
     const wasMobile = this.isMobileView;
     this.isMobileView = window.innerWidth <= 768;
-    
+
     // Reset states when switching between mobile and desktop
     if (wasMobile !== this.isMobileView) {
       this.isMobileMenuOpen = false;
@@ -39,11 +39,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (!this.isMobileView) {
-      const clickedElement = event.target as HTMLElement;
-      if (!clickedElement.closest('.has-submenu')) {
-        this.activeSubmenuId = null;
-      }
+    const clickedElement = event.target as HTMLElement;
+    if (!clickedElement.closest('.has-submenu')) {
+      this.activeSubmenuId = null;
     }
   }
 
@@ -54,23 +52,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // Initial state setup
     this.isLoggedIn = this.authService.isUserLoggedIn();
     this.userRole = this.authService.getUserRole();
     this.username = this.authService.getUsername() || this.userRole;
-    
-    // Initial menu load
     this.loadMenuItems();
-    
-    // Subscribe to subsequent auth changes
+
     this.subscriptions.push(
       combineLatest([
         this.authService.loginStatus$,
         this.authService.userRole$
       ]).pipe(
-        skip(1) // Skip the first emission to avoid double loading
+        skip(1)
       ).subscribe(([status, role]) => {
-        console.log('Auth status changed - Status:', status, 'Role:', role);
         this.isLoggedIn = status;
         this.userRole = role;
         if (status) {
@@ -84,15 +77,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Clean up subscriptions
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   loadMenuItems(): void {
-    console.log('NavbarComponent: Loading menu items...');
     this.menuService.getMenuItems().subscribe({
       next: (items) => {
-        console.log('NavbarComponent: Received menu items:', items);
         this.menuItems = items;
       },
       error: (error) => {
@@ -115,8 +105,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   toggleSubmenu(event: Event, itemId: string): void {
     event.preventDefault();
     event.stopPropagation();
-    
-    // Toggle submenu state
+
     this.activeSubmenuId = this.activeSubmenuId === itemId ? null : itemId;
   }
 
@@ -130,32 +119,37 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    console.log('Navbar logout button clicked');
     this.authService.logout().subscribe({
       next: () => {
-        console.log('Navbar: Logout successful');
-        // The service will handle the redirect
+        window.location.href = '/login';
       },
       error: (error) => {
         console.error('Navbar: Logout error:', error);
-        // Force redirect to login page even on error
         window.location.href = '/login';
       }
     });
     this.closeMenu();
   }
 
-  // Debug method to help track menu item structure
   logMenuItem(item: MenuItem): void {
-    console.log('Menu Item:', {
-      name: item.menuName,
-      hasSubmenu: this.hasSubmenu(item),
-      subMenuCount: item.listOfSubMenu?.length || 0,
-      subMenuItems: item.listOfSubMenu
-    });
+    console.log('Menu Item:', item);
   }
 
   navigateToProfile(): void {
     this.router.navigate(['/my-profile']);
   }
+
+  // New method to handle mouse hover for showing submenus
+  onMenuHover(itemId: string): void {
+    if (!this.isMobileView) {
+      this.activeSubmenuId = itemId;
+    }
+  }
+
+  onMenuLeave(): void {
+    if (!this.isMobileView) {
+      this.activeSubmenuId = null;
+    }
+  }
 }
+

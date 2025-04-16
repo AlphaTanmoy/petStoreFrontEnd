@@ -14,7 +14,7 @@ import { AuthService } from '../../service/auth/Auth.Service';
 })
 export class MyProfileComponent implements OnInit {
   userRole: string = '';
-  username: string = '';
+  userName: string = '';
 
   constructor(
     private authService: AuthService,
@@ -23,7 +23,7 @@ export class MyProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.userRole = this.authService.getUserRole();
-    this.username = this.authService.getUsername() || this.userRole;
+    this.userName = this.authService.getUsername();
   }
 
   logout(): void {
@@ -40,4 +40,4 @@ export class MyProfileComponent implements OnInit {
       }
     });
   }
-} 
+}

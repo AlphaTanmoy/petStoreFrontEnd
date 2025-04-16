@@ -1,15 +1,18 @@
 <footer class="footer-container">
-  <div class="social-links">
-    <a *ngFor="let link of socialLinks"
-       [href]="link.url"
-       target="_blank"
-       class="social-link">
-      <i [class]="link.icon"></i>
-      <span class="link-text">{{ link.name }}</span>
-    </a>
-  </div>
-  <div class="docs-button">
-    <a href="https://pet-store-api-docx.vercel.app/" class="docs-link" target="_blank">
+  <div class="left-group">
+    <div class="social-links">
+      <a *ngFor="let link of socialLinks"
+         [href]="link.url"
+         target="_blank"
+         class="social-link">
+        <i [class]="link.icon"></i>
+        <span class="link-text">{{ link.name }}</span>
+      </a>
+    </div>
+
+    <a href="https://pet-store-api-docx.vercel.app/"
+       class="docs-link docs-button"
+       target="_blank">
       <i class="fas fa-book"></i>
       <span class="link-text">Documentation</span>
     </a>

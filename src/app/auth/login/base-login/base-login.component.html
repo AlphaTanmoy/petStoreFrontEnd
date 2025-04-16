@@ -1,7 +1,7 @@
 <div class="login-container">
   <div class="login-card">
     <h2>{{ title }}</h2>
-    
+
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <ng-container *ngIf="!otpSent; else otpSection">
         <mat-form-field appearance="outline">
@@ -14,14 +14,14 @@
             Please enter a valid email
           </mat-error>
         </mat-form-field>
-        
+
         <div class="login-method-selection">
-          <mat-radio-group [(ngModel)]="loginMethod" [ngModelOptions]="{standalone: true}">
+          <mat-radio-group [(ngModel)]="loginMethod" [ngModelOptions]="{standalone: true}" (ngModelChange)="onLoginMethodChange()">
             <mat-radio-button value="password">Login with Password</mat-radio-button>
             <mat-radio-button value="otp">Login with OTP</mat-radio-button>
           </mat-radio-group>
         </div>
-        
+
         <ng-container *ngIf="loginMethod === 'password'">
           <mat-form-field appearance="outline">
             <mat-label>Password</mat-label>
@@ -34,9 +34,12 @@
             </mat-error>
           </mat-form-field>
         </ng-container>
-        
+
         <div class="button-group">
-          <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading">
+          <button mat-raised-button color="primary" type="submit"
+                  [disabled]="(loginMethod === 'password' && loginForm.invalid) ||
+                             (loginMethod === 'otp' && loginForm.get('email')?.invalid) ||
+                             isLoading">
             <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
             <span *ngIf="!isLoading">
               {{ loginMethod === 'password' ? 'Sign In' : 'Get OTP' }}
@@ -44,7 +47,7 @@
           </button>
         </div>
       </ng-container>
-      
+
       <ng-template #otpSection>
         <div *ngIf="otpSent" class="otp-section">
           <h3>Enter Verification Code</h3>
@@ -55,7 +58,7 @@
               <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
               <span *ngIf="!isLoading">Resend OTP</span>
             </button>
-            <button mat-raised-button color="primary" (click)="onSubmit()" 
+            <button mat-raised-button color="primary" (click)="onSubmit()"
                     [disabled]="isLoading || otpValue.length !== 6">
               <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
               <span *ngIf="!isLoading">Verify</span>
@@ -66,4 +69,4 @@
       </ng-template>
     </form>
   </div>
-</div> 
+</div>

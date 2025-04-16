@@ -11,13 +11,17 @@
         <span></span>
       </button>
     </div>
-    
+
     <div class="navbar-menu" [class.is-active]="isMobileMenuOpen">
       <ul class="navbar-nav">
-        <li *ngFor="let item of menuItems" class="nav-item" [class.has-submenu]="hasSubmenu(item)">
+        <li *ngFor="let item of menuItems" class="nav-item"
+            [class.has-submenu]="hasSubmenu(item)"
+            (mouseenter)="onMenuHover(item.id)"
+            (mouseleave)="onMenuLeave()">
+
           <!-- Menu item with link and no submenu -->
-          <a *ngIf="item.doHaveRedirectionLink && item.menuLink && !hasSubmenu(item)" 
-             [routerLink]="item.menuLink" 
+          <a *ngIf="item.doHaveRedirectionLink && item.menuLink && !hasSubmenu(item)"
+             [routerLink]="item.menuLink"
              class="nav-link"
              (click)="closeMenu()">
             <div>
@@ -38,13 +42,13 @@
             </div>
             <span class="dropdown-icon" [class.active]="isSubmenuActive(item.id)"></span>
           </a>
-          
+
           <!-- Submenu -->
-          <ul *ngIf="hasSubmenu(item)" class="submenu" 
+          <ul *ngIf="hasSubmenu(item)" class="submenu"
               [class.active]="isSubmenuActive(item.id)" role="menu">
             <li *ngFor="let subItem of item.listOfSubMenu" class="submenu-item">
-              <a *ngIf="subItem.doHaveRedirectionLink && subItem.menuLink" 
-                 [routerLink]="subItem.menuLink" 
+              <a *ngIf="subItem.doHaveRedirectionLink && subItem.menuLink"
+                 [routerLink]="subItem.menuLink"
                  class="submenu-link"
                  (click)="closeMenu()">
                 <div>
@@ -70,7 +74,7 @@
         </li>
       </ul>
     </div>
-    
+
     <!-- Desktop Auth Menu -->
     <div class="navbar-end desktop-auth">
       <ng-container *ngIf="isLoggedIn">
