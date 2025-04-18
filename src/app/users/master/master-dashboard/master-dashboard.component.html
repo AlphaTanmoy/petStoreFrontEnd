@@ -1,1 +1,86 @@
-<p>master-dashboard works!</p>
+<div class="dashboard-container">
+  <app-loader [isLoading]="isLoading"></app-loader>
+
+  <!-- Microservice Status Section - Full width -->
+  <mat-card class="dashboard-card microservice-card">
+    <mat-card-header>
+      <mat-card-title>Microservice Status</mat-card-title>
+      <button mat-raised-button
+              [color]="isFetching ? 'warn' : 'primary'"
+              (click)="toggleFetching()"
+              class="fetch-button">
+        <mat-icon>{{isFetching ? 'stop' : 'play_arrow'}}</mat-icon>
+        {{isFetching ? 'Fetching...' : 'Start Fetching'}}
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="status-list">
+        <div *ngFor="let status of microserviceStatuses"
+             class="status-item"
+             [class.up]="status.status === 'UP'"
+             [class.down]="status.status === 'DOWN'">
+          <span class="service-name">{{status.name}}</span>
+          <span class="service-status">{{status.status}}</span>
+          <span class="timestamp">{{status.timestamp | date:'medium'}}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- System Traffic Section - 3 columns -->
+  <mat-card class="dashboard-card traffic-card">
+    <mat-card-header>
+      <mat-card-title>System Traffic</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="traffic-placeholder">
+        <p>Traffic graph will be implemented here</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Server Status Section - 3 columns -->
+  <mat-card class="dashboard-card server-card">
+    <mat-card-header>
+      <mat-card-title>Server Status</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="server-placeholder">
+        <p>Server status information will be displayed here</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Additional Section - 6 columns below traffic and server -->
+  <mat-card class="dashboard-card additional-card">
+    <mat-card-header>
+      <mat-card-title>Additional Information</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="placeholder-content">
+        <p>This section is reserved for future implementation</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Notifications Section - 6 columns, spans height -->
+  <mat-card class="dashboard-card notification-card">
+    <mat-card-header>
+      <mat-card-title>Recent Notifications</mat-card-title>
+      <button mat-button color="primary" (click)="viewAllNotifications()">
+        View All
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item *ngFor="let notification of notifications" class="notification-item">
+          <div matListItemTitle>{{notification.title}}</div>
+          <div matListItemLine>{{notification.message}}</div>
+          <div matListItemMeta>
+            <span class="timestamp">{{notification.timestamp | date:'medium'}}</span>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+</div>

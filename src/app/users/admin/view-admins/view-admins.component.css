@@ -1,0 +1,118 @@
+.container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.filter-card {
+  margin-bottom: 20px;
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-checkbox {
+  margin-right: 16px;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.table-card {
+  margin-top: 20px;
+}
+
+.table-container {
+  position: relative;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+mat-paginator {
+  margin-top: 16px;
+}
+
+/* Total count styling */
+.total-count {
+  margin-left: 16px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .filter-row {
+    flex-direction: column;
+  }
+
+  .filter-field {
+    width: 100%;
+  }
+
+  .button-group {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .total-count {
+    margin-left: 8px;
+    font-size: 12px;
+  }
+}
+
+/* Hover effects */
+mat-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Status button styling */
+mat-icon-button {
+  transition: transform 0.2s;
+}
+
+mat-icon-button:hover {
+  transform: scale(1.1);
+}
