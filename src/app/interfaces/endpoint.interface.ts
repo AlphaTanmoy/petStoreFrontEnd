@@ -23,7 +23,7 @@ export interface AdminEndpoints {
   getUsers: string;
 }
 
-export interface ChatEndpoints {
+export interface DocEndpoints {
   getMessages: string;
   sendMessage: string;
 }
@@ -38,7 +38,7 @@ export interface S3Endpoints {
   getFile: string;
 }
 
-export interface SanctionEndpoints {
+export interface ManagementEndpoints {
   checkStatus: string;
 }
 
@@ -47,19 +47,19 @@ export interface SellerEndpoints {
   addProduct: string;
 }
 
-export interface LivenessEndpoints {
+export interface KycEndpoints {
   healthCheck: string;
 }
 
 export interface APIEndpoints {
-  [MICROSERVICE_NAME.CORE]: CoreEndpoints;
-  [MICROSERVICE_NAME.AUTHENTICATION]: AuthEndpoints;
-  [MICROSERVICE_NAME.USER]: UserEndpoints;
   [MICROSERVICE_NAME.ADMIN]: AdminEndpoints;
-  [MICROSERVICE_NAME.CHAT]: ChatEndpoints;
+  [MICROSERVICE_NAME.AUTH]: AuthEndpoints;
+  [MICROSERVICE_NAME.CORE]: CoreEndpoints;
+  [MICROSERVICE_NAME.DOC]: DocEndpoints;
+  [MICROSERVICE_NAME.MANAGEMENT]: ManagementEndpoints;
   [MICROSERVICE_NAME.PAYMENT]: PaymentEndpoints;
   [MICROSERVICE_NAME.S3]: S3Endpoints;
-  [MICROSERVICE_NAME.SANCTION]: SanctionEndpoints;
+  [MICROSERVICE_NAME.KYC]: KycEndpoints;
   [MICROSERVICE_NAME.SELLER]: SellerEndpoints;
-  [MICROSERVICE_NAME.LIVENESS]: LivenessEndpoints;
-} 
+  [MICROSERVICE_NAME.USER]: UserEndpoints;
+}
