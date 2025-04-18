@@ -12,7 +12,7 @@ import { MICROSERVICE_NAME } from '../../constants/Enums';
 })
 export class MenuService {
   // Use the GetAPIEndpoint function to get the correct endpoint
-  private apiUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'getNavbar');
+  private apiUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar/get');
 
   constructor(
     private http: HttpClient,
@@ -35,7 +35,7 @@ export class MenuService {
   private filterMenuItemsByRole(menuItems: MenuItem[]): MenuItem[] {
     const userRole = this.authService.getStoredUserRole();
     const isLoggedIn = this.authService.isUserLoggedIn();
-    
+
     console.log('MenuService: Filtering menu items - User Role:', userRole, 'Is Logged In:', isLoggedIn);
 
     return menuItems.filter(item => {

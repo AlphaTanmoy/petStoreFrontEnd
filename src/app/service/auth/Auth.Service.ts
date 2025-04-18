@@ -66,10 +66,6 @@ export class AuthService {
     return this.login(email, password, MICROSERVICE_NAME.USER, USER_ROLE.ROLE_RAIDER);
   }
 
-  deliveryBoyLogin(email: string, password: string): Observable<LoginResponse> {
-    return this.login(email, password, MICROSERVICE_NAME.USER, USER_ROLE.ROLE_DELIVERY_BOY);
-  }
-
   customerCareLogin(email: string, password: string): Observable<LoginResponse> {
     return this.login(email, password, MICROSERVICE_NAME.USER, USER_ROLE.ROLE_CUSTOMER_CARE);
   }

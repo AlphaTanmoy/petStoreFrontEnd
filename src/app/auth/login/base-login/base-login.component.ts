@@ -16,9 +16,9 @@ import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
 import { OtpInputComponent } from '../../../components/otp-input/otp-input.component';
 import { AuthService } from '../../../service/auth/Auth.Service';
-import { USER_ROLE } from '../../../constants/Enums';
+import { MICROSERVICE_NAME, USER_ROLE } from '../../../constants/Enums';
 import { OtpDialogComponent } from '../../../components/otp-dialog/otp-dialog.component';
-
+import {GetAPIEndpoint} from '../../../constants/endpoints'
 @Component({
   selector: 'app-base-login',
   standalone: true,
@@ -44,8 +44,8 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
   @Input() role: string = '';
 
   // Default endpoints - will be overridden based on role
-  otpEndpoint: string = 'http://localhost:8082/sent/otp';
-  signInEndpoint: string = 'http://localhost:8082/signIn';
+  otpEndpoint: string = '';
+  signInEndpoint: string = '';
 
   loginForm: FormGroup;
   isLoading = false;
@@ -87,47 +87,41 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Set endpoints based on role
     this.setEndpointsByRole();
-
+    console.log(this.setEndpointsByRole())
     // Subscribe to login method changes
     this.loginForm.get('password')?.setValidators(this.loginMethod === 'password' ? Validators.required : null);
     this.loginForm.get('password')?.updateValueAndValidity();
   }
 
   private setEndpointsByRole(): void {
-    const baseUrl = 'http://localhost:8082';
-
     switch (this.role) {
       case USER_ROLE.ROLE_MASTER:
-        this.otpEndpoint = `${baseUrl}/sent/otp`;
-        this.signInEndpoint = `${baseUrl}/signIn`;
+        this.otpEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.AUTH,'')}sent/otp`;
+        this.signInEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.AUTH,'')}signIn`;
         break;
       case USER_ROLE.ROLE_ADMIN:
-        this.otpEndpoint = `${baseUrl}/sent/otp`;
-        this.signInEndpoint = `${baseUrl}/signIn`;
+        this.otpEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.ADMIN,'')}sent/otp`;
+        this.signInEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.ADMIN,'')}signIn`;
         break;
       case USER_ROLE.ROLE_DOCTOR:
-        this.otpEndpoint = `${baseUrl}/sent/otp`;
-        this.signInEndpoint = `${baseUrl}/signIn`;
+        this.otpEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.DOC,'')}sent/otp`;
+        this.signInEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.DOC,'')}signIn`;
         break;
       case USER_ROLE.ROLE_SELLER:
-        this.otpEndpoint = `${baseUrl}/sent/otp`;
-        this.signInEndpoint = `${baseUrl}/signIn`;
+        this.otpEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.SELLER,'')}sent/otp`;
+        this.signInEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.SELLER,'')}signIn`;
         break;
       case USER_ROLE.ROLE_CUSTOMER:
-        this.otpEndpoint = `${baseUrl}/sent/otp`;
-        this.signInEndpoint = `${baseUrl}/signIn`;
+        this.otpEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.USER,'')}sent/otp`;
+        this.signInEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.USER,'')}signIn`;
         break;
       case USER_ROLE.ROLE_RAIDER:
-        this.otpEndpoint = `${baseUrl}/sent/otp`;
-        this.signInEndpoint = `${baseUrl}/signIn`;
-        break;
-      case USER_ROLE.ROLE_DELIVERY_BOY:
-        this.otpEndpoint = `${baseUrl}/sent/otp`;
-        this.signInEndpoint = `${baseUrl}/signIn`;
+        this.otpEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.MANAGEMENT,'')}sent/otp`;
+        this.signInEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.MANAGEMENT,'')}signIn`;
         break;
       case USER_ROLE.ROLE_CUSTOMER_CARE:
-        this.otpEndpoint = `${baseUrl}/sent/otp`;
-        this.signInEndpoint = `${baseUrl}/signIn`;
+        this.otpEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.MANAGEMENT,'')}sent/otp`;
+        this.signInEndpoint = `${GetAPIEndpoint(MICROSERVICE_NAME.MANAGEMENT,'')}signIn`;
         break;
       default:
         // Default endpoints remain unchanged
@@ -278,9 +272,6 @@ export class BaseLoginComponent implements OnInit, OnDestroy {
         break;
       case USER_ROLE.ROLE_RAIDER:
         this.router.navigate(['/raider/dashboard']);
-        break;
-      case USER_ROLE.ROLE_DELIVERY_BOY:
-        this.router.navigate(['/delivery/dashboard']);
         break;
       case USER_ROLE.ROLE_CUSTOMER_CARE:
         this.router.navigate(['/customer-care/dashboard']);

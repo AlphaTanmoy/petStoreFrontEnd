@@ -12,16 +12,15 @@ import { GetAPIEndpoint } from '../../constants/endpoints';
 export class OtpAuthService {
   private currentEmailSubject = new BehaviorSubject<string | null>(null);
   private currentRoleSubject = new BehaviorSubject<MICROSERVICE_NAME | null>(null);
-  
+
   currentEmail$ = this.currentEmailSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  private getEndpoints(role: MICROSERVICE_NAME) {
-    const baseEndpoint = GetAPIEndpoint(role, 'base').replace('/base', '');
+  getEndpoints(role: MICROSERVICE_NAME) {
     return {
-      otpEndpoint: `${baseEndpoint}/sent/otp`,
-      signInEndpoint: `${baseEndpoint}/signIn`
+      otpEndpoint: `/sent/otp`,
+      signInEndpoint: `/signIn`
     };
   }
 
@@ -72,4 +71,4 @@ export class OtpAuthService {
     this.currentEmailSubject.next(null);
     this.currentRoleSubject.next(null);
   }
-} 
+}

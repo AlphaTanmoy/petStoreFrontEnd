@@ -67,6 +67,8 @@ export const routes: Routes = [
     ]
   },
 
+
+
   // Master routes (protected)
   {
     path: 'master',
@@ -76,13 +78,13 @@ export const routes: Routes = [
       { path: 'dashboard', component: MasterDashboardComponent },
       { path: 'jwt-details', component: JwtDetailsComponent },
       { path: 'jwt-logs', component: JwtLogsComponent },
-      { path: 'notification-log', component: NotificationLogComponent }
+      { path: 'notification-log', component: NotificationLogComponent },
     ]
   },
 
   // Admin routes (protected)
   {
-    path: 'admins',
+    path: 'admin',
     canActivate: [AuthGuard],
     data: { roles: [USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
     children: [

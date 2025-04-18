@@ -34,11 +34,13 @@ export class ProfileService {
         case USER_ROLE.ROLE_SELLER:
           return MICROSERVICE_NAME.SELLER;
         case USER_ROLE.ROLE_DOCTOR:
+          return MICROSERVICE_NAME.DOC;
         case USER_ROLE.ROLE_CUSTOMER:
-        case USER_ROLE.ROLE_CUSTOMER_CARE:
-        case USER_ROLE.ROLE_RAIDER:
-        case USER_ROLE.ROLE_DELIVERY_BOY:
           return MICROSERVICE_NAME.USER;
+        case USER_ROLE.ROLE_CUSTOMER_CARE:
+          return MICROSERVICE_NAME.MANAGEMENT;
+        case USER_ROLE.ROLE_RAIDER:
+          return MICROSERVICE_NAME.MANAGEMENT;
         default:
           throw new Error('Invalid user role');
       }
