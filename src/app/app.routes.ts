@@ -9,14 +9,14 @@ import { LoginSelectionComponent } from './auth/login-selection/login-selection.
 import { DoctorLoginComponent } from './auth/login/doctor-login/doctor-login.component';
 import { SellerLoginComponent } from './auth/login/seller-login/seller-login.component';
 import { CustomerLoginComponent } from './auth/login/customer-login/customer-login.component';
-import { MasterLoginComponent } from './auth/login/master-login/master-login.component';
+import { MasterLoginComponent } from './auth/login/master-login.component';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { USER_ROLE } from './constants/Enums';
 import { MyProfileComponent } from './auth/my-profile/my-profile.component';
 import { MasterDashboardComponent } from './users/master/master-dashboard/master-dashboard.component';
 import { ControllS3Component } from './microservices/s3/controll-s3/controll-s3.component';
 import { ViewS3Component } from './microservices/s3/view-s3/view-s3.component';
-import { AdminLoginComponent } from './auth/login/admin-login/admin-login.component';
+import { AdminLoginComponent } from './auth/login/admin-login.component';
 import { AdminDashboardComponent } from './users/admin/admin-dashboard/admin-dashboard.component';
 import { DoctorDashboardComponent } from './users/doctor/doctor-dashboard/doctor-dashboard.component';
 import { SellerDashboardComponent } from './users/seller/seller-dashboard/seller-dashboard.component';

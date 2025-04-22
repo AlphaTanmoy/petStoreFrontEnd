@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { BaseLoginComponent } from '../base-login/base-login.component';
-import { USER_ROLE } from '../../../constants/Enums';
+import { BaseLoginComponent } from './base-login/base-login.component';
+import { USER_ROLE } from './../../constants/Enums';
 
 @Component({
   selector: 'app-doctor-login',

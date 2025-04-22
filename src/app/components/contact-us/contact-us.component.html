@@ -1,1 +1,115 @@
-<p>contact-us works!</p>
+<div class="contact-us-container">
+  <!-- Banner Image -->
+  <div class="banner">
+    <img src="assets/contact-us-bnr.PNG" alt="Contact Us Banner" />
+  </div>
+  <!-- Career With Us Section -->
+  <section class="career-section">
+    <h2>Career With Us</h2>
+    <div class="career-forms">
+      <div class="form-card" *ngFor="let role of roles">
+        <h3>{{ role.label }}</h3>
+        <form
+          (ngSubmit)="onSubmit(role.key)"
+          [formGroup]="careerForms[role.key]"
+        >
+          <label>Upload Supportive Document</label>
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            (change)="onFileChange($event, 'document', role.key)"
+          />
+
+          <label>Upload Profile Picture</label>
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png"
+            (change)="onFileChange($event, 'picture', role.key)"
+          />
+
+          <div class="checkbox">
+            <input type="checkbox" formControlName="agree" />
+            <label>I agree to the terms and conditions</label>
+          </div>
+
+          <button type="submit" [disabled]="!isCareerFormValid(role.key)">
+            Send
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map and Location -->
+  <section class="map-section">
+    <h2>Our Locations</h2>
+    <div class="map-container">
+      <iframe
+        src="https://www.google.com/maps/embed?..."
+        width="100%"
+        height="300"
+        style="border: 0"
+        allowfullscreen=""
+        loading="lazy"
+      ></iframe>
+      <p>Head Office: 123 Pet Lane, Kolkata, WB - 700001</p>
+      <p>Support Office: 456 Animal Blvd, Mumbai, MH - 400001</p>
+    </div>
+  </section>
+
+  <!-- Report and Inquiry Forms -->
+  <section class="extra-forms">
+    <h2>Need Help?</h2>
+    <div class="help-forms">
+      <div class="form-card">
+        <h3>Report a Bug</h3>
+        <form [formGroup]="extraForms.bugReport" (ngSubmit)="onSubmit('bugReport')">
+          <input
+            type="email"
+            placeholder="Your Email"
+            formControlName="email"
+            (input)="onEmailInput('bugReport')"
+          />
+
+          <div [class.hidden]="!extraForms.bugReport.get('email')?.valid">
+            <textarea
+              placeholder="Describe the issue"
+              formControlName="message"
+            ></textarea>
+            <button
+              type="submit"
+              [disabled]="!extraForms.bugReport.valid"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="form-card">
+        <h3>Any Inquiry</h3>
+        <form [formGroup]="extraForms.inquiry" (ngSubmit)="onSubmit('inquiry')">
+          <input
+            type="email"
+            placeholder="Your Email"
+            formControlName="email"
+            (input)="onEmailInput('inquiry')"
+          />
+
+          <div [class.hidden]="!extraForms.inquiry.get('email')?.valid">
+            <textarea
+              placeholder="Describe the issue"
+              formControlName="message"
+            ></textarea>
+            <button
+              type="submit"
+              [disabled]="!extraForms.inquiry.valid"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
