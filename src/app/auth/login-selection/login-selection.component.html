@@ -26,14 +26,15 @@
 
   <!-- Floating Bubble Options -->
   <div class="bubble-container" *ngIf="mode">
-    <div class="bubble" *ngFor="let option of options[mode]" [routerLink]="option.link">
+    <div class="bubble" *ngFor="let option of options[mode]; let i = index" [routerLink]="option.link"
+      [ngStyle]="getBubbleAnimation(i)">
       <mat-icon>{{ option.icon }}</mat-icon>
       <span>{{ option.label }}</span>
     </div>
-
-    <!-- Back Button -->
-    <button class="back-button" mat-icon-button color="warn" (click)="reset()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
+    <div class="bubble">
+      <button mat-icon-button color="warn" (click)="reset()">
+        <mat-icon>home</mat-icon><span>Back</span>
+      </button>
+    </div>
   </div>
 </div>

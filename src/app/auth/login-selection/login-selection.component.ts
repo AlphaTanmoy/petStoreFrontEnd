@@ -47,4 +47,18 @@ export class LoginSelectionComponent implements OnInit {
   reset(): void {
     this.mode = null;
   }
+
+  getBubbleAnimation(index: number) {
+    const animations = ['float1', 'float2', 'float3'];
+    const animationName = animations[index % animations.length];
+    const delay = `${(index % 3) * 0.5}s`; // 0s, 0.5s, 1s etc.
+
+    return {
+      animation: `${animationName} 3s ease-in-out infinite`,
+      animationDelay: delay
+    };
+  }
+
+
+
 }

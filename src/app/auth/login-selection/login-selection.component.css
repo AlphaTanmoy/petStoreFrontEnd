@@ -75,20 +75,21 @@ mat-icon {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  animation: float 4s ease-in-out infinite;
-  transition: transform 0.3s, background-color 0.3s;
-  cursor: pointer;
   text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  animation: float1 3s ease-in-out infinite;
+  will-change: transform;
 }
 
 .bubble:hover {
-  transform: scale(1.1);
-  background-color: #fff;
+  transform: translateY(-10px) scale(1.1);
+  /* animation-play-state: paused;  // Optional: pause animation on hover */
 }
 
 .bubble mat-icon {
   font-size: 2rem;
-  color: #7f00ff;
+  color: blue;
   margin-bottom: 0.5rem;
 }
 
@@ -98,9 +99,31 @@ mat-icon {
   color: #333;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+@keyframes float1 {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-15px) translateX(5px);
+  }
+}
+
+@keyframes float3 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-20px) translateX(-5px);
+  }
 }
 
 .back-button {
@@ -116,6 +139,7 @@ mat-icon {
   .bubble-container {
     gap: 1rem;
   }
+
   .bubble {
     width: 100px;
     height: 100px;
