@@ -1,52 +1,39 @@
-<div class="selection-container">
-  <mat-card class="selection-card">
-    <mat-card-header>
-      <mat-card-title>Select Login Type</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="login-options">
-        <button *ngIf="!isLoggedIn" mat-raised-button color="primary" routerLink="/login/customer-login">
-          <mat-icon>person</mat-icon>
-          Customer Login
-        </button>
-        <button *ngIf="!isLoggedIn" mat-raised-button color="accent" routerLink="/login/admin-login">
-          <mat-icon>admin_panel_settings</mat-icon>
-          Admin Login
-        </button>
-        <button *ngIf="!isLoggedIn" mat-raised-button color="warn" routerLink="/login/master-login">
-          <mat-icon>supervisor_account</mat-icon>
-          Master Login
-        </button>
-        <button *ngIf="!isLoggedIn" mat-raised-button color="primary" routerLink="/login/seller-login">
-          <mat-icon>store</mat-icon>
-          Seller Login
-        </button>
-        <button *ngIf="!isLoggedIn" mat-raised-button color="accent" routerLink="/login/doctor-login">
-          <mat-icon>medical_services</mat-icon>
-          Doctor Login
-        </button>
-        <button *ngIf="isLoggedIn" mat-raised-button color="primary" routerLink="/login/my-profile">
-          <mat-icon>account_circle</mat-icon>
-          My Profile
-        </button>
-      </div>
-      <div class="registration-section" *ngIf="!isLoggedIn">
-        <h3>New User? Register Here</h3>
-        <div class="registration-options">
-          <button mat-raised-button color="primary" routerLink="/register/customer">
+<!-- login-bubble-selection.component.html -->
+<div class="selection-container" [ngClass]="mode">
+  <!-- Background Overlay -->
+  <div class="background-overlay"></div>
+
+  <!-- Initial Login/Register Selection -->
+  <div class="selection-card" *ngIf="!mode">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Please Choose</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="login-options">
+          <button mat-raised-button color="primary" (click)="mode = 'login'">
+            <mat-icon>login</mat-icon>
+            Login
+          </button>
+          <button mat-raised-button color="accent" (click)="mode = 'register'">
             <mat-icon>person_add</mat-icon>
-            Register as Customer
-          </button>
-          <button mat-raised-button color="primary" routerLink="/register/seller">
-            <mat-icon>storefront</mat-icon>
-            Register as Seller
-          </button>
-          <button mat-raised-button color="primary" routerLink="/register/doctor">
-            <mat-icon>medical_services</mat-icon>
-            Register as Doctor
+            Register
           </button>
         </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
-</div> 
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Floating Bubble Options -->
+  <div class="bubble-container" *ngIf="mode">
+    <div class="bubble" *ngFor="let option of options[mode]" [routerLink]="option.link">
+      <mat-icon>{{ option.icon }}</mat-icon>
+      <span>{{ option.label }}</span>
+    </div>
+
+    <!-- Back Button -->
+    <button class="back-button" mat-icon-button color="warn" (click)="reset()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
+</div>

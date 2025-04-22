@@ -21,7 +21,30 @@ import { MatIconModule } from '@angular/material/icon';
 export class LoginSelectionComponent implements OnInit {
   isLoggedIn = false;
 
+  // Mode: 'login', 'register', or null (initial state)
+  mode: 'login' | 'register' | null = null;
+
+  // Login/Register bubble options
+  options: any = {
+    login: [
+      { icon: 'person', label: 'Customer', link: '/login/customer-login' },
+      { icon: 'admin_panel_settings', label: 'Admin', link: '/login/admin-login' },
+      { icon: 'supervisor_account', label: 'Master', link: '/login/master-login' },
+      { icon: 'store', label: 'Seller', link: '/login/seller-login' },
+      { icon: 'medical_services', label: 'Doctor', link: '/login/doctor-login' }
+    ],
+    register: [
+      { icon: 'person_add', label: 'Customer', link: '/register/customer' },
+      { icon: 'storefront', label: 'Seller', link: '/register/seller' },
+      { icon: 'medical_services', label: 'Doctor', link: '/register/doctor' }
+    ]
+  };
+
   ngOnInit() {
     this.isLoggedIn = !!localStorage.getItem('token');
   }
-} 
+
+  reset(): void {
+    this.mode = null;
+  }
+}

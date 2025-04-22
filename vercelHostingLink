@@ -1,1 +1,4 @@
 Link for vercerl: https://pet-store-front-end-alpha.vercel.app/
+
+production build command
+ng build --configuration production
