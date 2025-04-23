@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { accessTokens } from '../utils/apikey.secrect';
+//import { accessTokens } from '../utils/apikey.secrect'; //add this when need data for github
+
 @Injectable({
   providedIn: 'root'
 })
 export class ResumeDataFinderService {
 
   private readonly GITHUB_API = 'https://api.github.com/graphql';
-  private readonly TOKEN = accessTokens.git_hub_access_token;
+  //private readonly TOKEN = accessTokens.git_hub_access_token; //uncomment this if we need data
+  private readonly TOKEN = 'MOLLAR_MKC';
   private userName = 'AlphaTanmoy'
   constructor(private http: HttpClient) { }
 
