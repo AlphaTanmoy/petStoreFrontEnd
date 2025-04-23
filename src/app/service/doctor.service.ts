@@ -29,7 +29,7 @@ export class DoctorService {
       'Alpha': `Bearer ${token}`
     });
 
-    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOCTOR, 'getAllDoctors');
+    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOC, 'getAllDoctors');
 
     return this.http.get<DoctorResponse>(endpoint, {
       params: httpParams,
@@ -48,7 +48,7 @@ export class DoctorService {
       'Alpha': `Bearer ${token}`
     });
 
-    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOCTOR, 'toggleDoctorStatus');
+    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOC, 'toggleDoctorStatus');
 
     return this.http.put(`${endpoint}/${doctorId}`, { isActive }, { headers }).pipe(
       tap(response => {
@@ -64,7 +64,7 @@ export class DoctorService {
       'Alpha': `Bearer ${token}`
     });
 
-    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOCTOR, 'getDoctorDetails');
+    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOC, 'getDoctorDetails');
 
     return this.http.get<Doctor>(`${endpoint}/${doctorId}`, { headers }).pipe(
       tap(response => {
@@ -80,7 +80,7 @@ export class DoctorService {
       'Alpha': `Bearer ${token}`
     });
 
-    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOCTOR, 'getDoctorSchedule');
+    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOC, 'getDoctorSchedule');
 
     return this.http.get(`${endpoint}/${doctorId}/schedule`, {
       params: new HttpParams().set('date', date),
@@ -99,7 +99,7 @@ export class DoctorService {
       'Alpha': `Bearer ${token}`
     });
 
-    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOCTOR, 'getDoctorConsultations');
+    const endpoint = GetAPIEndpoint(MICROSERVICE_NAME.DOC, 'getDoctorConsultations');
 
     return this.http.get(`${endpoint}/${doctorId}/consultations`, { headers }).pipe(
       tap(response => {

@@ -20,14 +20,12 @@ export class ContactUsComponent implements OnInit {
   ];
 
   careerForms: { [key: string]: FormGroup } = {};
-  extraForms!: {
-    bugReport: FormGroup;
-    inquiry: FormGroup;
-  };
+  extraForm!: FormGroup;
+
+  messageReady: boolean = false;
 
   constructor(private fb: FormBuilder) { }
 
-  // Update the ngOnInit to disable message fields initially
   ngOnInit(): void {
     this.roles.forEach(role => {
       this.careerForms[role.key] = this.fb.group({
@@ -38,39 +36,20 @@ export class ContactUsComponent implements OnInit {
       this.uploadedFiles[role.key] = {};
     });
 
-    this.extraForms = {
-      bugReport: this.fb.group({
-        email: ['', [Validators.required, Validators.email]],
-        message: [{ value: '', disabled: true }, [Validators.required, Validators.minLength(10)]]
-      }),
-      inquiry: this.fb.group({
-        email: ['', [Validators.required, Validators.email]],
-        message: [{ value: '', disabled: true }, [Validators.required, Validators.minLength(10)]]
-      })
-    };
-  }
-
-  // Simplify the onEmailInput method
-  onEmailInput(formKey: keyof typeof this.extraForms): void {
-    const form = this.extraForms[formKey];
-    const emailControl = form.get('email');
-    const messageControl = form.get('message');
-
-    if (emailControl?.valid) {
-      messageControl?.enable();
-    } else {
-      messageControl?.disable();
-      messageControl?.reset();
-    }
+    this.extraForm = this.fb.group({
+      requestType: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      message: [{ value: '', disabled: true }, [Validators.required, Validators.minLength(10)]]
+    });
   }
 
   onSubmit(formKey: string): void {
     if (formKey in this.careerForms) {
       const formValue = this.careerForms[formKey].value;
       console.log(`Career Form Submitted for ${formKey}`, formValue);
-    } else if (formKey === 'bugReport' || formKey === 'inquiry') {
-      const formValue = this.extraForms[formKey as keyof typeof this.extraForms].value;
-      console.log(`${formKey === 'bugReport' ? 'Bug' : 'Inquiry'} Form Submitted`, formValue);
+    } else if (formKey === 'extraForm') {
+      const formValue = this.extraForm.value;
+      console.log(`${formValue.requestType} Form Submitted`, formValue);
     }
   }
 

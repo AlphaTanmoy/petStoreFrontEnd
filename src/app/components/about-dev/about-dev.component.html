@@ -1,0 +1,205 @@
+<!-- resume.component.html -->
+<div class="resume-container">
+  <!-- Overview Section -->
+  <section id="overview" class="resume-section">
+    <h2 class="section-title">Your All In One Dev Is Here</h2>
+    <div class="overview-content">
+      <div class="personal-info">
+        <h1>{{ personalInfo.name }}</h1>
+        <h2>{{ personalInfo.title }}</h2>
+        <p><i class="fas fa-envelope"></i> {{ personalInfo.email }}</p>
+        <p><i class="fas fa-phone"></i> {{ personalInfo.phone }}</p>
+        <p><i class="fas fa-map-marker-alt"></i> {{ personalInfo.location }}</p>
+        <a [href]="personalInfo.cvUrl" download="Tanmoy Das Resume.pdf" class="btn download-cv">
+          <i class="fas fa-download"></i> Download CV
+        </a>
+      </div>
+      <div class="social-media">
+        <h3>Connect with me:</h3>
+        <div class="social-links">
+          <a *ngFor="let social of personalInfo.socialMedia" [href]="social.url" target="_blank">
+            <i [class]="social.icon"></i> {{ social.name }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coding Profiles Section -->
+  <section id="coding-profiles" class="resume-section">
+    <h2 class="section-title">Coding Profiles</h2>
+    <div class="coding-profiles-container">
+      <div class="profile-card leetcode-card">
+        <div class="profile-header">
+          <i class="fas fa-code"></i>
+          <h3>LeetCode</h3>
+          <a [href]="codingProfiles.leetCode.url" target="_blank" class="profile-link">
+            {{ codingProfiles.leetCode.username }}
+          </a>
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ codingProfiles.leetCode.easySolved }}</span>
+            <span class="stat-label">Easy Solved</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ codingProfiles.leetCode.mediumSolved }}</span>
+            <span class="stat-label">Medium Solved</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ codingProfiles.leetCode.hardSolved }}</span>
+            <span class="stat-label">Hard Solved</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-card github-card">
+        <div class="profile-header">
+          <i class="fab fa-github"></i>
+          <h3>GitHub</h3>
+          <a [href]="codingProfiles.github.url" target="_blank" class="profile-link">
+            {{ codingProfiles.github.username }}
+          </a>
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ codingProfiles.github.repositories }}</span>
+            <span class="stat-label">Repositories</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ codingProfiles.github.stars }}</span>
+            <span class="stat-label">Stars</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ codingProfiles.github.contributions }}</span>
+            <span class="stat-label">Contributions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tech-stack" class="resume-section">
+    <h2 class="section-title">Tech Stack</h2>
+    <div class="tech-stack-container">
+      <div *ngFor="let tech of techStack" class="tech-item">
+        <div class="tech-icon">
+          <i [class]="tech.icon"></i>
+        </div>
+        <div class="tech-details">
+          <h3>{{ tech.name }}</h3>
+          <div class="skill-level">
+            <div class="skill-bar"></div>
+            <span>{{ tech.level }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Education Section -->
+  <section id="education" class="resume-section">
+    <h2 class="section-title">Education</h2>
+    <div class="education-list">
+      <div *ngFor="let edu of education" class="education-item">
+        <h3>{{ edu.institution }}</h3>
+        <div class="education-header">
+          <span class="degree">{{ edu.degree }}</span>
+          <span class="duration">{{ edu.duration }}</span>
+        </div>
+        <p class="education-description">{{ edu.description }}</p>
+        <div class="education-gpa">
+          <span class="gpa-label">Grade:</span>
+          <span class="gpa-value">{{ edu.gpa }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Work Experience Section -->
+  <section id="work-experience" class="resume-section">
+    <h2 class="section-title">Work Experience</h2>
+    <div class="experience-list">
+      <div *ngFor="let job of workExperience" class="experience-item">
+        <h3>{{ job.position }}</h3>
+        <div class="job-header">
+          <span class="company">{{ job.company }}</span>
+          <span class="duration">{{ job.duration }}</span>
+        </div>
+        <ul class="responsibilities">
+          <li *ngFor="let responsibility of job.responsibilities">{{ responsibility }}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects" class="resume-section">
+    <h2 class="section-title">Projects</h2>
+    <div class="project-list">
+      <div *ngFor="let project of projects" class="project-item">
+        <h3>{{ project.name }}</h3>
+        <p class="project-description">{{ project.description }}</p>
+        <div class="tech-stack">
+          <span *ngFor="let tech of project.techStack" class="tech-tag">{{ tech }}</span>
+        </div>
+        <div class="project-links">
+          <a *ngIf="project.livePreview" [href]="project.livePreview" target="_blank" class="btn">
+            <i class="fas fa-external-link-alt"></i> Live Preview
+          </a>
+          <a *ngIf="project.repoLink" [href]="project.repoLink" target="_blank" class="btn">
+            <i class="fab fa-github"></i> Repository
+          </a>
+          <a *ngIf="project.frontend" [href]="project.frontend" target="_blank" class="btn">
+            <i class="fab fa-github"></i> Frontend Repo
+          </a>
+          <a *ngIf="project.backend" [href]="project.backend" target="_blank" class="btn">
+            <i class="fab fa-github"></i> Backend Repo
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Certificates Section -->
+  <section id="certificates" class="resume-section">
+    <h2 class="section-title">Certificates</h2>
+    <div class="certificate-list">
+      <div *ngFor="let certificate of certificates; let i = index" class="certificate-item">
+        <h3>{{ certificate.name }}</h3>
+        <div class="certificate-header">
+          <span class="issuer">{{ certificate.issuer }}</span>
+          <span class="date">{{ certificate.date }}</span>
+        </div>
+        <p class="certificate-description">{{ certificate.description }}</p>
+        <button (click)="toggleCertificateImage(i)" class="btn">
+          {{ certificate.showImage ? 'Hide Certificate' : 'View Certificate' }}
+        </button>
+        <div *ngIf="certificate.showImage" class="certificate-image-container">
+          <img [src]="certificate.imageUrl" alt="{{ certificate.name }}" class="certificate-image">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Achievements Section -->
+  <section id="achievements" class="resume-section">
+    <h2 class="section-title">Achievements</h2>
+    <div class="achievement-list">
+      <div *ngFor="let achievement of achievements; let i = index" class="achievement-item">
+        <h3>{{ achievement.name }}</h3>
+        <div class="achievement-header">
+          <span class="issuer">{{ achievement.issuer }}</span>
+          <span class="date">{{ achievement.date }}</span>
+        </div>
+        <p class="achievement-description">{{ achievement.description }}</p>
+        <button (click)="toggleAchievementImage(i)" class="btn">
+          {{ achievement.showImage ? 'Hide Achievement' : 'View Achievement' }}
+        </button>
+        <div *ngIf="achievement.showImage" class="achievement-image-container">
+          <img [src]="achievement.imageUrl" alt="{{ achievement.name }}" class="achievement-image">
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

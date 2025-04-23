@@ -1,5 +1,5 @@
 .main-content {
-  margin: 0 !important; /* or 250px depending on sidebar state */
+  margin: 33px 0 0 0 !important; /* or 250px depending on sidebar state */
   padding: 0 !important; /* override any default */
   overflow-y: scroll; /* or auto */
   scrollbar-width: none; /* Firefox */

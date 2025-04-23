@@ -127,6 +127,8 @@ textarea:focus {
 textarea {
   resize: vertical;
   min-height: 120px;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
 }
 
 .checkbox {
@@ -183,57 +185,4 @@ button:disabled {
   font-size: 0.95rem;
 }
 
-form textarea {
-  transition: opacity 0.3s ease, max-height 0.3s ease;
-  opacity: 1;
-  max-height: 200px;
-}
 
-form textarea.ng-untouched {
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-  border: none;
-}
-
-/* Hide textarea and button by default */
-form:not(.ng-valid) textarea,
-form:not(.ng-valid) button[type="submit"] {
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-  border: red;
-}
-
-/* Reveal when form is valid */
-form.ng-valid textarea,
-form.ng-valid button[type="submit"] {
-  opacity: 1;
-  max-height: 200px;
-  padding: 0.5rem;
-  margin-top: 1rem;
-  border: 1px solid #ced4da;
-}
-
-/* Add this to your CSS */
-.hidden {
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: opacity 0.3s ease, max-height 0.3s ease;
-}
-
-form div:not(.hidden) {
-  opacity: 1;
-  max-height: 500px; /* Adjust as needed */
-  transition: opacity 0.3s ease, max-height 0.3s ease;
-}
-
-textarea {
-  margin-top: 1rem;
-  transition: all 0.3s ease;
-}

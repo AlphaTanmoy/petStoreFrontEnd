@@ -1,13 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-
-interface SocialLink {
-  name: string;
-  url: string;
-  icon: string;
-}
-
+import { AuthService } from '../../service/auth/Auth.Service';
+import { USER_ROLE } from '../../constants/Enums';
 @Component({
   selector: 'app-footer',
   standalone: true,
@@ -16,31 +11,10 @@ interface SocialLink {
   styleUrls: ['./footer.component.css']
 })
 export class FooterComponent {
-  socialLinks: SocialLink[] = [
-    {
-      name: 'GitHub',
-      url: 'https://github.com',
-      icon: 'fab fa-github'
-    },
-    {
-      name: 'Facebook',
-      url: 'https://facebook.com',
-      icon: 'fab fa-facebook'
-    },
-    {
-      name: 'Instagram',
-      url: 'https://instagram.com',
-      icon: 'fab fa-instagram'
-    },
-    {
-      name: 'LinkedIn',
-      url: 'https://linkedin.com',
-      icon: 'fab fa-linkedin'
-    },
-    {
-      name: 'LeetCode',
-      url: 'https://leetcode.com',
-      icon: 'fas fa-code'
-    }
-  ];
-} 
+  private authService = inject(AuthService);
+  readonly userRole = this.authService.getUserRole();
+  readonly isPrivilegedUser = [USER_ROLE.ROLE_ADMIN, USER_ROLE.ROLE_MASTER, USER_ROLE.ROLE_DOCTOR].includes(this.userRole as USER_ROLE);
+
+  readonly currentYear = new Date().getFullYear();
+
+}

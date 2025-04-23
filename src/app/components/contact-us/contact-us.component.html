@@ -1,14 +1,14 @@
 <div class="contact-us-container">
   <!-- Banner Image -->
   <div class="banner">
-    <img src="assets/contact-us-bnr.PNG" alt="Contact Us Banner" />
+    <img src="contact-us-bnr.PNG" alt="Contact Us Banner" />
   </div>
   <!-- Career With Us Section -->
   <section class="career-section">
     <h2>Career With Us</h2>
     <div class="career-forms">
       <div class="form-card" *ngFor="let role of roles">
-        <h3>{{ role.label }}</h3>
+        <h3> <i class="fas fa-envelope"></i> Apply For <i class="fa-solid fa-arrows-turn-right"></i><span> {{ role.label }}</span></h3>
         <form
           (ngSubmit)="onSubmit(role.key)"
           [formGroup]="careerForms[role.key]"
@@ -52,64 +52,9 @@
         allowfullscreen=""
         loading="lazy"
       ></iframe>
-      <p>Head Office: 123 Pet Lane, Kolkata, WB - 700001</p>
-      <p>Support Office: 456 Animal Blvd, Mumbai, MH - 400001</p>
+      <p>Head Office: MultiVerse</p>
+      <p>Support Office: Operating From Earth</p>
     </div>
   </section>
 
-  <!-- Report and Inquiry Forms -->
-  <section class="extra-forms">
-    <h2>Need Help?</h2>
-    <div class="help-forms">
-      <div class="form-card">
-        <h3>Report a Bug</h3>
-        <form [formGroup]="extraForms.bugReport" (ngSubmit)="onSubmit('bugReport')">
-          <input
-            type="email"
-            placeholder="Your Email"
-            formControlName="email"
-            (input)="onEmailInput('bugReport')"
-          />
-
-          <div [class.hidden]="!extraForms.bugReport.get('email')?.valid">
-            <textarea
-              placeholder="Describe the issue"
-              formControlName="message"
-            ></textarea>
-            <button
-              type="submit"
-              [disabled]="!extraForms.bugReport.valid"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div class="form-card">
-        <h3>Any Inquiry</h3>
-        <form [formGroup]="extraForms.inquiry" (ngSubmit)="onSubmit('inquiry')">
-          <input
-            type="email"
-            placeholder="Your Email"
-            formControlName="email"
-            (input)="onEmailInput('inquiry')"
-          />
-
-          <div [class.hidden]="!extraForms.inquiry.get('email')?.valid">
-            <textarea
-              placeholder="Describe the issue"
-              formControlName="message"
-            ></textarea>
-            <button
-              type="submit"
-              [disabled]="!extraForms.inquiry.valid"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </section>
 </div>

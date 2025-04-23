@@ -1,65 +1,121 @@
 .footer-container {
+  background-color: #222;
+  color: #eee;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.footer-content {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #f8f9fa;
-  border-top: 1px solid #dee2e6;
-  margin-top: auto;
   flex-wrap: wrap;
+  gap: 2rem;
 }
 
-/* New container for left-aligned icons */
-.left-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+.footer-section {
+  flex: 1 1 200px;
 }
 
-.social-links {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
+.footer-section h5, .footer-section h4 {
+  color: #fff;
+  margin-bottom: 0.8rem;
 }
 
-.social-link,
-.docs-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #6c757d;
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin: 0.4rem 0;
+}
+
+.footer-section ul li a {
+  color: #bbb;
   text-decoration: none;
-  transition: color 0.3s ease;
-  font-size: 1rem;
+  transition: color 0.2s ease;
 }
 
-.social-link:hover,
-.docs-link:hover {
-  color: #0d6efd;
+.footer-section ul li a:hover {
+  color: #fff;
 }
 
-.docs-button {
-  padding: 0.5rem;
-  background-color: #e9ecef;
-  border-radius: 0.25rem;
-  font-weight: 500;
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #444;
+  padding-top: 1rem;
+  font-size: 0.9rem;
+  color: #aaa;
 }
 
 @media (max-width: 768px) {
-  .footer-container {
+  .footer-content {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem;
   }
 
-  .left-group {
-    width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+  .footer-section {
+    margin-bottom: 1rem;
   }
+}
 
-  .link-text {
-    display: none;
-  }
+.footer-section.brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.brand-text h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.brand-text a {
+  margin: 0;
+  font-size: 1.2rem;
+  color: rgb(0, 247, 255);
+  text-decoration: none;
+}
+
+.brand-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.footer-section.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+.footer-logo {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+}
+
+.brand-text h4 {
+  margin: 0.3rem 0 0.2rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+}
+
+.brand-text p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #ccc;
+  max-width: 300px;
 }
