@@ -11,20 +11,22 @@ export class AuthGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const requiredRoles = route.data['roles'] as USER_ROLE[];
-    
+
+    // If not authenticated
     if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/login']);
+      this.authService.clearSession(); // clear any old junk
+      window.location.href = '/login'; // hard redirect to login (one-time)
       return false;
     }
 
-    if (requiredRoles && requiredRoles.length > 0) {
-      const userRole = this.authService.getUserRole() as USER_ROLE;
-      if (!userRole || !requiredRoles.includes(userRole)) {
-        this.router.navigate(['/un-authorized']);
-        return false;
-      }
+    // Role check
+    const userRole = this.authService.getStoredUserRole() as USER_ROLE;
+    if (requiredRoles?.length && (!userRole || !requiredRoles.includes(userRole))) {
+      this.router.navigate(['/un-authorized']);
+      return false;
     }
 
     return true;
   }
-} 
+
+}

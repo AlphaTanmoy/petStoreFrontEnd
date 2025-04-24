@@ -14,21 +14,32 @@
 
 .main-content {
   padding: 2rem;
+  margin: 1.5rem auto; /* Centers the container */
+  max-width: 1000px; /* Set a maximum width */
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
   grid-template-areas:
     "name name"
-    "picture details";
+    "picture details"
+    "picture actions";
 }
 
-.profile-name-section {
-  grid-area: name;
+
+.profile-name-section,
+.profile-picture-section,
+.api-response-section,
+.action-buttons-section {
   background-color: white;
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+.profile-name-section {
+  grid-area: name;
 }
 
 .profile-name-section h2 {
@@ -39,10 +50,6 @@
 
 .profile-picture-section {
   grid-area: picture;
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -74,10 +81,6 @@
 
 .api-response-section {
   grid-area: details;
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
 }
@@ -109,15 +112,15 @@
   color: #2c3e50;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  justify-content: flex-end;
+.action-buttons-section {
+  grid-area: actions;
 }
 
-.action-buttons button {
-  min-width: 120px;
+.action-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 /* Mobile Responsive */
@@ -127,7 +130,7 @@
   }
 
   .navbar-section {
-    display: none; /* Hide navbar on mobile, assuming you have a mobile menu */
+    display: none;
   }
 
   .main-content {
@@ -135,8 +138,11 @@
     grid-template-areas:
       "name"
       "picture"
-      "details";
+      "details"
+      "actions";
     padding: 1rem;
+    margin: 1rem auto;
+    width: 95%;
   }
 
   .action-buttons {
@@ -146,39 +152,4 @@
   .action-buttons button {
     width: 100%;
   }
-}
-
-.api-response-section {
-  grid-area: details;
-}
-
-.action-buttons-section {
-  grid-area: actions;
-}
-
-.action-buttons {
-  grid-area: actions;
-  display: flex;
-  justify-content: flex-start;
-  gap: 1rem;
-}
-
-.main-content {
-  padding: 2rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas:
-    "name name"
-    "picture details"
-    "picture actions";
-  gap: 2rem;
-}
-
-.main-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas:
-    "name name"
-    "picture details"
-    "picture actions";
 }
