@@ -1,0 +1,31 @@
+<div class="container">
+  <div class="header">
+    <h2>Microservice Status Dashboard</h2>
+    <button (click)="togglePolling()">
+      {{ polling ? 'Stop Polling' : 'Start Polling' }}
+    </button>
+  </div>
+
+  <div class="grid">
+    <div class="card" *ngFor="let service of microservices">
+      <h3>
+        {{ service.microservice }}
+        <span class="uptime">({{ calculateUptime(service.timeStamp) }}% Uptime)</span>
+      </h3>
+      <p>Status:
+        <span [class.up]="service.status === 'UP'" [class.down]="service.status === 'DOWN'">
+          {{ service.status }}
+        </span>
+      </p>
+      <p>Pre-Hitter: {{ service.callPreHitter ?? 'N/A' }}</p>
+      <div class="timestamp-blocks">
+        <div
+          *ngFor="let stamp of service.timeStamp"
+          [class.green]="stamp"
+          [class.red]="!stamp"
+          class="block">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
