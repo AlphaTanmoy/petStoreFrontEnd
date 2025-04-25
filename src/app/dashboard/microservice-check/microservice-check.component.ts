@@ -33,7 +33,7 @@ export class MicroserviceCheckComponent implements OnInit, OnDestroy {
   }
 
   startPolling() {
-    this.apiSubscription = interval(30000).subscribe(() => {
+    this.apiSubscription = interval(60000).subscribe(() => {
       if (this.polling) this.fetchData();
     });
   }
