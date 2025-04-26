@@ -1,50 +1,70 @@
-// microservice-check.component.ts
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { interval, Subscription } from 'rxjs';
+import { switchMap, takeWhile } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
-import  {GetAPIEndpoint} from '../../constants/endpoints'
+import { GetAPIEndpoint } from '../../constants/endpoints';
 import { MICROSERVICE_NAME } from '../../constants/Enums';
+
 @Component({
   selector: 'app-microservice-check',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './microservice-check.component.html',
   styleUrls: ['./microservice-check.component.css']
 })
 export class MicroserviceCheckComponent implements OnInit, OnDestroy {
   microservices: any[] = [];
-  private apiSubscription: Subscription | null = null;
+  private pollingSubscription: Subscription | null = null;
   polling = true;
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.fetchData();
     this.startPolling();
   }
 
- private api_endpoint = GetAPIEndpoint(MICROSERVICE_NAME.CORE,'/executePreHitter')
+  private api_endpoint = GetAPIEndpoint(MICROSERVICE_NAME.CORE, '/executePreHitter');
 
   fetchData() {
-    this.http.get<any[]>(this.api_endpoint).subscribe(
-      data => this.microservices = data,
-      error => console.error('API Error:', error)
-    );
+    this.http.get<any[]>(this.api_endpoint).subscribe({
+      next: data => this.microservices = data,
+      error: error => console.error('API Error:', error)
+    });
   }
 
   startPolling() {
-    this.apiSubscription = interval(60000).subscribe(() => {
-      if (this.polling) this.fetchData();
+    // Clear existing subscription if any
+    this.stopPolling();
+
+    this.pollingSubscription = interval(10000).pipe(
+      takeWhile(() => this.polling)
+    ).subscribe(() => {
+      this.fetchData();
     });
+
+    // Initial fetch
+    this.fetchData();
+  }
+
+  stopPolling() {
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+      this.pollingSubscription = null;
+    }
   }
 
   togglePolling() {
     this.polling = !this.polling;
-    if (this.polling) this.fetchData();
+    if (this.polling) {
+      this.startPolling();
+    } else {
+      this.stopPolling();
+    }
   }
 
   ngOnDestroy() {
-    this.apiSubscription?.unsubscribe();
+    this.stopPolling();
   }
 
   calculateUptime(timeStamp: boolean[]): number {
@@ -52,6 +72,17 @@ export class MicroserviceCheckComponent implements OnInit, OnDestroy {
     const total = timeStamp.length;
     const upCount = timeStamp.filter(x => x).length;
     return Math.round((upCount / total) * 100);
+  }
+
+  getPreHitterDate(preHitterTimestamp: string): string {
+    if (!preHitterTimestamp) return 'N/A';
+    return preHitterTimestamp.split('T')[0];
+  }
+
+  getPreHitterTime(preHitterTimestamp: string): string {
+    if (!preHitterTimestamp) return 'N/A';
+    const timePart = preHitterTimestamp.split('T')[1];
+    return timePart ? timePart.split('.')[0] : 'N/A';
   }
 
 }

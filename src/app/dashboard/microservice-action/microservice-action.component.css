@@ -1,0 +1,82 @@
+.container {
+  padding: 1rem;
+  text-align: center;
+}
+
+.microservice-table {
+  display: table;
+  width: 100%;
+  margin-top: 1rem;
+  border-collapse: collapse;
+}
+
+.microservice-header, .microservice-row {
+  display: table-row;
+}
+
+.microservice-header div, .microservice-row div {
+  display: table-cell;
+  padding: 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.microservice-header {
+  font-weight: bold;
+  background-color: #f2f2f2;
+}
+
+.action-button {
+  padding: 0.4rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.start {
+  background-color: #4caf50;
+  color: white;
+}
+
+.stop {
+  background-color: #f44336;
+  color: white;
+}
+
+.restart {
+  background-color: #2196f3;
+  color: white;
+}
+
+.start:hover {
+  background-color: #45a049;
+}
+
+.stop:hover {
+  background-color: #d32f2f;
+}
+
+.restart:hover {
+  background-color: #1976d2;
+}
+
+.loader {
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #555;
+}
+
+@media (max-width: 600px) {
+  .microservice-table, .microservice-header, .microservice-row,
+  .microservice-header div, .microservice-row div {
+    display: block;
+    width: 100%;
+  }
+
+  .microservice-row {
+    margin-bottom: 1rem;
+  }
+}

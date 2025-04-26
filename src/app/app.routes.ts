@@ -43,6 +43,7 @@ import { ViewSellesComponent } from './users/seller/view-selles/view-selles.comp
 import { SellerProfileControlComponent } from './users/seller/seller-profile-control/seller-profile-control.component';
 import { AboutDev } from './components/about-dev/about-dev.component';
 import { AboutUsComponent } from './components/about-us/about-us.component';
+import { MicroserviceActionComponent } from './dashboard/microservice-action/microservice-action.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -69,6 +70,18 @@ export const routes: Routes = [
     ]
   },
 
+  {
+    path: 'microservice',
+    canActivate: [AuthGuard],
+    data: { roles: [USER_ROLE.ROLE_MASTER,USER_ROLE.ROLE_ADMIN] },
+    children: [
+      { path: 'start', component: MasterDashboardComponent},
+      { path: 'stop', component: MicroserviceActionComponent },
+      { path: 'restart', component: MicroserviceActionComponent },
+      //{ path: 'mvnRunner/update' }
+    ]
+  },
+
 
 
   // Master routes (protected)
@@ -88,7 +101,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
+    data: { roles: [USER_ROLE.ROLE_ADMIN, USER_ROLE.ROLE_MASTER] },
     children: [
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'details', component: AdminDetailsComponent },
@@ -101,7 +114,7 @@ export const routes: Routes = [
   {
     path: 'customer',
     canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_CUSTOMER,USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
+    data: { roles: [USER_ROLE.ROLE_CUSTOMER, USER_ROLE.ROLE_ADMIN, USER_ROLE.ROLE_MASTER] },
     children: [
       { path: 'details', component: CustomerDetailsComponent },
       { path: 'register', component: CustomerRegisterComponent },
@@ -114,7 +127,7 @@ export const routes: Routes = [
   {
     path: 'customer-care',
     canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
+    data: { roles: [USER_ROLE.ROLE_ADMIN, USER_ROLE.ROLE_ADMIN, USER_ROLE.ROLE_MASTER] },
     children: [
       { path: 'dashboard', component: CustomerCareDashboardComponent },
       { path: 'details', component: CustomerCareDetailsComponent },
@@ -128,7 +141,7 @@ export const routes: Routes = [
   {
     path: 'doctor',
     canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_DOCTOR,USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
+    data: { roles: [USER_ROLE.ROLE_DOCTOR, USER_ROLE.ROLE_ADMIN, USER_ROLE.ROLE_MASTER] },
     children: [
       { path: 'dashboard', component: DoctorDashboardComponent },
       { path: 'details', component: DoctorDetailsComponent },
@@ -142,7 +155,7 @@ export const routes: Routes = [
   {
     path: 'seller',
     canActivate: [AuthGuard],
-    data: { roles: [USER_ROLE.ROLE_SELLER,USER_ROLE.ROLE_ADMIN,USER_ROLE.ROLE_MASTER] },
+    data: { roles: [USER_ROLE.ROLE_SELLER, USER_ROLE.ROLE_ADMIN, USER_ROLE.ROLE_MASTER] },
     children: [
       { path: 'dashboard', component: SellerDashboardComponent },
       { path: 'details', component: SellerDetailsComponent },

@@ -17,7 +17,14 @@
           {{ service.status }}
         </span>
       </p>
-      <p>Pre-Hitter: {{ service.callPreHitter ?? 'N/A' }}</p>
+      <p *ngIf="service.callPreHitter; else noPreHitter">
+        PreHitter Date: {{ getPreHitterDate(service.callPreHitter) }}<br>
+        PreHitter Time: {{ getPreHitterTime(service.callPreHitter) }}
+      </p>
+      <ng-template #noPreHitter>
+        <p>Pre-Hitter: N/A</p>
+      </ng-template>
+
       <div class="timestamp-blocks">
         <div
           *ngFor="let stamp of service.timeStamp"

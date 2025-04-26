@@ -1,1 +1,42 @@
-<p>microservice-action works!</p>
+<div class="container">
+  <h2>Microservice Actions</h2>
+
+  <div class="microservice-table">
+    <div class="microservice-header">
+      <div>Microservice Name</div>
+      <div>Start</div>
+      <div>Stop</div>
+      <div>Restart</div>
+    </div>
+
+    <div *ngFor="let service of microservices" class="microservice-row">
+      <div>{{ service }}</div>
+      <div>
+        <button
+          (click)="handleAction(service, 'start')"
+          [disabled]="isLoading"
+          class="action-button start">
+          Start
+        </button>
+      </div>
+      <div>
+        <button
+          (click)="handleAction(service, 'stop')"
+          [disabled]="isLoading"
+          class="action-button stop">
+          Stop
+        </button>
+      </div>
+      <div>
+        <button
+          (click)="handleAction(service, 'restart')"
+          [disabled]="isLoading"
+          class="action-button restart">
+          Restart
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loader">Loading...</div>
+</div>
