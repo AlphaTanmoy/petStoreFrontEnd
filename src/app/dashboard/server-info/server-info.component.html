@@ -1,1 +1,89 @@
-<p>server-info works!</p>
+<div class="server-info-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>dns</mat-icon>
+        Server Information
+      </mat-card-title>
+      <mat-card-subtitle>Current system status and resources</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="loadServerInfo()" [disabled]="isLoading">
+          <mat-icon>refresh</mat-icon>
+          Refresh Now
+        </button>
+
+        <button mat-raised-button
+                [color]="isAutoRefresh ? 'warn' : 'primary'"
+                (click)="toggleAutoRefresh()"
+                [disabled]="isLoading">
+          <mat-icon>{{isAutoRefresh ? 'stop' : 'schedule'}}</mat-icon>
+          {{isAutoRefresh ? 'Stop Auto Refresh' : 'Auto Refresh (10s)'}}
+        </button>
+      </div>
+
+      <div *ngIf="isLoading" class="loading-spinner">
+        <mat-spinner diameter="50"></mat-spinner>
+        <span>Loading server information...</span>
+      </div>
+
+      <div *ngIf="serverInfo && !isLoading" class="info-grid">
+        <!-- Operating System Info -->
+        <div class="info-card">
+          <div class="info-header">
+            <mat-icon>computer</mat-icon>
+            <h3>Operating System</h3>
+          </div>
+          <div class="info-content">
+            <p><strong>Name:</strong> {{serverInfo.osName}}</p>
+            <p><strong>Version:</strong> {{serverInfo.osVersion}}</p>
+            <p><strong>IP Address:</strong> {{serverInfo.ipAddress}}</p>
+          </div>
+        </div>
+
+        <!-- CPU Info -->
+        <div class="info-card">
+          <div class="info-header">
+            <mat-icon>memory</mat-icon>
+            <h3>CPU</h3>
+          </div>
+          <div class="info-content">
+            <p><strong>Usage:</strong> {{serverInfo.cpu.usagePercent}}%</p>
+            <mat-progress-bar mode="determinate" [value]="serverInfo.cpu.usagePercent"></mat-progress-bar>
+            <p><strong>Cores:</strong> {{serverInfo.cpu.physicalCores}} Physical, {{serverInfo.cpu.logicalCores}} Logical</p>
+          </div>
+        </div>
+
+        <!-- Memory Info -->
+        <div class="info-card">
+          <div class="info-header">
+            <mat-icon>sd_storage</mat-icon>
+            <h3>Memory</h3>
+          </div>
+          <div class="info-content">
+            <p><strong>Used:</strong> {{serverInfo.memory.usedMemoryMB | number}} MB</p>
+            <p><strong>Free:</strong> {{serverInfo.memory.freeMemoryMB | number}} MB</p>
+            <p><strong>Total:</strong> {{serverInfo.memory.totalMemoryMB | number}} MB</p>
+            <mat-progress-bar mode="determinate" [value]="memoryUsagePercent"></mat-progress-bar>
+          </div>
+        </div>
+
+        <!-- Disk Info -->
+        <div class="info-card">
+          <div class="info-header">
+            <mat-icon>storage</mat-icon>
+            <h3>Disk</h3>
+          </div>
+          <div class="info-content">
+            <p><strong>Used:</strong> {{serverInfo.disk.usedDiskGB | number}} GB</p>
+            <p><strong>Free:</strong> {{serverInfo.disk.freeDiskGB | number}} GB</p>
+            <p><strong>Total:</strong> {{serverInfo.disk.totalDiskGB | number}} GB</p>
+            <mat-progress-bar mode="determinate" [value]="diskUsagePercent"></mat-progress-bar>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
