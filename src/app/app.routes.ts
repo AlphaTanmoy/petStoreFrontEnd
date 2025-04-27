@@ -44,6 +44,8 @@ import { SellerProfileControlComponent } from './users/seller/seller-profile-con
 import { AboutDev } from './components/about-dev/about-dev.component';
 import { AboutUsComponent } from './components/about-us/about-us.component';
 import { MicroserviceActionComponent } from './dashboard/microservice-action/microservice-action.component';
+import { MvnRunnerListComponent } from './dashboard/mvn-runner-list/mvn-runner-list.component';
+import { ServerInfoComponent } from './dashboard/server-info/server-info.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -78,7 +80,9 @@ export const routes: Routes = [
       { path: 'start', component: MasterDashboardComponent},
       { path: 'stop', component: MicroserviceActionComponent },
       { path: 'restart', component: MicroserviceActionComponent },
-      //{ path: 'mvnRunner/update' }
+      { path: 'system-info', component: ServerInfoComponent },
+      { path: 'mvnRunner/update', component: MvnRunnerListComponent },
+      { path: 'mvnRunner/getAll', component: MvnRunnerListComponent },
     ]
   },
 

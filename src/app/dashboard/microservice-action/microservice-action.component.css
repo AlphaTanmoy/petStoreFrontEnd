@@ -80,3 +80,52 @@
     margin-bottom: 1rem;
   }
 }
+
+/* Add these styles to your existing CSS */
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.progress-container {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  width: 80%;
+  max-width: 500px;
+}
+
+.progress-blocks {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin: 1.5rem 0;
+}
+
+.progress-block {
+  width: 30px;
+  height: 30px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.progress-block.filled {
+  background-color: #4caf50;
+}
+
+.progress-message {
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #333;
+}

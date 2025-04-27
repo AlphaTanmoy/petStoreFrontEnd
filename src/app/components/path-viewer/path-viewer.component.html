@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Path Details</h2>
+<mat-dialog-content>
+  <div class="path-container">
+    <mat-icon>folder</mat-icon>
+    <code>{{data.path}}</code>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button color="primary" (click)="copyToClipboard()">
+    <mat-icon>content_copy</mat-icon> Copy
+  </button>
+</mat-dialog-actions>

@@ -38,5 +38,15 @@
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="loader">Loading...</div>
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="progress-container">
+      <h3>Starting {{ currentService }}...</h3>
+      <div class="progress-blocks">
+        <div *ngFor="let block of progressBlocks"
+             [class.filled]="block.filled"
+             class="progress-block"></div>
+      </div>
+      <p>{{ progressMessage }}</p>
+    </div>
+  </div>
 </div>

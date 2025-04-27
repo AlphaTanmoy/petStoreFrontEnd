@@ -1,0 +1,87 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>MVN Runner Configuration</mat-card-title>
+    <mat-card-subtitle>Manage microservice build configurations</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <!-- Microservice Column -->
+        <ng-container matColumnDef="microservice">
+          <th mat-header-cell *matHeaderCellDef> Microservice </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="microservice-badge">{{element.microservice}}</span>
+          </td>
+        </ng-container>
+
+        <!-- Last Updated Column -->
+        <ng-container matColumnDef="lastUpdated">
+          <th mat-header-cell *matHeaderCellDef> Last Updated </th>
+          <td mat-cell *matCellDef="let element">
+            {{element.lastUpdated | date:'medium'}}
+          </td>
+        </ng-container>
+
+        <!-- Maven Created Column -->
+        <ng-container matColumnDef="mavCreated">
+          <th mat-header-cell *matHeaderCellDef> Maven Created </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-slide-toggle
+              [(ngModel)]="element.mavCreated"
+              (change)="updateMvnRunner(element)"
+              color="primary">
+              {{element.mavCreated ? 'Yes' : 'No'}}
+            </mat-slide-toggle>
+          </td>
+        </ng-container>
+
+        <!-- Should Create Maven Column -->
+        <ng-container matColumnDef="shouldCreateMaven">
+          <th mat-header-cell *matHeaderCellDef> Auto Create </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-slide-toggle
+              [(ngModel)]="element.shouldCreateMaven"
+              (change)="updateMvnRunner(element)"
+              color="primary">
+              {{element.shouldCreateMaven ? 'Enabled' : 'Disabled'}}
+            </mat-slide-toggle>
+          </td>
+        </ng-container>
+
+        <!-- Saved Path Column -->
+        <ng-container matColumnDef="savedPath">
+          <th mat-header-cell *matHeaderCellDef> Path </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="primary" (click)="showPath(element.savedPath)" matTooltip="View path">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button color="primary" (click)="updateMvnRunner(element)">
+              <mat-icon>save</mat-icon> Update
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-spinner">
+      <mat-spinner diameter="50"></mat-spinner>
+      <span>Loading configurations...</span>
+    </div>
+
+    <div *ngIf="!isLoading && dataSource.length === 0" class="no-data">
+      <mat-icon>info</mat-icon>
+      <span>No MVN runner configurations found</span>
+    </div>
+  </mat-card-content>
+</mat-card>
