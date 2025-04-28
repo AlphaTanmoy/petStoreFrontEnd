@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MICROSERVICE_NAME } from '../../constants/Enums';
 import { CommonModule } from '@angular/common';
@@ -12,13 +12,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './microservice-action.component.html',
   styleUrls: ['./microservice-action.component.css']
 })
-export class MicroserviceActionComponent {
+export class MicroserviceActionComponent implements OnDestroy {
   microservices = Object.values(MICROSERVICE_NAME).filter(
     service => service !== MICROSERVICE_NAME.AUTH && service !== MICROSERVICE_NAME.CORE
   );
   isLoading = false;
   currentService = '';
-  progressBlocks: {filled: boolean}[] = Array(10).fill({filled: false});
+  progressBlocks: { filled: boolean }[] = Array(10).fill({ filled: false });
   progressMessage = 'Initializing...';
   private api_endpoint = GetAPIEndpoint(MICROSERVICE_NAME.CORE, '/microservice');
   private progressInterval: any;
@@ -34,69 +34,63 @@ export class MicroserviceActionComponent {
   }
 
   private startWithProgress(service: string) {
-    this.isLoading = true;
-    this.currentService = service;
-    this.progressBlocks = Array(10).fill({filled: false});
-    this.progressMessage = 'Starting service...';
-
-    // Start progress animation
-    let filledBlocks = 0;
-    this.progressInterval = setInterval(() => {
-      if (filledBlocks < 10) {
-        this.progressBlocks[filledBlocks] = {filled: true};
-        filledBlocks++;
-        this.progressMessage = `Progress: ${filledBlocks * 10}%`;
-      } else {
-        clearInterval(this.progressInterval);
-      }
-    }, 1000);
-
-    // Make API call
     const url = `${this.api_endpoint}/start/${service}`;
+
     this.http.post(url, {}).subscribe({
-      next: (response) => {
-        this.completeProgress(true, service, 'start');
+      next: () => {
+        // After successful API call, then show progress
+        this.showProgress(service, 'start', true);
       },
-      error: (error) => {
-        this.completeProgress(false, service, 'start');
+      error: () => {
+        // Even if failed, show minimal progress then error
+        this.showProgress(service, 'start', false);
       }
     });
   }
 
   private performSimpleAction(service: string, action: 'stop' | 'restart') {
-    this.isLoading = true;
     const url = `${this.api_endpoint}/${action}/${service}`;
 
     this.http.post(url, {}).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        this.showSnackbar(`${action} successful for ${service}`, 'success');
+      next: () => {
+        this.showProgress(service, action, true);
       },
-      error: (error) => {
-        this.isLoading = false;
-        this.showSnackbar(`${action} failed for ${service}`, 'error');
+      error: () => {
+        this.showProgress(service, action, false);
       }
     });
   }
 
-  private completeProgress(success: boolean, service: string, action: string) {
-    // Ensure all blocks are filled
-    this.progressBlocks = this.progressBlocks.map(() => ({filled: true}));
-    this.progressMessage = success ? 'Completed successfully!' : 'Failed to start';
+  private showProgress(service: string, action: string, success: boolean) {
+    this.isLoading = true;
+    this.currentService = service;
+    this.progressBlocks = Array(10).fill({ filled: false });
+    this.progressMessage = 'Processing...';
 
-    // Clear interval if still running
-    if (this.progressInterval) {
-      clearInterval(this.progressInterval);
-    }
+    let filledBlocks = 0;
+    this.progressInterval = setInterval(() => {
+      if (filledBlocks < 10) {
+        this.progressBlocks[filledBlocks] = { filled: true };
+        filledBlocks++;
+        this.progressMessage = `Progress: ${filledBlocks * 10}%`;
+      } else {
+        clearInterval(this.progressInterval);
+        this.finishAction(service, action, success);
+      }
+    }, 100); // faster animation (1 second total)
+  }
 
-    // Wait a moment before hiding
+  private finishAction(service: string, action: string, success: boolean) {
+    this.progressBlocks = this.progressBlocks.map(() => ({ filled: true }));
+    this.progressMessage = success ? 'Completed successfully!' : 'Action failed!';
+
     setTimeout(() => {
       this.isLoading = false;
       this.showSnackbar(
         `${action} ${success ? 'successful' : 'failed'} for ${service}`,
         success ? 'success' : 'error'
       );
-    }, 1000);
+    }, 1000); // show final message 1s
   }
 
   private showSnackbar(message: string, type: 'success' | 'error') {

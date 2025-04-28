@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmationDialogComponent } from '../../components/path-viewer/confirmation-dialog.component';
@@ -44,11 +44,15 @@ interface MvnRunner {
   templateUrl: './mvn-runner-list.component.html',
   styleUrls: ['./mvn-runner-list.component.css']
 })
-export class MvnRunnerListComponent implements OnInit {
+export class MvnRunnerListComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['microservice', 'lastUpdated', 'mavCreated', 'shouldCreateMaven', 'savedPath'];
   dataSource: MvnRunner[] = [];
   isLoading = false;
+  progressBlocks: { filled: boolean }[] = Array(10).fill({ filled: false });
+  progressMessage = 'Initializing...';
   private api_endpoint = GetAPIEndpoint(MICROSERVICE_NAME.CORE, '/microservice');
+  private progressInterval: any;
+  private apiResponseStatus: 'success' | 'error' | null = null;
 
   constructor(
     private http: HttpClient,
@@ -60,6 +64,12 @@ export class MvnRunnerListComponent implements OnInit {
     this.loadMvnRunners();
   }
 
+  ngOnDestroy(): void {
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+    }
+  }
+
   loadMvnRunners(): void {
     this.isLoading = true;
     this.http.get<MvnRunner[]>(`${this.api_endpoint}/mvnRunner/getAll`).subscribe({
@@ -67,7 +77,7 @@ export class MvnRunnerListComponent implements OnInit {
         this.dataSource = data;
         this.isLoading = false;
       },
-      error: (error) => {
+      error: () => {
         this.isLoading = false;
         this.showSnackBar('Failed to load MVN runners', 'error');
       }
@@ -92,33 +102,97 @@ export class MvnRunnerListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.performUpdate(service);
-      } else {
-        window.location.reload();
+        // First, trigger API immediately
+        const payload = {
+          microserviceName: service.microservice,
+          shouldCreateMvn: service.shouldCreateMaven,
+          mavCreated: service.mavCreated
+        };
+        this.apiResponseStatus = null;
+
+        this.http.post(`${this.api_endpoint}/mvnRunner/update`, payload).subscribe({
+          next: () => {
+            this.apiResponseStatus = 'success';
+          },
+          error: () => {
+            this.apiResponseStatus = 'error';
+          }
+        });
+
+        // Then start the spinner/loader animation
+        this.startProgressAnimation(service);
       }
     });
   }
 
-  private performUpdate(service: MvnRunner): void {
+  private startProgressAnimation(service: MvnRunner) {
     this.isLoading = true;
+    this.progressBlocks = Array(10).fill({ filled: false });
+    this.progressMessage = 'Updating...';
+    let filledBlocks = 0;
 
+    this.progressInterval = setInterval(() => {
+      if (filledBlocks < 10) {
+        this.progressBlocks[filledBlocks] = { filled: true };
+        filledBlocks++;
+        this.progressMessage = `Progress: ${filledBlocks * 10}%`;
+      } else {
+        clearInterval(this.progressInterval);
+        this.finishUpdate(service);
+      }
+    }, 500); // 500ms between each block filled
+  }
+
+
+  private startProgressAndUpdate(service: MvnRunner) {
+    this.isLoading = true;
+    this.progressBlocks = Array(10).fill({ filled: false });
+    this.progressMessage = 'Updating...';
+    let filledBlocks = 0;
+    this.apiResponseStatus = null;
+
+    // Start API call immediately
     const payload = {
       microserviceName: service.microservice,
       shouldCreateMvn: service.shouldCreateMaven,
       mavCreated: service.mavCreated
     };
-
     this.http.post(`${this.api_endpoint}/mvnRunner/update`, payload).subscribe({
       next: () => {
-        this.isLoading = false;
-        this.showSnackBar(`${service.microservice} updated successfully`, 'success');
-        this.loadMvnRunners();
+        this.apiResponseStatus = 'success';
       },
-      error: (error) => {
-        this.isLoading = false;
-        this.showSnackBar(`Failed to update ${service.microservice}`, 'error');
+      error: () => {
+        this.apiResponseStatus = 'error';
       }
     });
+
+    // Progress animation
+    this.progressInterval = setInterval(() => {
+      if (filledBlocks < 10) {
+        this.progressBlocks[filledBlocks] = { filled: true };
+        filledBlocks++;
+        this.progressMessage = `Progress: ${filledBlocks * 10}%`;
+      } else {
+        clearInterval(this.progressInterval);
+        this.finishUpdate(service);
+      }
+    }, 500); // adjust speed if needed
+  }
+
+  private finishUpdate(service: MvnRunner) {
+    this.progressBlocks = this.progressBlocks.map(() => ({ filled: true }));
+    this.progressMessage = this.apiResponseStatus === 'success' ? 'Completed successfully!' : 'Update failed';
+
+    setTimeout(() => {
+      this.isLoading = false;
+
+      if (this.apiResponseStatus === 'success') {
+        this.showSnackBar(`${service.microservice} updated successfully`, 'success');
+        this.loadMvnRunners();
+      } else {
+        this.showSnackBar(`Failed to update ${service.microservice}`, 'error');
+      }
+    }, 1000);
   }
 
   private showSnackBar(message: string, type: 'success' | 'error'): void {
