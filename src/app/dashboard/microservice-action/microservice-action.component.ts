@@ -1,9 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { MICROSERVICE_NAME } from '../../constants/Enums';
 import { CommonModule } from '@angular/common';
-import { GetAPIEndpoint } from '../../constants/endpoints';
+import { MICROSERVICE_NAME } from '../../constants/Enums';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DashboardService } from './../../service/dashboard.service';
 
 @Component({
   selector: 'app-microservice-action',
@@ -16,53 +15,35 @@ export class MicroserviceActionComponent implements OnDestroy {
   microservices = Object.values(MICROSERVICE_NAME).filter(
     service => service !== MICROSERVICE_NAME.AUTH && service !== MICROSERVICE_NAME.CORE
   );
+
   isLoading = false;
   currentService = '';
   progressBlocks: { filled: boolean }[] = Array(10).fill({ filled: false });
   progressMessage = 'Initializing...';
-  private api_endpoint = GetAPIEndpoint(MICROSERVICE_NAME.CORE, '/microservice');
   private progressInterval: any;
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
+  constructor(
+    private snackBar: MatSnackBar,
+    private dashboardService: DashboardService
+  ) {}
 
   handleAction(service: string, action: 'start' | 'stop' | 'restart') {
-    if (action === 'start') {
-      this.startWithProgress(service);
-    } else {
-      this.performSimpleAction(service, action);
-    }
-  }
+    this.isLoading = true;
 
-  private startWithProgress(service: string) {
-    const url = `${this.api_endpoint}/start/${service}`;
+    const apiCall =
+      action === 'start'
+        ? this.dashboardService.startService(service)
+        : action === 'stop'
+        ? this.dashboardService.stopService(service)
+        : this.dashboardService.restartService(service);
 
-    this.http.post(url, {}).subscribe({
-      next: () => {
-        // After successful API call, then show progress
-        this.showProgress(service, 'start', true);
-      },
-      error: () => {
-        // Even if failed, show minimal progress then error
-        this.showProgress(service, 'start', false);
-      }
-    });
-  }
-
-  private performSimpleAction(service: string, action: 'stop' | 'restart') {
-    const url = `${this.api_endpoint}/${action}/${service}`;
-
-    this.http.post(url, {}).subscribe({
-      next: () => {
-        this.showProgress(service, action, true);
-      },
-      error: () => {
-        this.showProgress(service, action, false);
-      }
+    apiCall.subscribe({
+      next: () => this.showProgress(service, action, true),
+      error: () => this.showProgress(service, action, false)
     });
   }
 
   private showProgress(service: string, action: string, success: boolean) {
-    this.isLoading = true;
     this.currentService = service;
     this.progressBlocks = Array(10).fill({ filled: false });
     this.progressMessage = 'Processing...';
@@ -77,7 +58,7 @@ export class MicroserviceActionComponent implements OnDestroy {
         clearInterval(this.progressInterval);
         this.finishAction(service, action, success);
       }
-    }, 100); // faster animation (1 second total)
+    }, 100); // animation speed
   }
 
   private finishAction(service: string, action: string, success: boolean) {
@@ -90,7 +71,7 @@ export class MicroserviceActionComponent implements OnDestroy {
         `${action} ${success ? 'successful' : 'failed'} for ${service}`,
         success ? 'success' : 'error'
       );
-    }, 1000); // show final message 1s
+    }, 1000);
   }
 
   private showSnackbar(message: string, type: 'success' | 'error') {

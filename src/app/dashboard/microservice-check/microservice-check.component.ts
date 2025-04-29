@@ -1,10 +1,9 @@
+// microservice-check.component.ts (refactored)
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { interval, Subscription } from 'rxjs';
-import { switchMap, takeWhile } from 'rxjs/operators';
+import { takeWhile } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
-import { GetAPIEndpoint } from '../../constants/endpoints';
-import { MICROSERVICE_NAME } from '../../constants/Enums';
+import { DashboardService } from '../../service/dashboard.service';
 
 @Component({
   selector: 'app-microservice-check',
@@ -18,33 +17,26 @@ export class MicroserviceCheckComponent implements OnInit, OnDestroy {
   private pollingSubscription: Subscription | null = null;
   polling = true;
 
-  constructor(private http: HttpClient) {}
+  constructor(private dashboardService: DashboardService) {}
 
   ngOnInit() {
     this.startPolling();
   }
 
-  private api_endpoint = GetAPIEndpoint(MICROSERVICE_NAME.CORE, '/executePreHitter');
-
   fetchData() {
-    this.http.get<any[]>(this.api_endpoint).subscribe({
+    this.dashboardService.getPreHitters().subscribe({
       next: data => this.microservices = data,
       error: error => console.error('API Error:', error)
     });
   }
 
   startPolling() {
-    // Clear existing subscription if any
     this.stopPolling();
-
     this.pollingSubscription = interval(10000).pipe(
       takeWhile(() => this.polling)
-    ).subscribe(() => {
-      this.fetchData();
-    });
+    ).subscribe(() => this.fetchData());
 
-    // Initial fetch
-    this.fetchData();
+    this.fetchData(); // Initial load
   }
 
   stopPolling() {
@@ -56,11 +48,7 @@ export class MicroserviceCheckComponent implements OnInit, OnDestroy {
 
   togglePolling() {
     this.polling = !this.polling;
-    if (this.polling) {
-      this.startPolling();
-    } else {
-      this.stopPolling();
-    }
+    this.polling ? this.startPolling() : this.stopPolling();
   }
 
   ngOnDestroy() {
@@ -84,5 +72,4 @@ export class MicroserviceCheckComponent implements OnInit, OnDestroy {
     const timePart = preHitterTimestamp.split('T')[1];
     return timePart ? timePart.split('.')[0] : 'N/A';
   }
-
 }

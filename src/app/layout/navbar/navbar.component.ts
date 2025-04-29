@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MenuService } from '../../service/menu/menu.service';
+import { MenuService } from '../../service/menu.service';
 import { MenuItem } from '../../interfaces/menu.interface';
 import { AuthService } from '../../service/auth/Auth.Service';
 import { Router } from '@angular/router';

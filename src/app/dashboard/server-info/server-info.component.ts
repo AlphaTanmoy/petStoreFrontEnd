@@ -1,5 +1,5 @@
+// server-info.component.ts (refactored)
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmationDialogComponent } from '../../components/path-viewer/confirmation-dialog.component';
@@ -12,9 +12,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subscription, timer } from 'rxjs';
-import { GetAPIEndpoint } from '../../constants/endpoints';
-import { MICROSERVICE_NAME } from '../../constants/Enums';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DashboardService } from '../../service/dashboard.service';
 
 interface ServerInfo {
   osName: string;
@@ -59,12 +58,11 @@ export class ServerInfoComponent implements OnInit, OnDestroy {
   isLoading = false;
   isAutoRefresh = false;
   private refreshSubscription: Subscription | null = null;
-  private api_endpoint = GetAPIEndpoint(MICROSERVICE_NAME.CORE, '/microservice');
 
   constructor(
-    private http: HttpClient,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dashboardService: DashboardService
   ) {}
 
   ngOnInit(): void {
@@ -77,13 +75,12 @@ export class ServerInfoComponent implements OnInit, OnDestroy {
 
   loadServerInfo(): void {
     this.isLoading = true;
-
-    this.http.get<ServerInfo>(`${this.api_endpoint}/system-info`).subscribe({
+    this.dashboardService.getSystemInfo().subscribe({
       next: (data) => {
         this.serverInfo = data;
         this.isLoading = false;
       },
-      error: (error) => {
+      error: () => {
         this.isLoading = false;
         this.showSnackBar('Failed to load server info', 'error');
       }

@@ -6,7 +6,7 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
 import { SideNavbarComponent } from './layout/side-navbar/side-navbar.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { AuthService } from './service/auth/Auth.Service';
-import { LoaderService } from './service/loader/loader.service';
+import { LoaderService } from './service/loader.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // Check if user is logged in to determine which navbar to show
     this.useSideNavbar = this.authService.isUserLoggedIn();
-    
+
     // Subscribe to auth changes to update navbar type
     this.authService.loginStatus$.subscribe(status => {
       this.useSideNavbar = status;

@@ -17,7 +17,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('../../../assets/bg-animated.gif') no-repeat center center / cover;
+  background: url('../../../../assets/bg-animated.gif') no-repeat center center / cover;
   z-index: -1;
 }
 
