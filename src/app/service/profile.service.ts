@@ -62,10 +62,7 @@ export class ProfileService {
       return throwError(() => new Error('No token or user role found'));
     }
 
-    const headers = new HttpHeaders({
-      'Alpha': `Bearer ${token}`
-    });
-    console.log('Request headers:', headers);
+    console.log('Request headers:');
 
     try {
       const microservice = this.getMicroserviceByRole(userRole);
@@ -75,7 +72,7 @@ export class ProfileService {
       console.log('- Full endpoint:', endpoint);
       console.log('- Microservice:', microservice);
 
-      return this.http.post<ProfileData>(endpoint, {}, { headers }).pipe(
+      return this.http.post<ProfileData>(endpoint, {}).pipe(
         tap(response => {
           console.log('Profile API Response:', response);
           console.log('API call successful');

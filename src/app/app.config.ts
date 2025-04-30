@@ -9,9 +9,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    // Provide HttpClient with DI-based interceptors support
     provideHttpClient(withInterceptorsFromDi()),
-    // Register your TokenInterceptor
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

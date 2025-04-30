@@ -11,7 +11,6 @@ import { MICROSERVICE_NAME } from '../constants/Enums';
   providedIn: 'root'
 })
 export class MenuService {
-  // Use the GetAPIEndpoint function to get the correct endpoint
   private apiUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar/get');
 
   constructor(
@@ -20,7 +19,6 @@ export class MenuService {
   ) { }
 
   getMenuItems(): Observable<MenuItem[]> {
-    console.log('MenuService: Fetching menu items from:', this.apiUrl);
     return this.http.get<MenuItem[]>(this.apiUrl).pipe(
       tap(items => console.log('MenuService: Raw menu items:', items)),
       map(menuItems => this.filterMenuItemsByRole(menuItems)),
@@ -42,9 +40,6 @@ export class MenuService {
       // For guest users, only show items that are explicitly marked as available while logged out
       if (!isLoggedIn) {
         const guestAccess = item.isAvailableWhileLoggedOut === true;
-        console.log('MenuService: Guest access check for', item.menuName, '- Has Access:', guestAccess, {
-          isAvailableWhileLoggedOut: item.isAvailableWhileLoggedOut
-        });
         return guestAccess;
       }
 
@@ -58,13 +53,6 @@ export class MenuService {
         // Keep parent if it has visible submenu items
         hasAccess = hasAccess || filteredSubMenu.length > 0;
       }
-
-      console.log('MenuService: Item access check -', {
-        name: item.menuName,
-        hasAccess,
-        isSubMenu: item.isASubMenu,
-        subMenuCount: item.listOfSubMenu?.length || 0
-      });
 
       return hasAccess;
     });
@@ -106,7 +94,6 @@ export class MenuService {
         hasAccess = false;
     }
 
-    console.log('MenuService: Role-based access check for', item.menuName, '- Role:', userRole, 'Has Access:', hasAccess);
     return hasAccess;
   }
 }
