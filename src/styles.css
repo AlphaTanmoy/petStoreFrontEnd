@@ -1,3 +1,23 @@
+:root {
+  --primary-color: #1976d2;
+  --primary-hover: #1565c0;
+  --secondary-color: #ff4081;
+  --secondary-hover: #f50057;
+  --background-color: #f5f7fa;
+  --card-background: #ffffff;
+  --text-color: #263238;
+  --light-text: #607d8b;
+  --border-color: #cfd8dc;
+  --border-focus: #90caf9;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.12);
+  --transition: all 0.2s ease;
+  --border-radius: 8px;
+  --checkbox-size: 18px;
+  --input-height: 44px;
+  --spacing-unit: 1rem;
+}
+
 .main-content {
   margin-top: 0 !important; /* override any default */
   margin-bottom: 0 !important; /* override any default */

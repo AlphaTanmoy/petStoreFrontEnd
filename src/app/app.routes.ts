@@ -46,6 +46,7 @@ import { AboutUsComponent } from './components/about-us/about-us.component';
 import { MicroserviceActionComponent } from './dashboard/microservice-action/microservice-action.component';
 import { MvnRunnerListComponent } from './dashboard/mvn-runner-list/mvn-runner-list.component';
 import { ServerInfoComponent } from './dashboard/server-info/server-info.component';
+import { AppPaginatedRecordsComponent } from './test/app-paginated-records/app-paginated-records.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -201,6 +202,11 @@ export const routes: Routes = [
     data: { roles: Object.values(USER_ROLE).filter(role => role !== USER_ROLE.GUEST) }
   },
 
+  {
+    path: 'test', component: AppPaginatedRecordsComponent
+ },
+
   // Catch-all route must be at the end
   { path: '**', component: ErrorPageComponent }
+
 ];
