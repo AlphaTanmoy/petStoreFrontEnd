@@ -5,7 +5,7 @@ import { LoaderComponent } from './components/loader/loader.component';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { SideNavbarComponent } from './layout/side-navbar/side-navbar.component';
 import { FooterComponent } from './layout/footer/footer.component';
-import { AuthService } from './service/auth/Auth.Service';
+import { AuthService } from './service/Auth.Service';
 import { LoaderService } from './service/loader.service';
 import { Observable } from 'rxjs';
 

@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ProfileService, ProfileData } from '../../service/profile.service';
-import { AuthService } from '../../service/auth/Auth.Service';
+import { AuthService } from '../../service/Auth.Service';
 
 @Component({
   selector: 'app-my-profile',

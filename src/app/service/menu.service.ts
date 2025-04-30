@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MenuItem } from '../interfaces/menu.interface';
-import { AuthService } from './auth/Auth.Service';
+import { AuthService } from './Auth.Service';
 import { GetAPIEndpoint } from '../constants/endpoints';
 import { MICROSERVICE_NAME } from '../constants/Enums';
 

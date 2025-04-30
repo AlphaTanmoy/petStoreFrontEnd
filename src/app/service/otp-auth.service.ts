@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { OtpRequest, OtpVerifyRequest, LoginResponse, ErrorResponse } from '../../interfaces/auth.interface';
-import { MICROSERVICE_NAME } from '../../constants/Enums';
-import { GetAPIEndpoint } from '../../constants/endpoints';
+import { OtpRequest, OtpVerifyRequest, LoginResponse, ErrorResponse } from '../interfaces/auth.interface';
+import { MICROSERVICE_NAME } from '../constants/Enums';
+import { GetAPIEndpoint } from '../constants/endpoints';
 
 @Injectable({
   providedIn: 'root'

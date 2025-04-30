@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { AuthService } from '../../service/auth/Auth.Service';
+import { AuthService } from '../../service/Auth.Service';
 
 @Component({
   selector: 'app-my-profile',

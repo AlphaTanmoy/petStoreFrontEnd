@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuService } from '../../service/menu.service';
 import { MenuItem } from '../../interfaces/menu.interface';
-import { AuthService } from '../../service/auth/Auth.Service';
+import { AuthService } from '../../service/Auth.Service';
 import { Subscription, combineLatest } from 'rxjs';
 import { skip } from 'rxjs/operators';
 

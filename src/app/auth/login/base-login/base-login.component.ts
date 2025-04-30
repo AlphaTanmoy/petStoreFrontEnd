@@ -15,7 +15,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
 import { OtpInputComponent } from '../../../components/otp-input/otp-input.component';
-import { AuthService } from '../../../service/auth/Auth.Service';
+import { AuthService } from '../../../service/Auth.Service';
 import { MICROSERVICE_NAME, USER_ROLE } from '../../../constants/Enums';
 import { OtpDialogComponent } from '../../../components/otp-dialog/otp-dialog.component';
 import {GetAPIEndpoint} from '../../../constants/endpoints'

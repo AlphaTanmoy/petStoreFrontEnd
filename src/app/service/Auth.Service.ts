@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { GetAPIEndpoint } from '../../constants/endpoints';
-import { USER_ROLE, MICROSERVICE_NAME } from '../../constants/Enums';
-import { LoginRequest, LoginResponse, RefreshTokenRequest, TokenPayload } from '../../interfaces/auth.interface';
+import { GetAPIEndpoint } from '../constants/endpoints';
+import { USER_ROLE, MICROSERVICE_NAME } from '../constants/Enums';
+import { LoginRequest, LoginResponse, RefreshTokenRequest, TokenPayload } from '../interfaces/auth.interface';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
