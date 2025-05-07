@@ -1,0 +1,231 @@
+<div class="product-details-container">
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb">
+    <a routerLink="/">Home</a> &gt;
+    <a routerLink="/electronics">Electronics</a> &gt;
+    <a routerLink="/electronics/headphones">Headphones</a> &gt;
+    <span>{{product.name}}</span>
+  </div>
+
+  <!-- Main Product Section -->
+  <div class="product-main">
+    <!-- Media Gallery -->
+    <div class="product-gallery">
+      <!-- Thumbnails -->
+      <div class="thumbnails">
+        <div *ngFor="let media of product.media; let i = index"
+             [class.active]="i === product.currentMediaIndex"
+             (click)="selectMedia(i)">
+          <img *ngIf="media.type === 'image'" [src]="media.url" [alt]="product.name + ' thumbnail ' + (i + 1)">
+          <div *ngIf="media.type === 'video'" class="video-thumbnail">
+            <img [src]="media.thumbnail" [alt]="product.name + ' video thumbnail ' + (i + 1)">
+            <div class="play-icon"><fa-icon [icon]="faPlay"></fa-icon></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Media Display -->
+      <div class="main-media" [class.zoomed]="product.zoomed">
+        <div class="media-container"
+             [style.transform]="'scale(' + product.zoomLevel + ')'"
+             (dblclick)="resetZoom()">
+          <img *ngIf="product.media[product.currentMediaIndex].type === 'image'"
+               [src]="product.media[product.currentMediaIndex].url"
+               [alt]="product.name + ' image ' + (product.currentMediaIndex + 1)">
+
+          <div *ngIf="product.media[product.currentMediaIndex].type === 'video'" class="video-container">
+            <video controls>
+              <source [src]="product.media[product.currentMediaIndex].url" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+
+        <button class="nav-btn prev" (click)="prevMedia()"><fa-icon [icon]="faChevronLeft"></fa-icon></button>
+        <button class="nav-btn next" (click)="nextMedia()"><fa-icon [icon]="faChevronRight"></fa-icon></button>
+
+        <div class="zoom-controls" *ngIf="product.media[product.currentMediaIndex].type === 'image'">
+          <button (click)="zoomIn()">+</button>
+          <button (click)="zoomOut()">-</button>
+          <button (click)="resetZoom()"><fa-icon [icon]="faExpand"></fa-icon></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <h1>{{product.name}}</h1>
+      <div class="brand">Brand: {{product.brand}}</div>
+
+      <div class="rating-section">
+        <div class="stars">
+          <span *ngFor="let star of getStars(product.rating)">
+            <fa-icon *ngIf="star === 'full'" [icon]="faStar"></fa-icon>
+            <fa-icon *ngIf="star === 'half'" [icon]="faStarHalfAlt"></fa-icon>
+          </span>
+        </div>
+        <span class="rating-count">{{product.rating.toFixed(1)}} ({{product.totalRatings}} ratings)</span>
+      </div>
+
+      <div class="price-section">
+        <span class="current-price">₹{{product.price.toFixed(2)}}</span>
+        <span class="original-price">₹{{product.actualPrice.toFixed(2)}}</span>
+        <span class="discount">{{product.discount}}% off</span>
+      </div>
+
+      <div class="in-stock" [class.out-of-stock]="!product.inStock">
+        {{product.inStock ? 'In Stock' : 'Out of Stock'}}
+      </div>
+
+      <div class="delivery-info">
+        <span class="delivery-date">{{product.deliveryDate}}</span>
+        <span class="free-delivery">FREE Delivery</span>
+      </div>
+
+      <!-- Color Selection -->
+      <div class="color-selection">
+        <h3>Color:</h3>
+        <div class="color-options">
+          <div *ngFor="let color of product.colors"
+               [class.selected]="color === product.selectedColor"
+               (click)="product.selectedColor = color">
+            <div class="color-circle" [style.background-color]="color.toLowerCase()"></div>
+            <span>{{color}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="add-to-cart">Add to Cart</button>
+        <button class="buy-now">Buy Now</button>
+        <button class="wishlist" (click)="toggleWishlist()" [class.in-wishlist]="inWishlist">
+          <fa-icon [icon]="faHeart"></fa-icon> {{inWishlist ? 'In Wishlist' : 'Wishlist'}}
+        </button>
+      </div>
+
+      <!-- Share Options -->
+      <div class="share-options">
+        <span>Share:</span>
+        <button (click)="shareProduct('whatsapp')">WhatsApp</button>
+        <button (click)="shareProduct('facebook')">Facebook</button>
+        <button (click)="shareProduct('twitter')">Twitter</button>
+        <button (click)="shareProduct('link')">Copy Link</button>
+        <fa-icon [icon]="faShareAlt"></fa-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Offers Section -->
+  <div class="offers-section">
+    <h2>Available Offers</h2>
+    <ul>
+      <li *ngFor="let offer of product.offers">
+        <span class="offer-icon">🎁</span> {{offer}}
+      </li>
+    </ul>
+  </div>
+
+  <!-- Specifications Section -->
+  <div class="specifications-section">
+    <h2>Specifications</h2>
+
+    <div class="spec-tabs">
+      <div class="tab active">General</div>
+      <div class="tab">Product Details</div>
+      <div class="tab">Dimensions</div>
+      <div class="tab">Manufacturing</div>
+      <div class="tab">Packaging</div>
+      <div class="tab">Import Info</div>
+    </div>
+
+    <div class="spec-content">
+      <table>
+        <tbody>
+          <tr *ngFor="let item of getObjectKeys(product.specifications.general)">
+            <th>{{ item }}</th>
+            <td>{{ product.specifications.general[item] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Ratings & Reviews Section -->
+  <div class="reviews-section">
+    <h2>Ratings & Reviews</h2>
+
+    <div class="rating-summary">
+      <div class="overall-rating">
+        <div class="rating-value">{{product.rating.toFixed(1)}}</div>
+        <div class="stars">
+          <span *ngFor="let star of getStars(product.rating)">
+            <fa-icon *ngIf="star === 'full'" [icon]="faStar"></fa-icon>
+            <fa-icon *ngIf="star === 'half'" [icon]="faStarHalfAlt"></fa-icon>
+          </span>
+        </div>
+        <div class="rating-count">{{product.totalRatings}} ratings</div>
+      </div>
+
+      <div class="rating-distribution">
+        <!-- Rating distribution bars would go here -->
+      </div>
+    </div>
+
+    <button class="rate-product-btn">Rate Product</button>
+
+    <div class="reviews-list">
+      <div *ngFor="let review of product.reviews" class="review-card">
+        <div class="review-header">
+          <div class="user">{{review.user}}</div>
+          <div class="rating">
+            <span *ngFor="let star of getStars(review.rating)">
+              <fa-icon *ngIf="star === 'full'" [icon]="faStar"></fa-icon>
+            </span>
+          </div>
+          <div class="date">{{review.date}}</div>
+        </div>
+        <h3 class="review-title">{{review.title}}</h3>
+        <p class="review-comment">{{review.comment}}</p>
+      </div>
+    </div>
+
+    <!-- Add Review Form -->
+    <div class="add-review">
+      <h3>Write a Review</h3>
+      <div class="rating-input">
+        <span>Your Rating:</span>
+        <span *ngFor="let star of [1,2,3,4,5]"
+              (click)="setRating(star)"
+              [class.active]="star <= newReview.rating">★</span>
+      </div>
+      <input type="text" placeholder="Title" [(ngModel)]="newReview.title">
+      <textarea placeholder="Your review" [(ngModel)]="newReview.comment"></textarea>
+      <button (click)="submitReview()">Submit Review</button>
+    </div>
+  </div>
+
+  <!-- Q&A Section -->
+  <div class="qa-section">
+    <h2>Questions & Answers</h2>
+
+    <div class="ask-question">
+      <input type="text" placeholder="Have a question? Ask here..." [(ngModel)]="newQuestion">
+      <button (click)="submitQuestion()">Ask</button>
+    </div>
+
+    <div class="questions-list">
+      <div *ngFor="let question of product.questions" class="question-card">
+        <div class="question">
+          <div class="user">{{question.user}}</div>
+          <div class="date">{{question.date}}</div>
+          <p>{{question.question}}</p>
+        </div>
+        <div *ngIf="question.answer" class="answer">
+          <div class="label">Answer:</div>
+          <p>{{question.answer}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

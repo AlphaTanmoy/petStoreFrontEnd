@@ -1,0 +1,118 @@
+<div class="payment-container">
+  <h1>Payment Options</h1>
+  <div class="amount-due">
+    <span>Amount Due: ₹{{amountDue.toFixed(2)}}</span>
+  </div>
+
+  <!-- Payment Options -->
+  <div class="payment-methods">
+    <!-- UPI -->
+    <div class="payment-option" [class.selected]="selectedPaymentMethod === 'upi'">
+      <div class="option-header" (click)="selectPaymentMethod('upi')">
+        <input type="radio" name="payment-method" [checked]="selectedPaymentMethod === 'upi'" readonly>
+        <span>UPI</span>
+      </div>
+      <div class="option-content" *ngIf="selectedPaymentMethod === 'upi'">
+        <input type="text" placeholder="Enter UPI ID (e.g., name@bank)" [(ngModel)]="upiId">
+      </div>
+    </div>
+
+    <!-- Net Banking -->
+    <div class="payment-option" [class.selected]="selectedPaymentMethod === 'netbanking'">
+      <div class="option-header" (click)="selectPaymentMethod('netbanking')">
+        <input type="radio" name="payment-method" [checked]="selectedPaymentMethod === 'netbanking'" readonly>
+        <span>Net Banking</span>
+      </div>
+      <div class="option-content" *ngIf="selectedPaymentMethod === 'netbanking'">
+        <select [(ngModel)]="selectedBank">
+          <option value="" disabled selected>Select your bank</option>
+          <option *ngFor="let bank of banks" [value]="bank">{{bank}}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PetStorePay -->
+    <div class="payment-option" [class.selected]="selectedPaymentMethod === 'petstorepay'">
+      <div class="option-header" (click)="selectPaymentMethod('petstorepay')">
+        <input type="radio" name="payment-method" [checked]="selectedPaymentMethod === 'petstorepay'" readonly>
+        <span>PetStorePay</span>
+        <span class="balance">Balance: ₹{{petStorePayBalance.toFixed(2)}}</span>
+      </div>
+      <div class="option-content" *ngIf="selectedPaymentMethod === 'petstorepay'">
+        <p>Pay using your PetStorePay balance.</p>
+        <button class="add-funds-btn" (click)="openAddFundsModal()">Add Funds</button>
+      </div>
+    </div>
+
+    <!-- Credit/Debit Card -->
+    <div class="payment-option" [class.selected]="selectedPaymentMethod === 'card'">
+      <div class="option-header" (click)="selectPaymentMethod('card')">
+        <input type="radio" name="payment-method" [checked]="selectedPaymentMethod === 'card'" readonly>
+        <span>Credit/Debit Card</span>
+      </div>
+      <div class="option-content" *ngIf="selectedPaymentMethod === 'card'">
+        <p>Card payment integration coming soon!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Funds Modal -->
+  <div class="modal-backdrop" *ngIf="showAddFundsModal" (click)="closeAddFundsModal()"></div>
+  <div class="modal" *ngIf="showAddFundsModal">
+    <div class="modal-header">
+      <h3>Add Funds to PetStorePay</h3>
+      <button class="close-btn" (click)="closeAddFundsModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="number" placeholder="Enter amount to add" [(ngModel)]="addFundsAmount" min="0">
+
+      <!-- Add Funds Methods -->
+      <div class="add-funds-methods">
+        <!-- UPI -->
+        <div class="fund-method" [class.selected]="addFundsMethod === 'upi'">
+          <div class="method-header" (click)="selectAddFundsMethod('upi')">
+            <input type="radio" name="add-funds-method" [checked]="addFundsMethod === 'upi'" readonly>
+            <span>UPI</span>
+          </div>
+          <div class="method-content" *ngIf="addFundsMethod === 'upi'">
+            <input type="text" placeholder="Enter UPI ID (e.g., name@bank)" [(ngModel)]="addFundsUpiId">
+          </div>
+        </div>
+
+        <!-- Net Banking -->
+        <div class="fund-method" [class.selected]="addFundsMethod === 'netbanking'">
+          <div class="method-header" (click)="selectAddFundsMethod('netbanking')">
+            <input type="radio" name="add-funds-method" [checked]="addFundsMethod === 'netbanking'" readonly>
+            <span>Net Banking</span>
+          </div>
+          <div class="method-content" *ngIf="addFundsMethod === 'netbanking'">
+            <select [(ngModel)]="addFundsSelectedBank">
+              <option value="" disabled selected>Select your bank</option>
+              <option *ngFor="let bank of banks" [value]="bank">{{bank}}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Credit/Debit Card -->
+        <div class="fund-method" [class.selected]="addFundsMethod === 'card'">
+          <div class="method-header" (click)="selectAddFundsMethod('card')">
+            <input type="radio" name="add-funds-method" [checked]="addFundsMethod === 'card'" readonly>
+            <span>Credit/Debit Card</span>
+          </div>
+          <div class="method-content" *ngIf="addFundsMethod === 'card'">
+            <p>Card payment integration coming soon!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="closeAddFundsModal()">Cancel</button>
+      <button class="confirm-add-funds" (click)="addFunds()">Add Funds</button>
+    </div>
+  </div>
+
+  <!-- Proceed to Pay Button -->
+  <div class="action-buttons">
+    <button class="pay-now" (click)="proceedToPay()">Proceed to Pay</button>
+  </div>
+</div>

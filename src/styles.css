@@ -19,15 +19,16 @@
 }
 
 .main-content {
-  margin-top: 0 !important; /* override any default */
-  margin-bottom: 0 !important; /* override any default */
-  padding: 0 !important; /* override any default */
-  overflow-y: scroll; /* or auto */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE 10+ */
-  height: 100vh;
+  margin-top: 64px; /* or the height of your navbar */
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  height: calc(100vh - 64px); /* Adjust height to exclude navbar */
   width: 100vw;
 }
+
 
 .main-content::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Edge */

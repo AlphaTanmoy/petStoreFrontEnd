@@ -1,0 +1,55 @@
+<div class="cart-container">
+  <div class="cart-header">
+    <h1>Shopping Cart</h1>
+    <p class="price-column">Price</p>
+  </div>
+
+  <div *ngIf="cartItems.length === 0" class="empty-cart">
+    <h2>Your cart is empty</h2>
+    <p>Your shopping cart is waiting. Give it purpose!</p>
+    <button routerLink="/" class="shop-btn">Shop now</button>
+  </div>
+
+  <div *ngFor="let item of cartItems" class="cart-item">
+    <div class="item-image">
+      <img [src]="item.image" alt="{{item.name}}">
+    </div>
+    <div class="item-details">
+      <h3>{{item.name}}</h3>
+      <p class="seller">Sold by: {{item.seller}}</p>
+      <p class="stock" [class.in-stock]="item.inStock" [class.out-of-stock]="!item.inStock">
+        {{item.inStock ? 'In Stock' : 'Out of Stock'}}
+      </p>
+      <p class="delivery">Delivery: {{item.deliveryDate}}</p>
+
+      <div class="quantity-control">
+        <label>Qty:</label>
+        <button (click)="updateQuantity(item, item.quantity - 1)">-</button>
+        <input type="number" [(ngModel)]="item.quantity" min="1" (change)="updateQuantity(item, item.quantity)">
+        <button (click)="updateQuantity(item, item.quantity + 1)">+</button>
+      </div>
+
+      <button class="delete-btn" (click)="removeItem(item.id)">Delete</button>
+    </div>
+    <div class="item-price">
+      <p class="price">₹{{item.price * item.quantity | number:'1.2-2'}}</p>
+      <p class="unit-price">₹{{item.price}} each</p>
+    </div>
+  </div>
+
+  <div *ngIf="cartItems.length > 0" class="cart-summary">
+    <div class="subtotal">
+      <p>Subtotal ({{cartItems.length}} items):</p>
+      <p>₹{{subtotal | number:'1.2-2'}}</p>
+    </div>
+    <div class="delivery">
+      <p>Delivery Fee:</p>
+      <p>{{deliveryFee === 0 ? 'FREE' : '₹' + deliveryFee}}</p>
+    </div>
+    <div class="total">
+      <h3>Total:</h3>
+      <h3>₹{{total | number:'1.2-2'}}</h3>
+    </div>
+    <button class="checkout-btn" (click)="proceedToPayment()">Proceed to Payment</button>
+  </div>
+</div>
