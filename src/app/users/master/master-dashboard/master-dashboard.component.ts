@@ -3,9 +3,10 @@ import { MicroserviceCheckComponent } from '../../../dashboard/microservice-chec
 import { MicroserviceActionComponent } from '../../../dashboard/microservice-action/microservice-action.component';
 import { MvnRunnerListComponent } from '../../../dashboard/mvn-runner-list/mvn-runner-list.component';
 import { ServerInfoComponent } from '../../../dashboard/server-info/server-info.component';
+import { NavbarControlComponent } from '../navbar-control/navbar-control.component';
 @Component({
   selector: 'app-master-dashboard',
-  imports: [MicroserviceCheckComponent, MicroserviceActionComponent, MvnRunnerListComponent, ServerInfoComponent],
+  imports: [MicroserviceCheckComponent, MicroserviceActionComponent, MvnRunnerListComponent, ServerInfoComponent, NavbarControlComponent],
   templateUrl: './master-dashboard.component.html',
   styleUrl: './master-dashboard.component.css'
 })

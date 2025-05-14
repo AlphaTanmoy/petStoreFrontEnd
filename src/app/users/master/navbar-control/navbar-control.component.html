@@ -1,0 +1,66 @@
+<div class="navbar-form-container">
+    <form [formGroup]="navbarForm" (ngSubmit)="onSubmit()">
+        <h2>Add Navbar</h2>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Menu Name:</label>
+                <input type="text" formControlName="menuName" required>
+            </div>
+
+            <div class="form-group">
+                <label>Menu Link (optional):</label>
+                <input type="text" formControlName="menuLink">
+            </div>
+        </div>
+
+        <div class="checkbox-group">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" formControlName="doHaveRedirectionLink">
+                    Do Have Redirection Link
+                </label>
+            </div>
+
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" formControlName="isASubMenu">
+                    Is a Sub Menu
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group" *ngIf="navbarForm.get('isASubMenu')?.value">
+            <label>Parent ID (if Sub Menu):</label>
+            <input type="text" formControlName="parentId">
+        </div>
+
+        <div class="checkbox-group">
+            <div class="checkbox" *ngFor="let field of fields">
+                <label>
+                    <input type="checkbox" [formControlName]="field.name">
+                    {{ field.label }}
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>SVG File:</label>
+            <div class="file-input-container">
+                <input type="file" (change)="onFileSelected($event)" accept=".svg" id="svgFile">
+                <label class="file-input-label" for="svgFile">
+                    {{ selectedFile ? selectedFile.name : 'Choose a file...' }}
+                </label>
+                <div class="file-name" *ngIf="selectedFile">
+                    Selected: {{ selectedFile.name }}
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="navbarForm.invalid">Submit</button>
+
+        <p class="response-msg" [class.success]="isSuccess" [class.error]="!isSuccess">
+            {{ responseMessage }}
+        </p>
+    </form>
+</div>
