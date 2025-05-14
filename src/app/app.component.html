@@ -1,18 +1,26 @@
 <!-- Loader -->
 <app-loader [isLoading]="(isLoading$ | async) ?? false"></app-loader>
 
-<!-- Top Navbar for guests -->
+<!-- Top Navbar for guest users -->
 <div *ngIf="!useSideNavbar">
   <app-navbar></app-navbar>
 </div>
 
-<!-- Main content with side navbar for logged-in users -->
+<!-- Main container for authenticated layout -->
 <div class="app-container">
-  <app-side-navbar *ngIf="useSideNavbar" (sidebarCollapsed)="onSidebarCollapsed($event)"></app-side-navbar>
-  <div class="main-content" [class.sidebar-collapsed]="isSidebarCollapsed" [class.with-sidebar]="useSideNavbar">
+  <!-- Side Navbar for logged-in users -->
+  <app-side-navbar
+    *ngIf="useSideNavbar"
+    (sidebarCollapsed)="onSidebarCollapsed($event)">
+  </app-side-navbar>
+
+  <!-- Main Content Area -->
+  <div
+    class="main-content"
+    [class.with-sidebar]="useSideNavbar"
+    [class.sidebar-collapsed]="isSidebarCollapsed">
+    
     <router-outlet></router-outlet>
     <app-footer></app-footer>
   </div>
 </div>
-
-
