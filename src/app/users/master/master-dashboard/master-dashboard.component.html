@@ -1,12 +1,13 @@
-<div class="dashboard-container">
-  <!-- Full-width first row -->
+<!-- master-dashboard.component.html -->
+<div class="dashboard-container" [class.sidebar-collapsed]="isSidebarCollapsed">
+  <!-- Microservice Status Row -->
   <div class="dashboard-row">
     <div class="dashboard-tile full-width">
       <app-microservice-check></app-microservice-check>
     </div>
   </div>
 
-  <!-- Standard 2-column rows -->
+  <!-- Microservice Actions and Runner Configuration -->
   <div class="dashboard-row">
     <div class="dashboard-tile">
       <app-microservice-action></app-microservice-action>
@@ -15,6 +16,8 @@
       <app-mvn-runner-list></app-mvn-runner-list>
     </div>
   </div>
+
+  <!-- Server Info and Navbar Control -->
   <div class="dashboard-row">
     <div class="dashboard-tile">
       <app-server-info></app-server-info>
@@ -23,6 +26,8 @@
       <app-navbar-control></app-navbar-control>
     </div>
   </div>
+
+  <!-- Extra Tiles -->
   <div class="dashboard-row">
     <div class="dashboard-tile">
       <p>Tile 6 content</p>

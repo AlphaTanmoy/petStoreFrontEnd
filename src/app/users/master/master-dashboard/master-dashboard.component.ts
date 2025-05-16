@@ -11,5 +11,11 @@ import { NavbarControlComponent } from '../navbar-control/navbar-control.compone
   styleUrl: './master-dashboard.component.css'
 })
 export class MasterDashboardComponent {
+isSidebarCollapsed: boolean = false;
+
+// If using service or output from sidebar:
+updateSidebarState(collapsed: boolean) {
+  this.isSidebarCollapsed = collapsed;
+}
 
 }
