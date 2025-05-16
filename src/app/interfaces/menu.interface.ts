@@ -1,6 +1,7 @@
 export interface MenuItem {
   id: string;
   menuName: string;
+  parentId: string;
   doHaveRedirectionLink: boolean;
   menuLink: string | null;
   isASubMenu: boolean;

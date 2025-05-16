@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { NavbarService } from '../../../service/navbar.service';
+import { AuthService } from '../../../service/Auth.Service';
 
 @Component({
   selector: 'app-navbar-control',
@@ -15,6 +16,8 @@ export class NavbarControlComponent {
   selectedFile: File | null = null;
   responseMessage = '';
   isSuccess = false;
+  isEditMode = false;
+  currentItemId: string | null = null;
   
   fields = [
     { name: 'canAdminAccess', label: 'Admin Access' },
@@ -27,13 +30,17 @@ export class NavbarControlComponent {
     { name: 'isAvailableWhileLoggedOut', label: 'Available While Logged Out' }
   ];
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(
+    private fb: FormBuilder,
+    private navbarService: NavbarService,
+    private authService: AuthService
+  ) {
     this.navbarForm = this.fb.group({
       menuName: ['', Validators.required],
       doHaveRedirectionLink: [false],
       menuLink: [''],
       isASubMenu: [false],
-      parentId: [''],
+      parentId: [null],
       canAdminAccess: [false],
       canUserAccess: [false],
       canDoctorAccess: [false],
@@ -42,6 +49,17 @@ export class NavbarControlComponent {
       chatUsersAccess: [false],
       isVisibleToGuest: [false],
       isAvailableWhileLoggedOut: [false]
+    });
+
+    // Watch for changes in isASubMenu to show/hide parentId field
+    this.navbarForm.get('isASubMenu')?.valueChanges.subscribe(value => {
+      if (value) {
+        this.navbarForm.get('parentId')?.setValidators([Validators.required]);
+      } else {
+        this.navbarForm.get('parentId')?.clearValidators();
+        this.navbarForm.get('parentId')?.setValue(null);
+      }
+      this.navbarForm.get('parentId')?.updateValueAndValidity();
     });
   }
 
@@ -56,35 +74,68 @@ export class NavbarControlComponent {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('navbar', JSON.stringify(this.navbarForm.value));
-    
-    if (this.selectedFile) {
-      formData.append('svgFile', this.selectedFile);
+    const authToken = this.authService.getToken();
+    if (!authToken) {
+      this.handleError('', new Error('Authentication token is missing'));
+      return;
     }
 
-    const headers = new HttpHeaders({
-      'Authorization': 'Bearer your-auth-token-here'
-    });
+    const formValue = this.navbarForm.value;
+    const menuData = {
+      menuName: formValue.menuName,
+      doHaveRedirectionLink: formValue.doHaveRedirectionLink,
+      menuLink: formValue.menuLink || null,
+      isASubMenu: formValue.isASubMenu,
+      parentId: formValue.parentId,
+      canAdminAccess: formValue.canAdminAccess,
+      canUserAccess: formValue.canUserAccess,
+      canDoctorAccess: formValue.canDoctorAccess,
+      canSellerAccess: formValue.canSellerAccess,
+      canRiderAccess: formValue.canRiderAccess,
+      chatUsersAccess: formValue.chatUsersAccess,
+      isVisibleToGuest: formValue.isVisibleToGuest,
+      isAvailableWhileLoggedOut: formValue.isAvailableWhileLoggedOut
+    };
 
-    this.http.post('/your-api-endpoint/add', formData, { headers })
-      .subscribe({
-        next: (res) => {
-          this.responseMessage = 'Navbar added successfully!';
-          this.isSuccess = true;
-          this.resetForm();
-        },
-        error: (err) => {
-          this.responseMessage = 'Error adding navbar: ' + (err.error?.message || err.message);
-          this.isSuccess = false;
-        }
+    if (this.isEditMode && this.currentItemId) {
+      this.navbarService.updateNavbarItem(
+        this.currentItemId,
+        menuData,
+        this.selectedFile,
+        authToken
+      ).subscribe({
+        next: () => this.handleSuccess('Navbar item updated successfully!'),
+        error: (err) => this.handleError('Error updating navbar item: ', err)
       });
+    } else {
+      this.navbarService.addNavbarItem(
+        menuData,
+        this.selectedFile,
+        authToken
+      ).subscribe({
+        next: () => this.handleSuccess('Navbar item added successfully!'),
+        error: (err) => this.handleError('Error adding navbar item: ', err)
+      });
+    }
+  }
+
+  handleSuccess(message: string) {
+    this.responseMessage = message;
+    this.isSuccess = true;
+    this.resetForm();
+  }
+
+  handleError(prefix: string, error: any) {
+    this.responseMessage = prefix + (error.error?.message || error.message);
+    this.isSuccess = false;
+    console.error(error);
   }
 
   resetForm() {
     this.navbarForm.reset({
       doHaveRedirectionLink: false,
       isASubMenu: false,
+      parentId: null,
       canAdminAccess: false,
       canUserAccess: false,
       canDoctorAccess: false,
@@ -95,5 +146,7 @@ export class NavbarControlComponent {
       isAvailableWhileLoggedOut: false
     });
     this.selectedFile = null;
+    this.isEditMode = false;
+    this.currentItemId = null;
   }
 }
