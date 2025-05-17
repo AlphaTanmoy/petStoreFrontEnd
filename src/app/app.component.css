@@ -3,10 +3,11 @@
   margin: 0;
   padding: 0;
   height: 100vh;
+  width: 100vw;
   overflow: hidden;
 }
 
-/* Ensure full height and reset margins */
+/* Reset margins and ensure full height */
 html, body {
   margin: 0;
   padding: 0;
@@ -18,22 +19,27 @@ html, body {
 /* App container for layout */
 .app-container {
   display: flex;
-  flex-direction: column;
   height: 100vh;
   width: 100vw;
-  position: relative;
+  overflow: hidden;
+}
+
+/* Side navbar should not shrink the main content */
+app-side-navbar {
+  flex-shrink: 0;
 }
 
 /* Main content area */
 .main-content {
   flex: 1;
-  padding: 0;
-  transition: margin-left 0.3s ease;
-  background-color: var(--bg-secondary);
   display: flex;
   flex-direction: column;
-  overflow: auto; /* Allows scrolling only inside main content */
-  margin-top: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: margin-left 0.3s ease;
+  background-color: var(--bg-secondary);
+  padding: 0;
+  margin-left: 0;
 }
 
 /* Sidebar expanded */
@@ -46,7 +52,7 @@ html, body {
   margin-left: 60px;
 }
 
-/* No sidebar (e.g. for guest users) */
+/* No sidebar */
 .main-content:not(.with-sidebar) {
   margin-left: 0;
 }
@@ -70,7 +76,7 @@ app-footer {
   .main-content.with-sidebar.sidebar-collapsed {
     margin-left: 0;
   }
-  
+
   .main-content {
     overflow-y: auto;
     overflow-x: hidden;
