@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProfileService, ProfileData } from '../../service/profile.service';
 import { AuthService } from '../../service/Auth.Service';
 
@@ -15,7 +16,8 @@ import { AuthService } from '../../service/Auth.Service';
     RouterModule,
     MatCardModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './my-profile.component.html',
   styleUrls: ['./my-profile.component.css']
@@ -24,6 +26,7 @@ export class MyProfileComponent implements OnInit {
   profileData: ProfileData | null = null;
   loading = true;
   error = false;
+  authError = false;
 
   constructor(
     private profileService: ProfileService,

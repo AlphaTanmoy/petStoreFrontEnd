@@ -1,11 +1,14 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MenuService } from '../../service/menu.service';
 import { MenuItem } from '../../interfaces/menu.interface';
 import { AuthService } from '../../service/Auth.Service';
 import { Subscription, combineLatest } from 'rxjs';
 import { skip } from 'rxjs/operators';
+
+const USER_ROLE_KEY = 'userRole';
+const USERNAME_KEY = 'username';
 
 @Component({
   selector: 'app-side-navbar',
@@ -19,12 +22,17 @@ export class SideNavbarComponent implements OnInit, OnDestroy {
   menuItems: MenuItem[] = [];
   isLoggedIn = false;
   userRole = '';
+  userName = '';
   isExpanded = true;
   isMobile = false;
   expandedMenuItems: Set<string> = new Set();
   private subscriptions: Subscription[] = [];
   shouldShowSidebar = true;
   collapsed = false;
+
+  navigateToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
 
   @Output() sidebarCollapsed = new EventEmitter<boolean>();
 
@@ -35,7 +43,8 @@ export class SideNavbarComponent implements OnInit, OnDestroy {
 
   constructor(
     private menuService: MenuService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.checkMobileView();
   }
@@ -43,11 +52,68 @@ export class SideNavbarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Initial state setup
     this.isLoggedIn = this.authService.isUserLoggedIn();
-    this.userRole = this.authService.getUserRole();
+    this.userRole = sessionStorage.getItem(USER_ROLE_KEY) || '';
+    this.userName = sessionStorage.getItem(USERNAME_KEY) || '';
     this.updateSidebarVisibility();
 
     // Initial menu load
     this.loadMenuItems();
+
+    // Subscribe to auth changes
+    this.subscriptions.push(
+      this.authService.loginStatus$.subscribe(
+        (isLoggedIn) => {
+          this.isLoggedIn = isLoggedIn;
+          this.userRole = sessionStorage.getItem(USER_ROLE_KEY) || '';
+          this.userName = sessionStorage.getItem(USERNAME_KEY) || '';
+          this.updateSidebarVisibility();
+        }
+      )
+    );
+
+    // Subscribe to user role changes
+    this.subscriptions.push(
+      this.authService.userRole$.subscribe(
+        (role) => {
+          this.userRole = role;
+          this.updateSidebarVisibility();
+        }
+      )
+    );
+
+    // Subscribe to username changes
+    this.subscriptions.push(
+      this.authService.username$.subscribe(
+        (username) => {
+          this.userName = username;
+        }
+      )
+    );
+
+    // Listen for storage changes
+    window.addEventListener('storage', () => {
+      this.userRole = sessionStorage.getItem(USER_ROLE_KEY) || '';
+      this.userName = sessionStorage.getItem(USERNAME_KEY) || '';
+    });
+
+    // Subscribe to user role changes
+    this.subscriptions.push(
+      this.authService.userRole$.subscribe(
+        (role) => {
+          this.userRole = role;
+          this.updateSidebarVisibility();
+        }
+      )
+    );
+
+    // Subscribe to username changes
+    this.subscriptions.push(
+      this.authService.username$.subscribe(
+        (username: string) => {
+          this.userName = username;
+        }
+      )
+    );
 
     // Subscribe to auth changes
     this.subscriptions.push(
@@ -56,10 +122,10 @@ export class SideNavbarComponent implements OnInit, OnDestroy {
         this.authService.userRole$
       ]).pipe(
         skip(1) // Skip the first emission to avoid double loading
-      ).subscribe(([status, role]) => {
-        console.log('Auth status changed - Status:', status, 'Role:', role);
+      ).subscribe(([status, userRole]) => {
+        console.log('Auth status changed - Status:', status, 'Role:', userRole);
         this.isLoggedIn = status;
-        this.userRole = role;
+        this.userRole = userRole;
         this.updateSidebarVisibility();
         this.loadMenuItems();
       })

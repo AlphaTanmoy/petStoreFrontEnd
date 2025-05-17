@@ -90,7 +90,51 @@
 .restart:hover {
   background-color: var(--warning-hover);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(255, 152, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(255, 153, 0, 0.2);
+}
+
+.microservice-card {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  transition: var(--transition);
+  border: 1px solid var(--border-color);
+}
+
+.microservice-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.microservice-card h3 {
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.microservice-card p {
+  color: var(--light-text);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  border: 2px solid transparent;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 1rem;
 }
 
 .loader {

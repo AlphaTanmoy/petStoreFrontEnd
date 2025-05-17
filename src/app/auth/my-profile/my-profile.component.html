@@ -1,61 +1,84 @@
-<div class="main-content">
-  <!-- Profile Name -->
-  <div class="profile-name-section" *ngIf="profileData">
-    <h2>{{ profileData.name }}</h2>
-  </div>
-
-  <!-- Profile Picture -->
-  <div class="profile-picture-section" *ngIf="profileData">
-    <div class="profile-picture-container">
-      <img *ngIf="profileData.profileImage; else defaultImage" [src]="profileData.profileImage" alt="Profile Image" />
-      <ng-template #defaultImage>
-        <!-- Default SVG icon -->
-        <svg class="default-profile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="7" r="4" />
-          <path d="M5.5 21a8.38 8.38 0 0 1 13 0" />
-        </svg>
-      </ng-template>
+<div class="profile-layout">
+  <div class="main-content">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="profile-card">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading profile...</p>
     </div>
-  </div>
 
-  <!-- Profile Details -->
-  <div class="api-response-section" *ngIf="profileData">
-    <h3>Profile Details</h3>
-    <div class="details-container">
-      <div class="detail-item">
-        <span class="label">Role:</span>
-        <span class="value">{{ profileData.userRole }}</span>
+    <!-- Auth Error -->
+    <div *ngIf="authError" class="profile-card error-card">
+      <p>Authentication error. Please log in again.</p>
+      <button mat-raised-button color="primary" (click)="logout()">Logout</button>
+    </div>
+
+    <!-- Profile Content -->
+    <div *ngIf="!loading && !authError && profileData">
+      <!-- Profile Name -->
+      <div class="profile-card profile-name-section">
+        <h2>{{ profileData.name }}</h2>
       </div>
-      <div class="detail-item">
-        <span class="label">Tire Code:</span>
-        <span class="value">{{ profileData.tireCode }}</span>
+
+      <!-- Profile Picture -->
+      <div class="profile-card profile-picture-section">
+        <div class="profile-picture-container">
+          <img *ngIf="profileData.profileImage; else defaultImage" [src]="profileData.profileImage" alt="Profile Image" />
+          <ng-template #defaultImage>
+            <!-- Default SVG icon -->
+            <svg class="default-profile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="7" r="4" />
+              <path d="M5.5 21a8.38 8.38 0 0 1 13 0" />
+            </svg>
+          </ng-template>
+        </div>
       </div>
-      <div class="detail-item">
-        <span class="label">Status:</span>
-        <span class="value">{{ profileData.dataStatus }}</span>
+
+      <!-- Profile Details -->
+      <div class="profile-card api-response-section">
+        <h3>Profile Details</h3>
+        <div class="details-container">
+          <div class="detail-item">
+            <span class="label">Role:</span>
+            <span class="value">{{ profileData.userRole }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Tire Code:</span>
+            <span class="value">{{ profileData.tireCode }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Status:</span>
+            <span class="value">{{ profileData.dataStatus }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">API Key:</span>
+            <span class="value">{{ profileData.apiKey }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Created:</span>
+            <span class="value">{{ profileData.createdAt | date: 'medium' }}</span>
+          </div>
+        </div>
       </div>
-      <div class="detail-item">
-        <span class="label">API Key:</span>
-        <span class="value">{{ profileData.apiKey }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="label">Created:</span>
-        <span class="value">{{ profileData.createdAt | date: 'medium' }}</span>
+
+      <!-- Action Buttons -->
+      <div class="profile-card action-buttons-section">
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" class="settings-btn">
+            <mat-icon>settings</mat-icon>
+            Settings
+          </button>
+          <button mat-raised-button color="warn" class="logout-btn" (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            Logout
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Action Buttons -->
-  <div class="action-buttons-section" *ngIf="profileData">
-    <div class="action-buttons">
-      <button mat-raised-button color="primary" class="settings-btn">
-        <mat-icon>settings</mat-icon>
-        Settings
-      </button>
-      <button mat-raised-button color="warn" class="logout-btn" (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        Logout
-      </button>
+    <!-- Error State -->
+    <div *ngIf="error" class="profile-card error-card">
+      <p>Failed to load profile. Please try again later.</p>
+      <button mat-raised-button color="primary" (click)="loadProfile()">Retry</button>
     </div>
   </div>
 </div>

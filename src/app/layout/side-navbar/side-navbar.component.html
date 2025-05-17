@@ -58,7 +58,13 @@
               <img [src]="item.svgFileBase64" alt="menu icon" class="menu-icon">
             </ng-container>
             <i *ngIf="!item.svgFileBase64" class="fas fa-circle"></i>
-            <span class="menu-text">{{ item.menuName }}</span>
+            <span class="menu-text">
+              {{ item.menuName }}
+              <span class="user-info" *ngIf="item.menuLink === '/profile'">
+                <span class="user-name">{{ userName }}</span>
+                <span class="user-role-badge">{{ userRole }}</span>
+              </span>
+            </span>
           </a>
         </li>
       </ng-container>
