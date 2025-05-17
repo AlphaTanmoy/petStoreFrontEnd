@@ -14,6 +14,116 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  font-family: var(--font-family);
+}
+
+/* Theme Variables */
+:root {
+  --primary-color: #1976d2;
+  --primary-hover: #1565c0;
+  --secondary-color: #ff4081;
+  --secondary-hover: #f50057;
+  --background-color: #f5f7fa;
+  --card-background: #ffffff;
+  --text-color: #263238;
+  --light-text: #607d8b;
+  --border-color: #cfd8dc;
+  --border-focus: #90caf9;
+  --border-radius: 8px;
+  --spacing-unit: 1rem;
+  --input-height: 44px;
+  --font-family: 'Roboto', sans-serif;
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-lg: 18px;
+  --success-color: #4caf50;
+  --success-hover: #43a047;
+  --warning-color: #ff9800;
+  --warning-hover: #f57c00;
+  --danger-color: #ff0000;
+}
+
+/* Button styles */
+.button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.button-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.button-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.button-secondary {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.button-secondary:hover {
+  background-color: var(--secondary-hover);
+}
+
+.button-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.button-success:hover {
+  background-color: var(--success-hover);
+}
+
+.button-warning {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.button-warning:hover {
+  background-color: var(--warning-hover);
+}
+
+.button-danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.button-danger:hover {
+  background-color: var(--danger-hover);
+}
+
+.button-outline {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.button-outline:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Card styles */
+.card-base {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+.card-base:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
 /* App container for layout */

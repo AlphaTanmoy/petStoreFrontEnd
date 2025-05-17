@@ -1,9 +1,12 @@
 .alert-container {
   position: relative;
-  padding: 24px;
+  padding: var(--spacing-unit);
   min-width: 300px;
   max-width: 500px;
   overflow: hidden;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
 }
 
 .alert-svg {
@@ -16,25 +19,29 @@
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 0;
+  transition: all 0.2s ease;
 }
 
 .alert-content {
   position: relative;
   z-index: 1;
+  padding: var(--spacing-unit);
 }
 
 .alert-title {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 1.5rem;
-  justify-content: center;
-  align-items: center;
+  margin: 0 0 var(--spacing-unit) 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: center;
 }
 
 .alert-message {
-  margin-bottom: 24px;
-  font-size: 1rem;
+  margin-bottom: var(--spacing-unit);
+  font-size: var(--font-size-base);
+  color: var(--text-color);
   line-height: 1.5;
+  text-align: center;
 }
 
 .alert-actions {
@@ -69,32 +76,36 @@
 }
 
 .alert-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   border: none;
   cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  transition: all 0.2s ease;
+  text-decoration: none;
   font-weight: 500;
-  border-style: none;
-  justify-content: center;
-  align-items: center;
 }
 
 .alert-button.success {
-  background-color: #28a745;
+  background-color: var(--primary-color);
   color: white;
 }
 
 .alert-button.warning {
-  background-color: #ffc107;
+  background-color: var(--secondary-color);
   color: white;
 }
 
 .alert-button.error {
-  background-color: #dc3545;
+  background-color: var(--border-color);
   color: white;
 }
 
 .alert-button.info {
-  background-color: #17a2b8;
+  background-color: var(--border-focus);
   color: white;
 }

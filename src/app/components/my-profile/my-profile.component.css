@@ -2,21 +2,24 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 2rem;
+  padding: var(--spacing-unit);
   margin-top: 60px;
 }
 
 .profile-card {
   width: 100%;
   max-width: 600px;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
 }
 
 .profile-info {
-  margin: 1rem 0;
+  margin: var(--spacing-unit) 0;
 }
 
 mat-card-actions {
   display: flex;
   justify-content: flex-end;
-  padding: 1rem;
-} 
+  padding: var(--spacing-unit);
+}

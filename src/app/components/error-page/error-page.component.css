@@ -1,40 +1,49 @@
 .error-container {
   text-align: center;
-  padding: 40px;
+  padding: var(--spacing-unit);
   max-width: 500px;
-  margin: 60px auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  font-family: 'Segoe UI', sans-serif;
+  margin: var(--spacing-unit) auto;
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  font-family: var(--font-family);
 }
 
 .error-container svg {
   width: 180px;
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-unit);
 }
 
 h1 {
-  font-size: 1.8rem;
-  color: #007BFF;
-  margin: 5px;
+  font-size: var(--font-size-lg);
+  color: var(--primary-color);
+  margin: var(--spacing-unit);
+  font-weight: 600;
 }
 
 p {
-  font-size: 1rem;
-  color: #555;
-  margin: 5px;
+  font-size: var(--font-size-base);
+  color: var(--text-color);
+  margin: var(--spacing-unit);
+  line-height: 1.5;
 }
 
 .back-btn {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #007BFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
   color: white;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  transition: all 0.2s ease;
   text-decoration: none;
 }
 
 .back-btn:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-hover);
 }
