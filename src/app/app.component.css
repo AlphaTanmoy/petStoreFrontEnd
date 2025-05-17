@@ -122,16 +122,7 @@ html, body {
   background-color: var(--bg-secondary);
   padding: 0;
   margin-left: 0;
-  margin-top: 64px; /* or the height of your navbar */
-  margin-bottom: 0 !important;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  height: calc(100vh - 64px); /* Adjust height to exclude navbar */
-}
-
-/* Side navbar should not shrink the main content */
-app-side-navbar {
-  flex-shrink: 0;
+  margin-top: 0;
 }
 
 /* Main content area */
@@ -145,9 +136,12 @@ app-side-navbar {
   background-color: var(--bg-secondary);
   padding: 0;
   margin-left: 0;
+  margin-bottom: 0 !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  height: calc(100vh - 64px); /* Adjust height to exclude navbar */
 }
 
-/* Sidebar expanded */
 .main-content.with-sidebar {
   margin-left: 250px;
 }
