@@ -5,7 +5,7 @@
   min-height: 100vh;
   background-color: #ffffff;
   background: url('../../../../assets/bg-animated.gif') no-repeat center center / cover;
-  margin: 0;
+  margin-top: -60px;
   padding: 0;
 }
 
