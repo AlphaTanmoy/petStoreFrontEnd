@@ -28,21 +28,27 @@ export class AppComponent implements OnInit {
   useSideNavbar = false;
   isSidebarCollapsed = false;
   isLoading$: Observable<boolean>;
+  isLoggedIn = false; // Add isLoggedIn property
+  userProfileImage = 'assets/images/default-profile.png'; // Add default profile image path
 
   constructor(
     private authService: AuthService,
     private loaderService: LoaderService
   ) {
     this.isLoading$ = this.loaderService.isLoading$;
+    this.isLoggedIn = this.authService.isUserLoggedIn();
+    // For now, using default profile image since we don't have getUserProfileImage method
   }
 
   ngOnInit(): void {
     // Check if user is logged in to determine which navbar to show
     this.useSideNavbar = this.authService.isUserLoggedIn();
+    this.isLoggedIn = this.authService.isUserLoggedIn(); // Update isLoggedIn
 
-    // Subscribe to auth changes to update navbar type
+    // Subscribe to auth changes to update navbar type and login status
     this.authService.loginStatus$.subscribe(status => {
       this.useSideNavbar = status;
+      this.isLoggedIn = status; // Update isLoggedIn when auth status changes
     });
   }
 

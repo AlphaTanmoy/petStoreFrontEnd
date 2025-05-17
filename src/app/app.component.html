@@ -19,7 +19,22 @@
     class="main-content"
     [class.with-sidebar]="useSideNavbar"
     [class.sidebar-collapsed]="isSidebarCollapsed">
-    
+    <div class="top-profile-section" *ngIf="useSideNavbar">
+      <div class="profile-container">
+        <div class="user-info" *ngIf="isLoggedIn">
+          <a [routerLink]="['/my-profile']" class="profile-link">
+            <i class="fas fa-user"></i>
+            <span class="menu-text">Profile</span>
+          </a>
+        </div>
+        <div class="login-section" *ngIf="!isLoggedIn">
+          <a routerLink="/login" class="login-link">
+            <i class="fas fa-sign-in-alt"></i>
+            <span class="menu-text">Login</span>
+          </a>
+        </div>
+      </div>
+    </div>
     <router-outlet></router-outlet>
     <app-footer></app-footer>
   </div>

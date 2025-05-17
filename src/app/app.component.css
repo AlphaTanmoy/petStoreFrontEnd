@@ -142,6 +142,60 @@ html, body {
   height: calc(100vh - 64px); /* Adjust height to exclude navbar */
 }
 
+/* Top profile section styles */
+.top-profile-section {
+  position: fixed;
+  top: 0;
+  left: 250px;
+  right: 0;
+  height: 64px;
+  background-color: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  z-index: 1000;
+}
+
+.top-profile-section.sidebar-collapsed {
+  left: 60px;
+}
+
+.profile-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.profile-link,
+.login-link {
+  color: var(--text-color);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.profile-link:hover,
+.login-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.profile-link i,
+.login-link i {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+.menu-text {
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
 .main-content.with-sidebar {
   margin-left: 250px;
 }

@@ -65,21 +65,6 @@
     </ul>
   </div>
 
-  <!-- Sidebar Footer -->
-  <div class="sidebar-footer">
-    <div class="user-info" *ngIf="isLoggedIn">
-      <a [routerLink]="['/my-profile']" class="profile-link" (click)="toggleExpand()">
-        <i class="fas fa-user"></i>
-        <span class="menu-text">Profile</span>
-      </a>
-    </div>
-    <div class="login-section" *ngIf="!isLoggedIn">
-      <a routerLink="/login" class="login-link" (click)="toggleExpand()">
-        <i class="fas fa-sign-in-alt"></i>
-        <span class="menu-text">Login</span>
-      </a>
-    </div>
-  </div>
 </aside>
 
 <div class="sidebar-overlay" *ngIf="isExpanded && isMobile" (click)="toggleExpand()"></div>
