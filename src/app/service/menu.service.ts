@@ -43,7 +43,12 @@ export class MenuService {
         return guestAccess;
       }
 
-      // For logged-in users, check role-based access
+      // Always show regular navbar items for customers
+      if (userRole === 'ROLE_CUSTOMER') {
+        return true;
+      }
+
+      // For other logged-in users, check role-based access
       let hasAccess = this.checkAccess(item, userRole, isLoggedIn);
 
       // If the item has submenus, filter them
