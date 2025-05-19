@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MenuItem } from '../interfaces/menu.interface';
-import { AuthService } from './Auth.Service';
+import { AuthService } from '../core/services/auth.service';
 import { GetAPIEndpoint } from '../constants/endpoints';
 import { MICROSERVICE_NAME } from '../constants/Enums';
 import { ApiResponse, ApiResponseOrError, isApiErrorResponse, isApiResponse } from '../interfaces/api-response.interface';

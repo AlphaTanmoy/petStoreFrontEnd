@@ -14,7 +14,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subscription, timer } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DashboardService } from '../../service/dashboard.service';
-import { NotificationService } from '../../service/notification.service';
+import { NotificationService } from '../../core/services/notification.service';
 
 interface ServerInfo {
   osName: string;

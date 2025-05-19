@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProfileService, ProfileData } from '../../service/profile.service';
-import { AuthService } from '../../service/Auth.Service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-my-profile',

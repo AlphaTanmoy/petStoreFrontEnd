@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { GetAPIEndpoint } from '../constants/endpoints';
-import { USER_ROLE, MICROSERVICE_NAME } from '../constants/Enums';
-import { LoginRequest, LoginResponse, RefreshTokenRequest, TokenPayload } from '../interfaces/auth.interface';
-import { ApiResponse, ApiResponseOrError, isApiErrorResponse, isApiResponse } from '../interfaces/api-response.interface';
+import { GetAPIEndpoint } from '../../constants/endpoints';
+import { USER_ROLE, MICROSERVICE_NAME } from '../../constants/Enums';
+import { LoginRequest, LoginResponse, RefreshTokenRequest, TokenPayload } from '../../interfaces/auth.interface';
+import { ApiResponse, ApiResponseOrError, isApiErrorResponse, isApiResponse } from '../../interfaces/api-response.interface';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';

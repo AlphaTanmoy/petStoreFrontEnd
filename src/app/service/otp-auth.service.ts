@@ -5,7 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { OtpRequest, OtpVerifyRequest, LoginResponse, ErrorResponse } from '../interfaces/auth.interface';
 import { MICROSERVICE_NAME } from '../constants/Enums';
 import { GetAPIEndpoint } from '../constants/endpoints';
-import { NotificationService } from './notification.service';
+import { NotificationService } from '../core/services/notification.service';
 
 @Injectable({
   providedIn: 'root'

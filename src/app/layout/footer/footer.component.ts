@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../service/Auth.Service';
+import { AuthService } from '../../core/services/auth.service';
 import { USER_ROLE } from '../../constants/Enums';
 @Component({
   selector: 'app-footer',
