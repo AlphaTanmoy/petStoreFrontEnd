@@ -5,6 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { OtpRequest, OtpVerifyRequest, LoginResponse, ErrorResponse } from '../interfaces/auth.interface';
 import { MICROSERVICE_NAME } from '../constants/Enums';
 import { GetAPIEndpoint } from '../constants/endpoints';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,10 @@ export class OtpAuthService {
 
   currentEmail$ = this.currentEmailSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private notificationService: NotificationService
+  ) {}
 
   getEndpoints(role: MICROSERVICE_NAME) {
     return {
@@ -52,8 +56,10 @@ export class OtpAuthService {
     return this.http.post<LoginResponse | ErrorResponse>(signInEndpoint, request).pipe(
       map(response => {
         if ('errorMessage' in response) {
+          this.notificationService.showError(response.errorMessage);
           throw new Error(response.errorMessage);
         }
+        this.notificationService.showSuccess('OTP verified successfully');
         return response as LoginResponse;
       }),
       tap(() => {

@@ -14,6 +14,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subscription, timer } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DashboardService } from '../../service/dashboard.service';
+import { NotificationService } from '../../service/notification.service';
 
 interface ServerInfo {
   osName: string;
@@ -61,7 +62,7 @@ export class ServerInfoComponent implements OnInit, OnDestroy {
 
   constructor(
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
+    private notificationService: NotificationService,
     private dashboardService: DashboardService
   ) {}
 
@@ -80,9 +81,9 @@ export class ServerInfoComponent implements OnInit, OnDestroy {
         this.serverInfo = data;
         this.isLoading = false;
       },
-      error: () => {
+      error: (error) => {
         this.isLoading = false;
-        this.showSnackBar('Failed to load server info', 'error');
+        this.showError(error.message || 'Failed to load server info');
       }
     });
   }
@@ -122,11 +123,8 @@ export class ServerInfoComponent implements OnInit, OnDestroy {
     this.isAutoRefresh = false;
   }
 
-  private showSnackBar(message: string, type: 'success' | 'error' | 'info'): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      panelClass: [`snackbar-${type}`]
-    });
+  private showError(message: string): void {
+    this.notificationService.showError(message);
   }
 
   get memoryUsagePercent(): number {
