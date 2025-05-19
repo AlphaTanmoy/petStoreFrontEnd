@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { timer } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +11,8 @@ export class NotificationService {
     verticalPosition: 'top'
   };
 
+  notifications: string[] = [];
+
   constructor(private snackBar: MatSnackBar) {}
 
   showSuccess(message: string) {
@@ -22,10 +23,15 @@ export class NotificationService {
   }
 
   showError(message: string) {
-    this.snackBar.open(message, 'Close', {
-      ...this.defaultConfig,
-      panelClass: ['notification-error']
-    });
+    this.notifications.push(message);
+    setTimeout(() => this.remove(message), 3000);
+  }
+
+  remove(message: string) {
+    const index = this.notifications.indexOf(message);
+    if (index > -1) {
+      this.notifications.splice(index, 1);
+    }
   }
 
   showInfo(message: string) {

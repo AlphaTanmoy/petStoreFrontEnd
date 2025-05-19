@@ -25,7 +25,9 @@ export class TokenInterceptor implements HttpInterceptor {
     return next.handle(cloned).pipe(
       catchError((error: HttpErrorResponse) => {
         let msg = 'An unexpected error occurred.';
-        if (error.error && error.error.message) {
+        if (error.error && typeof error.error === 'object' && error.error.errorMessage) {
+          msg = error.error.errorMessage;
+        } else if (error.error && error.error.message) {
           msg = error.error.message;
         } else if (error.message) {
           msg = error.message;

@@ -8,6 +8,8 @@ import { FooterComponent } from './layout/footer/footer.component';
 import { AuthService } from './core/services/auth.service';
 import { LoaderService } from './core/services/loader.service';
 import { Observable } from 'rxjs';
+import { NotificationService } from './core/services/notification.service';
+import { NotificationStackComponent } from './core/components/notification-stack';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +20,8 @@ import { Observable } from 'rxjs';
     LoaderComponent,
     NavbarComponent,
     SideNavbarComponent,
-    FooterComponent
+    FooterComponent,
+    NotificationStackComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
@@ -28,12 +31,13 @@ export class AppComponent implements OnInit {
   useSideNavbar = false;
   isSidebarCollapsed = false;
   isLoading$: Observable<boolean>;
-  isLoggedIn = false; // Add isLoggedIn property
-  userProfileImage = 'assets/images/default-profile.png'; // Add default profile image path
+  isLoggedIn = false; 
+  userProfileImage = 'assets/images/default-profile.png'; 
 
   constructor(
     private authService: AuthService,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    public notificationService: NotificationService
   ) {
     this.isLoading$ = this.loaderService.isLoading$;
     this.isLoggedIn = this.authService.isUserLoggedIn();
@@ -43,6 +47,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // Check if user is logged in to determine which navbar to show
     this.useSideNavbar = this.authService.isUserLoggedIn();
+    this.isLoggedIn = this.authService.isUserLoggedIn(); 
     this.isLoggedIn = this.authService.isUserLoggedIn(); // Update isLoggedIn
 
     // Subscribe to auth changes to update navbar type and login status
