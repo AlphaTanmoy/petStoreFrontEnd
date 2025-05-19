@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { MICROSERVICE_NAME } from '../constants/Enums';
 import { GetAPIEndpoint } from '../constants/endpoints';
+import { ApiResponse, ApiResponseOrError, isApiErrorResponse, getResponseData } from '../interfaces/api-response.interface';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -28,7 +30,17 @@ export class DashboardService {
   }
 
   getMvnRunners(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/mvnRunner/getAll`);
+    return this.http.get<ApiResponseOrError<any[]>>(`${this.baseUrl}/mvnRunner/getAll`).pipe(
+      map((response: ApiResponseOrError<any[]>) => {
+        if (!response.status) {
+          if (isApiErrorResponse(response)) {
+            throw new Error(response.error?.errorMessage || response.message);
+          }
+          throw new Error(response.message);
+        }
+        return getResponseData(response);
+      })
+    );
   }
 
   updateMvnRunner(payload: any): Observable<any> {
@@ -36,6 +48,16 @@ export class DashboardService {
   }
 
   getSystemInfo(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/system-info`);
+    return this.http.get<ApiResponseOrError<any>>(`${this.baseUrl}/system-info`).pipe(
+      map((response: ApiResponseOrError<any>) => {
+        if (!response.status) {
+          if (isApiErrorResponse(response)) {
+            throw new Error(response.error?.errorMessage || response.message);
+          }
+          throw new Error(response.message);
+        }
+        return getResponseData(response);
+      })
+    );
   }
 }

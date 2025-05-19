@@ -6,6 +6,7 @@ import { MenuItem } from '../interfaces/menu.interface';
 import { AuthService } from './Auth.Service';
 import { GetAPIEndpoint } from '../constants/endpoints';
 import { MICROSERVICE_NAME } from '../constants/Enums';
+import { ApiResponse, ApiResponseOrError, isApiErrorResponse, isApiResponse } from '../interfaces/api-response.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,22 @@ export class MenuService {
   ) { }
 
   getMenuItems(): Observable<MenuItem[]> {
-    return this.http.get<MenuItem[]>(this.apiUrl).pipe(
+    return this.http.get<ApiResponseOrError<MenuItem[]>>(this.apiUrl).pipe(
+      map((response: ApiResponseOrError<MenuItem[]>) => {
+        if (!response.status) {
+          if (isApiErrorResponse(response)) {
+            const errorMessage = response.error?.errorMessage || response.message;
+            console.error(`API Error (${response.error?.errorCode || 'N/A'}): ${errorMessage}`);
+            return [];
+          }
+          console.error('API Error:', response.message);
+          return [];
+        }
+        if (isApiResponse(response)) {
+          return response.data;
+        }
+        throw new Error('Invalid response format');
+      }),
       tap(items => console.log('MenuService: Raw menu items:', items)),
       map(menuItems => this.filterMenuItemsByRole(menuItems)),
       tap(filteredItems => console.log('MenuService: Filtered menu items:', filteredItems)),

@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, map } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { GetAPIEndpoint } from '../constants/endpoints';
 import { USER_ROLE, MICROSERVICE_NAME } from '../constants/Enums';
 import { LoginRequest, LoginResponse, RefreshTokenRequest, TokenPayload } from '../interfaces/auth.interface';
+import { ApiResponse, ApiResponseOrError, isApiErrorResponse, isApiResponse } from '../interfaces/api-response.interface';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -31,7 +32,20 @@ export class AuthService {
     const loginRequest: LoginRequest = { email, password };
     const endpoint = GetAPIEndpoint(microservice, 'login');
 
-    return this.http.post<LoginResponse>(endpoint, loginRequest).pipe(
+    return this.http.post<ApiResponseOrError<LoginResponse>>(endpoint, loginRequest).pipe(
+      map((response: ApiResponseOrError<LoginResponse>) => {
+        if (!response.status) {
+          if (isApiErrorResponse(response)) {
+            const errorMessage = response.error?.errorMessage || response.message;
+            throw new Error(`API Error (${response.error?.errorCode || 'N/A'}): ${errorMessage}`);
+          }
+          throw new Error(response.message);
+        }
+        if (isApiResponse(response)) {
+          return response.data;
+        }
+        throw new Error('Invalid response format');
+      }),
       tap(response => this.handleLoginResponse(response, expectedRole)),
       catchError(error => {
         console.error(`${expectedRole} login error:`, error);
