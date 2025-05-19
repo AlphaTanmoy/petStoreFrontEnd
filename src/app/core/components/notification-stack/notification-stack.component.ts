@@ -6,15 +6,8 @@ import { CommonModule } from '@angular/common';
   selector: 'app-notification-stack',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="notification-stack">
-      <div *ngFor="let notification of notifications" class="notification-error-stack">
-        {{ notification }}
-        <button class="close-btn" (click)="remove(notification)">×</button>
-      </div>
-    </div>
-  `,
-  styleUrls: ['./notification-stack.component.scss']
+  templateUrl: './notification-stack.component.html',
+  styleUrls: ['./notification-stack.component.css']
 })
 export class NotificationStackComponent {
   @Input() notifications: string[] = [];
