@@ -4,13 +4,14 @@
 
     <div class="form-grid">
       <div class="form-group">
-        <label>Menu Name:</label>
+        <label>Menu Name<span style="color:red">*</span>:</label>
         <input type="text" formControlName="menuName" required />
+        <div *ngIf="navbarForm.get('menuName')?.invalid && navbarForm.get('menuName')?.touched" class="error-msg">Menu Name is required.</div>
       </div>
 
-      <div class="form-group">
-        <label>Menu Link (optional):</label>
-        <input type="text" formControlName="menuLink" />
+      <div class="form-group" *ngIf="navbarForm.get('doHaveRedirectionLink')?.value">
+        <label>Menu Link<span style="color:red">*</span>:</label>
+        <input type="text" formControlName="menuLink" required />
       </div>
     </div>
 
@@ -48,15 +49,16 @@
     </div>
 
     <div class="form-group">
-      <label>SVG File:</label>
+      <label>SVG File<span style="color:red">*</span>:</label>
       <div class="file-input-container">
-        <input type="file" (change)="onFileSelected($event)" accept=".svg" id="svgFile" />
+        <input type="file" (change)="onFileSelected($event)" accept=".svg" id="svgFile" required />
         <label class="file-input-label" for="svgFile">
           {{ selectedFile ? selectedFile.name : 'Choose a file...' }}
         </label>
         <div class="file-name" *ngIf="selectedFile">
           Selected: {{ selectedFile.name }}
         </div>
+        <div *ngIf="!selectedFile && submitted" class="error-msg">Logo is required.</div>
       </div>
     </div>
 

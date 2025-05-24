@@ -18,7 +18,8 @@ export class NavbarControlComponent {
   isSuccess = false;
   isEditMode = false;
   currentItemId: string | null = null;
-  
+  submitted = false;
+
   fields = [
     { name: 'canAdminAccess', label: 'Admin Access' },
     { name: 'canUserAccess', label: 'User Access' },
@@ -26,8 +27,8 @@ export class NavbarControlComponent {
     { name: 'canSellerAccess', label: 'Seller Access' },
     { name: 'canRiderAccess', label: 'Rider Access' },
     { name: 'chatUsersAccess', label: 'Chat Users Access' },
+    { name: 'customerCareAccess', label: 'Customer Care Access' },
     { name: 'isVisibleToGuest', label: 'Visible to Guest' },
-    { name: 'isAvailableWhileLoggedOut', label: 'Available While Logged Out' }
   ];
 
   constructor(
@@ -48,8 +49,12 @@ export class NavbarControlComponent {
       canRiderAccess: [false],
       chatUsersAccess: [false],
       isVisibleToGuest: [false],
-      isAvailableWhileLoggedOut: [false]
+      customerCareAccess: [false]
     });
+
+    // Ensure logo (selectedFile) is checked on submit
+    // This will be handled in onSubmit()
+
 
     // Watch for changes in isASubMenu to show/hide parentId field
     this.navbarForm.get('isASubMenu')?.valueChanges.subscribe(value => {
@@ -61,6 +66,17 @@ export class NavbarControlComponent {
       }
       this.navbarForm.get('parentId')?.updateValueAndValidity();
     });
+
+    // Watch for changes in doHaveRedirectionLink to show/hide and require menuLink
+    this.navbarForm.get('doHaveRedirectionLink')?.valueChanges.subscribe(value => {
+      if (value) {
+        this.navbarForm.get('menuLink')?.setValidators([Validators.required]);
+      } else {
+        this.navbarForm.get('menuLink')?.clearValidators();
+        this.navbarForm.get('menuLink')?.setValue('');
+      }
+      this.navbarForm.get('menuLink')?.updateValueAndValidity();
+    });
   }
 
   onFileSelected(event: any) {
@@ -68,8 +84,14 @@ export class NavbarControlComponent {
   }
 
   onSubmit() {
+    this.submitted = true;
     if (this.navbarForm.invalid) {
-      this.responseMessage = 'Please fill all required fields';
+      this.responseMessage = 'Please fill in all required fields.';
+      this.isSuccess = false;
+      return;
+    }
+    if (!this.selectedFile) {
+      this.responseMessage = 'Please select a logo SVG file.';
       this.isSuccess = false;
       return;
     }
@@ -148,5 +170,6 @@ export class NavbarControlComponent {
     this.selectedFile = null;
     this.isEditMode = false;
     this.currentItemId = null;
+    this.submitted = false;
   }
 }
