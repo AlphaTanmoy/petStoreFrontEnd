@@ -159,6 +159,10 @@ export class NavbarControlComponent {
     this.responseMessage = message;
     this.isSuccess = true;
     this.resetForm();
+    // Reload the page after a short delay to show success message
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   }
 
   handleError(prefix: string, error: any) {
