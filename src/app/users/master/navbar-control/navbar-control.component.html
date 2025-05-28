@@ -34,8 +34,14 @@
     </div>
 
     <div class="form-group" *ngIf="navbarForm.get('isASubMenu')?.value">
-      <label>Parent ID (if Sub Menu):</label>
-      <input type="text" formControlName="parentId" />
+      <label>Parent Menu:</label>
+      <div class="select-wrapper">
+        <select formControlName="parentId">
+          <option value="" disabled selected>Select Parent Menu</option>
+          <option *ngFor="let menu of parentMenus" [value]="menu.secondParameter">{{ menu.firstParameter }}</option>
+        </select>
+      </div>
+      <div *ngIf="navbarForm.get('parentId')?.invalid && navbarForm.get('parentId')?.touched" class="error-msg">Parent menu is required.</div>
     </div>
 
     <div class="checkbox-group">
@@ -47,25 +53,36 @@
         </label>
       </div>
     </div>
+  </form>
 
-    <div class="form-group">
-      <label>SVG File<span style="color:red">*</span>:</label>
-      <div class="file-input-container">
-        <input type="file" (change)="onFileSelected($event)" accept=".svg" id="svgFile" required />
-        <label class="file-input-label" for="svgFile">
-          {{ selectedFile ? selectedFile.name : 'Choose a file...' }}
-        </label>
-        <div class="file-name" *ngIf="selectedFile">
-          Selected: {{ selectedFile.name }}
+  <div class="image-section">
+    <label>SVG Logo<span style="color:red">*</span>:</label>
+    <div class="file-upload-container">
+      <input type="file" (change)="onFileSelected($event)" accept=".svg" id="svgFile" style="display: none;" />
+      <label for="svgFile" class="file-upload-btn">
+        {{ selectedFile ? 'Change SVG' : 'Choose SVG File' }}
+      </label>
+      
+      <div class="file-preview" *ngIf="selectedFile">
+        <img [src]="svgPreviewUrl" alt="SVG Preview" *ngIf="svgPreviewUrl" />
+        <div class="file-info">
+          <span class="file-name">{{ selectedFile.name }}</span>
+          <button type="button" (click)="removeSelectedFile()" class="remove-btn">
+            <i class="material-icons">close</i>
+          </button>
         </div>
-        <div *ngIf="!selectedFile && submitted" class="error-msg">Logo is required.</div>
+      </div>
+      
+      <div *ngIf="submitted && !selectedFile" class="error-msg">
+        Please select an SVG file
       </div>
     </div>
+  </div>
 
-    <button type="submit" class="submit-btn" [disabled]="navbarForm.invalid">Submit</button>
-
-    <p class="response-msg" [class.success]="isSuccess" [class.error]="!isSuccess">
+  <div class="form-actions">
+    <button type="submit" class="submit-btn" [disabled]="navbarForm.invalid || !selectedFile" (click)="onSubmit()">Submit</button>
+    <p class="response-msg" [class.success]="isSuccess" [class.error]="!isSuccess && responseMessage">
       {{ responseMessage }}
     </p>
-  </form>
+  </div>
 </div>

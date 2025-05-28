@@ -15,6 +15,19 @@ export class NavbarService {
 
     constructor(private http: HttpClient) {}
 
+    // Fetch parent menu options
+    getParentMenus(authToken: string): Observable<{ firstParameter: string; secondParameter: string }[]> {
+        const headers = new HttpHeaders({ 'Alpha': `Alpha ${authToken}` });
+        return this.http.get<any>(`${this.baseUrl}/getParentMenu`, { headers }).pipe(
+            map(res => {
+                if (res && res.status && Array.isArray(res.data)) {
+                    return res.data;
+                }
+                throw new Error('Failed to fetch parent menus');
+            })
+        );
+    }
+
     // Upload SVG and return its URL
     uploadSvgFile(svgFile: File, authToken: string): Observable<string> {
         const formData = new FormData();

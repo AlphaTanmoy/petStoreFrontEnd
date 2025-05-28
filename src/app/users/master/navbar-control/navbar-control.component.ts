@@ -14,11 +14,14 @@ import { AuthService } from '../../../core/services/auth.service';
 export class NavbarControlComponent {
   navbarForm: FormGroup;
   selectedFile: File | null = null;
+  svgPreviewUrl: string | null = null;
   responseMessage = '';
   isSuccess = false;
   isEditMode = false;
   currentItemId: string | null = null;
   submitted = false;
+
+  parentMenus: { firstParameter: string; secondParameter: string }[] = [];
 
   fields = [
     { name: 'canAdminAccess', label: 'Admin Access' },
@@ -79,8 +82,32 @@ export class NavbarControlComponent {
     });
   }
 
+  ngOnInit(): void {
+    const authToken = this.authService.getToken();
+    if (authToken) {
+      this.navbarService.getParentMenus(authToken).subscribe({
+        next: (data) => {
+          this.parentMenus = data;
+        },
+        error: (err) => {
+          console.error('Failed to fetch parent menus', err);
+        }
+      });
+    }
+  }
+
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+    const file = event.target.files[0];
+    this.selectedFile = file;
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.svgPreviewUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.svgPreviewUrl = null;
+    }
   }
 
   onSubmit() {
@@ -163,8 +190,14 @@ export class NavbarControlComponent {
       isAvailableWhileLoggedOut: false
     });
     this.selectedFile = null;
+    this.svgPreviewUrl = null;
     this.isEditMode = false;
     this.currentItemId = null;
     this.submitted = false;
+  }
+
+  removeSelectedFile() {
+    this.selectedFile = null;
+    this.svgPreviewUrl = null;
   }
 }

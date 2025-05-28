@@ -25,12 +25,60 @@ h2 {
 }
 
 input[type="text"],
-input[type="file"] {
+input[type="file"],
+select {
   padding: 0.5rem;
   font-size: 1rem;
   border-radius: 6px;
   border: 1px solid #ccc;
+  background-color: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
 }
+
+select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  min-width: 160px;
+  background: #fff url('data:image/svg+xml;utf8,<svg fill="%23666" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 0 1 1.414 0L10 8.586l1.293-1.293a1 1 0 0 1 1.414 1.414l-2 2a1 1 0 0 1-1.414 0l-2-2a1 1 0 1 1 1.414-1.414z"/></svg>') no-repeat right 0.75rem center/1.2em auto;
+  padding-right: 2.5em;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Hide default arrow in IE10+ */
+select::-ms-expand {
+  display: none;
+}
+
+/* Optional: wrapper for better alignment if needed */
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-wrapper select {
+  width: 100%;
+}
+
+select option {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+select:disabled {
+  background-color: #f1f1f1;
+  color: #aaa;
+}
+
 
 .checkbox-group {
   display: grid;
@@ -92,41 +140,108 @@ input[type="file"] {
   transform: translateX(21px);
 }
 
-.file-input-container {
-  display: flex;
-  flex-direction: column;
+/* File Upload Styles */
+.file-upload-container {
+  margin-top: 0.5rem;
 }
 
-.file-input-label {
-  background-color: #eee;
-  padding: 0.5rem;
-  border-radius: 6px;
-  margin-top: 0.5rem;
-  cursor: pointer;
+.file-upload-btn {
   display: inline-block;
+  padding: 0.6rem 1.2rem;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.file-upload-btn:hover {
+  background-color: #e0e0e0;
+  border-color: #999;
+}
+
+.file-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+
+.file-preview img {
+  max-width: 100%;
+  max-height: 120px;
+  display: block;
+  margin-bottom: 0.75rem;
+  border-radius: 4px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .file-name {
+  flex: 1;
   font-size: 0.9rem;
   color: #555;
-  margin-top: 0.5rem;
+  word-break: break-all;
+  padding-right: 0.5rem;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.remove-btn:hover {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.remove-btn i {
+  font-size: 1.1rem;
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .submit-btn {
-  display: block;
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #3498db;
+  background-color: #4CAF50;
   color: white;
+  padding: 12px 24px;
   border: none;
   border-radius: 6px;
-  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  width: 100%;
+  max-width: 200px;
+}
+
+.submit-btn:hover {
+  background-color: #45a049;
 }
 
 .submit-btn:disabled {
-  background-color: #aaa;
+  background-color: #cccccc;
   cursor: not-allowed;
 }
 
