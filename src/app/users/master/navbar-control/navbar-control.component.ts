@@ -119,26 +119,13 @@ export class NavbarControlComponent {
       isAvailableWhileLoggedOut: formValue.isAvailableWhileLoggedOut
     };
 
-    if (this.isEditMode && this.currentItemId) {
-      this.navbarService.updateNavbarItem(
-        this.currentItemId,
-        menuData,
-        this.selectedFile,
-        authToken
-      ).subscribe({
-        next: () => this.handleSuccess('Navbar item updated successfully!'),
-        error: (err) => this.handleError('Error updating navbar item: ', err)
-      });
-    } else {
-      this.navbarService.addNavbarItem(
-        menuData,
-        this.selectedFile,
-        authToken
-      ).subscribe({
-        next: () => this.handleSuccess('Navbar item added successfully!'),
-        error: (err) => this.handleError('Error adding navbar item: ', err)
-      });
-    }
+    this.responseMessage = 'Uploading SVG file and adding menu...';
+    this.isSuccess = false;
+
+    this.navbarService.addNavbarItem(menuData, this.selectedFile, authToken).subscribe({
+      next: () => this.handleSuccess('Navbar item added successfully!'),
+      error: (err) => this.handleError('Error adding navbar item: ', err)
+    });
   }
 
   handleSuccess(message: string) {
@@ -148,9 +135,17 @@ export class NavbarControlComponent {
   }
 
   handleError(prefix: string, error: any) {
-    this.responseMessage = prefix + (error.error?.message || error.message);
+    let msg = prefix;
+    if (error && error.error) {
+      msg += typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
+    } else if (error && error.message) {
+      msg += error.message;
+    } else {
+      msg += JSON.stringify(error);
+    }
+    this.responseMessage = msg;
     this.isSuccess = false;
-    console.error(error);
+    console.error('Navbar error:', error);
   }
 
   resetForm() {
