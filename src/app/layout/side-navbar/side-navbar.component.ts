@@ -52,70 +52,15 @@ export class SideNavbarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Initial state setup
     this.isLoggedIn = this.authService.isUserLoggedIn();
-    this.userRole = sessionStorage.getItem(USER_ROLE_KEY) || '';
-    this.userName = sessionStorage.getItem(USERNAME_KEY) || '';
+    this.userRole = this.authService.getStoredUserRole() || '';
+    this.userName = this.authService.getUsername() || '';
+    console.log('[SideNavbar] ngOnInit: isLoggedIn:', this.isLoggedIn, 'userRole:', this.userRole);
     this.updateSidebarVisibility();
 
     // Initial menu load
     this.loadMenuItems();
 
-    // Subscribe to auth changes
-    this.subscriptions.push(
-      this.authService.loginStatus$.subscribe(
-        (isLoggedIn) => {
-          this.isLoggedIn = isLoggedIn;
-          this.userRole = sessionStorage.getItem(USER_ROLE_KEY) || '';
-          this.userName = sessionStorage.getItem(USERNAME_KEY) || '';
-          this.updateSidebarVisibility();
-        }
-      )
-    );
-
-    // Subscribe to user role changes
-    this.subscriptions.push(
-      this.authService.userRole$.subscribe(
-        (role) => {
-          this.userRole = role;
-          this.updateSidebarVisibility();
-        }
-      )
-    );
-
-    // Subscribe to username changes
-    this.subscriptions.push(
-      this.authService.username$.subscribe(
-        (username) => {
-          this.userName = username;
-        }
-      )
-    );
-
-    // Listen for storage changes
-    window.addEventListener('storage', () => {
-      this.userRole = sessionStorage.getItem(USER_ROLE_KEY) || '';
-      this.userName = sessionStorage.getItem(USERNAME_KEY) || '';
-    });
-
-    // Subscribe to user role changes
-    this.subscriptions.push(
-      this.authService.userRole$.subscribe(
-        (role) => {
-          this.userRole = role;
-          this.updateSidebarVisibility();
-        }
-      )
-    );
-
-    // Subscribe to username changes
-    this.subscriptions.push(
-      this.authService.username$.subscribe(
-        (username: string) => {
-          this.userName = username;
-        }
-      )
-    );
-
-    // Subscribe to auth changes
+    // Subscribe to login status and user role changes
     this.subscriptions.push(
       combineLatest([
         this.authService.loginStatus$,
@@ -126,6 +71,7 @@ export class SideNavbarComponent implements OnInit, OnDestroy {
         console.log('Auth status changed - Status:', status, 'Role:', userRole);
         this.isLoggedIn = status;
         this.userRole = userRole;
+        this.userName = this.authService.getUsername() || '';
         this.updateSidebarVisibility();
         this.loadMenuItems();
       })
@@ -196,6 +142,7 @@ export class SideNavbarComponent implements OnInit, OnDestroy {
         });
         console.log('SideNavbar: Received menu items:', items);
         this.menuItems = items;
+        console.log('[SideNavbar] menuItems set:', this.menuItems);
       },
       error: (error) => {
         console.error('SideNavbar: Error loading menu items:', error);

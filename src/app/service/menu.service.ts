@@ -12,7 +12,7 @@ import { ApiResponse, ApiResponseOrError, isApiErrorResponse, isApiResponse } fr
   providedIn: 'root'
 })
 export class MenuService {
-  private apiUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar/get');
+  private baseApiUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar/getNavbarListToDisplay');
 
   constructor(
     private http: HttpClient,
@@ -20,7 +20,12 @@ export class MenuService {
   ) { }
 
   getMenuItems(): Observable<MenuItem[]> {
-    return this.http.get<ApiResponseOrError<MenuItem[]>>(this.apiUrl).pipe(
+    const isLoggedIn = this.authService.isUserLoggedIn();
+    const userRole = this.authService.getStoredUserRole() || 'GUEST';
+    const userType = isLoggedIn ? userRole : 'GUEST';
+    const apiUrl = `${this.baseApiUrl}?userType=${encodeURIComponent(userType)}`;
+    console.log('[MenuService] Fetching menu with userType:', userType, 'API URL:', apiUrl);
+    return this.http.get<ApiResponseOrError<MenuItem[]>>(apiUrl).pipe(
       map((response: ApiResponseOrError<MenuItem[]>) => {
         if (!response.status) {
           if (isApiErrorResponse(response)) {
@@ -37,6 +42,7 @@ export class MenuService {
         throw new Error('Invalid response format');
       }),
       tap(items => console.log('MenuService: Raw menu items:', items)),
+      map(menuItems => this.normalizeMenuItems(menuItems)),
       map(menuItems => this.filterMenuItemsByRole(menuItems)),
       tap(filteredItems => console.log('MenuService: Filtered menu items:', filteredItems)),
       catchError(error => {
@@ -55,8 +61,8 @@ export class MenuService {
     return menuItems.filter(item => {
       // For guest users, only show items that are explicitly marked as available while logged out
       if (!isLoggedIn) {
-        const guestAccess = item.isAvailableWhileLoggedOut === true;
-        return guestAccess;
+        // If isAvailableWhileLoggedOut is missing or true, show the item for guests
+        return item.isAvailableWhileLoggedOut !== false;
       }
 
       // Always show regular navbar items for customers
@@ -76,6 +82,28 @@ export class MenuService {
       }
 
       return hasAccess;
+    });
+  }
+
+  /**
+   * Ensure every menu item has isASubMenu set to false if missing, recursively for submenus.
+   */
+  private normalizeMenuItems(menuItems: MenuItem[]): MenuItem[] {
+    return menuItems.map(item => {
+      const normalizedItem: MenuItem = {
+        ...item,
+        isASubMenu: item.isASubMenu !== undefined ? item.isASubMenu : false,
+        canMasterAccess: item.canMasterAccess !== undefined ? item.canMasterAccess : true,
+        canAdminAccess: item.canAdminAccess !== undefined ? item.canAdminAccess : true,
+        canUserAccess: item.canUserAccess !== undefined ? item.canUserAccess : true,
+        canDoctorAccess: item.canDoctorAccess !== undefined ? item.canDoctorAccess : true,
+        canSellerAccess: item.canSellerAccess !== undefined ? item.canSellerAccess : true,
+        canRiderAccess: item.canRiderAccess !== undefined ? item.canRiderAccess : true,
+        listOfSubMenu: item.listOfSubMenu && item.listOfSubMenu.length > 0
+          ? this.normalizeMenuItems(item.listOfSubMenu)
+          : []
+      };
+      return normalizedItem;
     });
   }
 
