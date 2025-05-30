@@ -9,8 +9,9 @@
       <option value="false">Main Menus</option>
     </select>
 
-    <label>
-      <input type="checkbox" formControlName="showGuest" /> Visible to Guest
+    <label class="checkbox-label">
+      <input type="checkbox" formControlName="showGuest" />
+      Visible to Guest
     </label>
 
     <select formControlName="access" multiple>
@@ -27,24 +28,48 @@
     <button type="submit">Apply Filters</button>
   </form>
 
-  <!-- List -->
-  <div class="navbar-list">
-    <div *ngFor="let item of items" class="navbar-list-item">
-      <div class="navbar-info">
-        <img [src]="item.svgFileDataLink" alt="icon" class="navbar-svg" *ngIf="item.svgFileDataLink" />
-        <div class="navbar-details">
-          <div class="navbar-title">{{item.menuName}}</div>
-          <div class="navbar-link">{{item.menuLink}}</div>
-        </div>
-      </div>
-      <div class="navbar-actions">
-        <button (click)="onEdit(item)">EDIT</button>
-        <button (click)="onDelete(item)">DELETE</button>
-        <button (click)="onView(item)">VIEW</button>
-      </div>
-    </div>
-    <div *ngIf="loading" class="loading">Loading...</div>
-    <div *ngIf="!hasMore && !loading && items.length" class="end-message">No more records.</div>
-    <div *ngIf="!items.length && !loading" class="no-records">No records found.</div>
+  <!-- Table -->
+  <div class="navbar-list-table-wrapper">
+    <table class="navbar-list-table">
+      <thead>
+        <tr>
+          <th>Icon</th>
+          <th>Menu Name</th>
+          <th>Parent ID</th>
+          <th>Redirection</th>
+          <th>Menu Link</th>
+          <th>Is Sub Menu</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items" class="navbar-list-row">
+          <td>
+            <img *ngIf="item.svgFileDataLink" [src]="item.svgFileDataLink" alt="icon" class="navbar-svg" />
+          </td>
+          <td>{{ item.menuName }}</td>
+          <td>{{ item.parentId }}</td>
+          <td>{{ item.doHaveRedirectionLink ? 'Yes' : 'No' }}</td>
+          <td>{{ item.menuLink }}</td>
+          <td>{{ item.isASubMenu ? 'Yes' : 'No' }}</td>
+          <td class="navbar-actions">
+            <button (click)="onEdit(item)" title="Edit" class="icon-btn">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button (click)="onDelete(item)" title="Delete" class="icon-btn">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+            <button (click)="onView(item)" title="View" class="icon-btn">
+              <i class="fas fa-eye"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- State Messages -->
+    <div *ngIf="loading" class="status-message">Loading...</div>
+    <div *ngIf="!hasMore && !loading && items.length" class="status-message">No more records.</div>
+    <div *ngIf="!items.length && !loading" class="status-message no-records">No records found.</div>
   </div>
 </div>
