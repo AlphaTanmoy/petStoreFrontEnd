@@ -11,6 +11,67 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class NavbarListComponent implements OnInit {
+  accessDropdownOpen = false;
+  accessOptions = [
+    { value: 'canMasterAccess', label: 'Master' },
+    { value: 'canAdminAccess', label: 'Admin' },
+    { value: 'canUserAccess', label: 'User' },
+    { value: 'canDoctorAccess', label: 'Doctor' },
+    { value: 'canSellerAccess', label: 'Seller' },
+    { value: 'canRiderAccess', label: 'Rider' },
+    { value: 'chatUsersAccess', label: 'Chat Users' },
+    { value: 'customerCareAccess', label: 'Customer Care' },
+  ];
+  selectedAccessLabels: string[] = [];
+
+  ngOnInit() {
+    this.updateSelectedAccessLabels();
+    document.addEventListener('click', this.handleDocumentClick, true);
+    this.loadItems();
+  }
+
+  ngOnDestroy() {
+    document.removeEventListener('click', this.handleDocumentClick, true);
+  }
+
+  toggleAccessDropdown() {
+    this.accessDropdownOpen = !this.accessDropdownOpen;
+  }
+
+  closeAccessDropdown() {
+    this.accessDropdownOpen = false;
+  }
+
+  onAccessCheckboxChange(value: string, event: any) {
+    const access: string[] = this.filterForm.value.access || [];
+    if (event.target.checked) {
+      if (!access.includes(value)) {
+        access.push(value);
+      }
+    } else {
+      const idx = access.indexOf(value);
+      if (idx > -1) {
+        access.splice(idx, 1);
+      }
+    }
+    this.filterForm.patchValue({ access });
+    this.updateSelectedAccessLabels();
+  }
+
+  updateSelectedAccessLabels() {
+    const selected = this.filterForm?.value?.access || [];
+    this.selectedAccessLabels = this.accessOptions
+      .filter(opt => selected.includes(opt.value))
+      .map(opt => opt.label);
+  }
+
+  // Handle outside click to close dropdown
+  handleDocumentClick = (event: Event) => {
+    const dropdown = document.querySelector('.multi-select-dropdown');
+    if (dropdown && !dropdown.contains(event.target as Node)) {
+      this.closeAccessDropdown();
+    }
+  }
   items: MenuItem[] = [];
   offsetToken: string | null = null;
   loading = false;
@@ -29,9 +90,6 @@ export class NavbarListComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.loadItems();
-  }
 
   loadItems(reset: boolean = false) {
     if (this.loading || (!this.hasMore && !reset)) return;

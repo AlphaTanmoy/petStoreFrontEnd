@@ -14,16 +14,20 @@
       Visible to Guest
     </label>
 
-    <select formControlName="access" multiple>
-      <option value="canMasterAccess">Master</option>
-      <option value="canAdminAccess">Admin</option>
-      <option value="canUserAccess">User</option>
-      <option value="canDoctorAccess">Doctor</option>
-      <option value="canSellerAccess">Seller</option>
-      <option value="canRiderAccess">Rider</option>
-      <option value="chatUsersAccess">Chat Users</option>
-      <option value="customerCareAccess">Customer Care</option>
-    </select>
+    <!-- Custom Multi-Select Dropdown for Access Roles -->
+    <div class="multi-select-dropdown" [class.open]="accessDropdownOpen" tabindex="0" (click)="toggleAccessDropdown()" (blur)="closeAccessDropdown()">
+      <div class="dropdown-selected">
+        <span *ngIf="!selectedAccessLabels.length">Select Access Roles</span>
+        <span *ngIf="selectedAccessLabels.length">{{ selectedAccessLabels.join(', ') }}</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="dropdown-list" *ngIf="accessDropdownOpen">
+        <label *ngFor="let option of accessOptions" class="dropdown-option">
+          <input type="checkbox" [checked]="filterForm.value.access.includes(option.value)" (change)="onAccessCheckboxChange(option.value, $event)" />
+          {{ option.label }}
+        </label>
+      </div>
+    </div>
 
     <button type="submit">Apply Filters</button>
   </form>
