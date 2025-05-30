@@ -1,0 +1,50 @@
+<div class="navbar-list-container">
+  <!-- Filters -->
+  <form [formGroup]="filterForm" (ngSubmit)="onFilter()" class="filter-area">
+    <input formControlName="search" type="text" placeholder="Search by menu name..." />
+
+    <select formControlName="isSubMenu">
+      <option value="">All Menus</option>
+      <option value="true">Sub Menus</option>
+      <option value="false">Main Menus</option>
+    </select>
+
+    <label>
+      <input type="checkbox" formControlName="showGuest" /> Visible to Guest
+    </label>
+
+    <select formControlName="access" multiple>
+      <option value="canMasterAccess">Master</option>
+      <option value="canAdminAccess">Admin</option>
+      <option value="canUserAccess">User</option>
+      <option value="canDoctorAccess">Doctor</option>
+      <option value="canSellerAccess">Seller</option>
+      <option value="canRiderAccess">Rider</option>
+      <option value="chatUsersAccess">Chat Users</option>
+      <option value="customerCareAccess">Customer Care</option>
+    </select>
+
+    <button type="submit">Apply Filters</button>
+  </form>
+
+  <!-- List -->
+  <div class="navbar-list">
+    <div *ngFor="let item of items" class="navbar-list-item">
+      <div class="navbar-info">
+        <img [src]="item.svgFileDataLink" alt="icon" class="navbar-svg" *ngIf="item.svgFileDataLink" />
+        <div class="navbar-details">
+          <div class="navbar-title">{{item.menuName}}</div>
+          <div class="navbar-link">{{item.menuLink}}</div>
+        </div>
+      </div>
+      <div class="navbar-actions">
+        <button (click)="onEdit(item)">EDIT</button>
+        <button (click)="onDelete(item)">DELETE</button>
+        <button (click)="onView(item)">VIEW</button>
+      </div>
+    </div>
+    <div *ngIf="loading" class="loading">Loading...</div>
+    <div *ngIf="!hasMore && !loading && items.length" class="end-message">No more records.</div>
+    <div *ngIf="!items.length && !loading" class="no-records">No records found.</div>
+  </div>
+</div>

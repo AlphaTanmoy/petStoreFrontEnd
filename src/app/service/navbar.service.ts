@@ -1,19 +1,58 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, tap, map, switchMap } from 'rxjs/operators';
 import { MenuItem } from '../interfaces/menu.interface';
 import { GetAPIEndpoint } from '../constants/endpoints';
 import { MICROSERVICE_NAME } from '../constants/Enums';
 
+import { PaginationResponse } from '../interfaces/paginationResponse.interface';
+
 @Injectable({
   providedIn: 'root'
 })
 export class NavbarService {
     private baseUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar');
+    private navbarGetUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar/get');
     private svgUploadUrl =GetAPIEndpoint(MICROSERVICE_NAME.S3, 's3/uploadSvgImage');
 
     constructor(private http: HttpClient) {}
+
+    // Get paginated, filtered navbar list
+    getNavbarList(paramsObj: {
+      limit?: number;
+      offsetToken?: string;
+      search?: string;
+      access?: string[];
+      isSubMenu?: string;
+      showGuest?: boolean;
+      [key: string]: any;
+    }): Observable<PaginationResponse<MenuItem>> {
+      let params = new HttpParams();
+      if (paramsObj.limit) params = params.set('limit', paramsObj.limit.toString());
+      if (paramsObj.offsetToken) params = params.set('offsetToken', paramsObj.offsetToken);
+      if (paramsObj.search) params = params.set('search', paramsObj.search);
+      if (paramsObj.isSubMenu) params = params.set('isSubMenu', paramsObj.isSubMenu);
+      if (paramsObj.showGuest) params = params.set('isVisibleToGuest', 'true');
+      if (paramsObj.access && paramsObj.access.length) {
+        params = params.set('access', paramsObj.access.join(','));
+      }
+      // Add more filters as needed
+      const headers = new HttpHeaders({ 'Alpha': this.getAuthHeader() });
+      return this.http.get<PaginationResponse<MenuItem>>(this.navbarGetUrl, { headers, params });
+    }
+
+    // Delete a navbar item by ID
+    deleteNavbarItem(id: string): Observable<any> {
+      const headers = new HttpHeaders({ 'Alpha': this.getAuthHeader() });
+      return this.http.delete(`${this.baseUrl}/delete/${id}`, { headers });
+    }
+
+    // Helper to get auth token (replace with actual implementation as needed)
+    private getAuthHeader(): string {
+      // TODO: Replace with actual token retrieval logic if needed
+      return 'Alpha eyJhbGciOiJIUzM4NCJ9.eyJlbWFpbCI6IjZ3M1lrdzdybnRkRGRzVlI0OFJ6QzFlMk9NY2dhdHN3S1lRQXNFOGVDLzlFY1NpbnV0T2FsWVVKbmJDU0dMOWEwUHFpdHl6WWpkWks0cGdnTmtsZDB3PT0iLCJpZCI6IjI3MDMzYmQ4LTExNjktNDU5MS05MmJiLWYwNGY4M2ZkODUwMCIsInJvbGUiOiJST0xFX01BU1RFUiIsInRpcmUiOiJUSVJFMCIsInR3b0ZhY3RvciI6dHJ1ZSwiaXNUd29GYWN0b3JWZXJpZmllZCI6dHJ1ZSwiY3JlYXRlZEF0IjoiMjAyNS0wNS0zMFQwMTo1ODowNy41MTE3MzYzMDArMDU6MzBbQXNpYS9DYWxjdXR0YV0iLCJleHBBdCI6IjIwMjUtMDUtMzBUMDI6MDM6MDcuNTExNzM2MzAwKzA1OjMwW0FzaWEvQ2FsY3V0dGFdIn0.yvQdGFTx87eiQ3n5_3BtSzUxb16mBE_rGM0iDklVIqGfXRAe3fthk6jB3TjlCD9m';
+    }
 
     // Fetch parent menu options
     getParentMenus(authToken: string): Observable<{ firstParameter: string; secondParameter: string }[]> {

@@ -92,7 +92,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   hasSubmenu(item: MenuItem): boolean {
-    return item.listOfSubMenu && item.listOfSubMenu.length > 0;
+    return !!item.listOfSubMenu && item.listOfSubMenu.length > 0;
   }
 
   toggleMobileMenu(): void {

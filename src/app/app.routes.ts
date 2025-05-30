@@ -51,6 +51,7 @@ import { ProductViewComponent } from './test/product-view/product-view.component
 import { ProductDetailsComponent } from './test/product-details/product-details.component';
 import { CartComponent} from './test/cart/cart.component';
 import { PaymentComponent } from './test/payment/payment.component';
+import { NavbarListComponent } from './users/master/navbar-list/navbar-list.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -106,6 +107,7 @@ export const routes: Routes = [
       { path: 'jwt-details', component: JwtDetailsComponent },
       { path: 'jwt-logs', component: JwtLogsComponent },
       { path: 'notification-log', component: NotificationLogComponent },
+      { path: 'navbar-list', component: NavbarListComponent },
     ]
   },
 

@@ -23,10 +23,10 @@
             class="menu-item"
             [class.expanded]="isMenuItemExpanded(item.id)">
           <div class="menu-link" (click)="toggleMenuItem(item.id)">
-            <ng-container *ngIf="item.svgFileBase64">
-              <img [src]="item.svgFileBase64" alt="menu icon" class="menu-icon">
+            <ng-container *ngIf="item.svgFileDataLink">
+              <img [src]="item.svgFileDataLink" alt="menu icon" class="menu-icon">
             </ng-container>
-            <i *ngIf="!item.svgFileBase64" class="fas fa-folder"></i>
+            <i *ngIf="!item.svgFileDataLink" class="fas fa-folder"></i>
             <span class="menu-text">{{ item.menuName }}</span>
             <i class="fas fa-chevron-down submenu-icon" *ngIf="!collapsed"></i>
           </div>
@@ -37,10 +37,10 @@
                  routerLinkActive="active"
                  [routerLinkActiveOptions]="{exact: true}"
                  (click)="toggleExpand()">
-                <ng-container *ngIf="subItem.svgFileBase64">
-                  <img [src]="subItem.svgFileBase64" alt="submenu icon" class="menu-icon">
+                <ng-container *ngIf="subItem.svgFileDataLink">
+                  <img [src]="subItem.svgFileDataLink" alt="submenu icon" class="menu-icon">
                 </ng-container>
-                <i *ngIf="!subItem.svgFileBase64" class="fas fa-circle"></i>
+                <i *ngIf="!subItem.svgFileDataLink" class="fas fa-circle"></i>
                 <span class="menu-text">{{ subItem.menuName }}</span>
               </a>
             </li>
@@ -54,10 +54,10 @@
              routerLinkActive="active"
              [routerLinkActiveOptions]="{exact: true}"
              (click)="toggleExpand()">
-            <ng-container *ngIf="item.svgFileBase64">
-              <img [src]="item.svgFileBase64" alt="menu icon" class="menu-icon">
+            <ng-container *ngIf="item.svgFileDataLink">
+              <img [src]="item.svgFileDataLink" alt="menu icon" class="menu-icon">
             </ng-container>
-            <i *ngIf="!item.svgFileBase64" class="fas fa-circle"></i>
+            <i *ngIf="!item.svgFileDataLink" class="fas fa-circle"></i>
             <span class="menu-text">
               {{ item.menuName }}
               <span class="user-info" *ngIf="item.menuLink === '/profile'">

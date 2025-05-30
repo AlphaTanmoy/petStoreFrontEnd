@@ -1,7 +1,8 @@
 export interface MenuItem {
   id: string;
+  createdDate: string;
   menuName: string;
-  parentId: string;
+  parentId?: string;
   doHaveRedirectionLink: boolean;
   menuLink: string | null;
   isASubMenu: boolean;
@@ -12,9 +13,10 @@ export interface MenuItem {
   canSellerAccess: boolean;
   canRiderAccess: boolean;
   chatUsersAccess: boolean;
+  customerCareAccess?: boolean;
   isVisibleToGuest: boolean;
-  isAvailableWhileLoggedOut: boolean;
   isAssignedToParentMenu: boolean;
-  svgFileBase64: string;
-  listOfSubMenu: MenuItem[];
-} 
+  isAvailableWhileLoggedOut?: boolean;
+  svgFileDataLink: string;
+  listOfSubMenu?: MenuItem[];
+}
