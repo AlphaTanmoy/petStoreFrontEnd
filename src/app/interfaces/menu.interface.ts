@@ -19,4 +19,6 @@ export interface MenuItem {
   isAvailableWhileLoggedOut?: boolean;
   svgFileDataLink: string;
   listOfSubMenu?: MenuItem[];
+  // Allow string indexing for dynamic access
+  [key: string]: any;
 }

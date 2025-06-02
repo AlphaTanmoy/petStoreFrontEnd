@@ -1,25 +1,48 @@
 <div class="navbar-list-container">
   <h2 class="navbar-list-heading">Navbar List</h2>
   <!-- Filters -->
-  <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-form">
+  <form [formGroup]="filterForm" (ngSubmit)="$event.preventDefault(); applyFilters()" class="filter-form">
     <div class="filter-section">
-      <h3 class="filter-section-title">Search & Filter</h3>
-      <div class="filter-grid">
+      <!-- First Row: Search and Toggle -->
+      <div class="form-row">
         <!-- Search -->
-        <div class="form-group">
+        <div class="form-group search-group">
           <label class="form-label">Search</label>
           <div class="input-with-icon">
             <i class="fas fa-search"></i>
-            <input type="text" formControlName="search" placeholder="Search by menu name..." class="form-control">
+            <input 
+              type="text" 
+              formControlName="search" 
+              placeholder="Search by menu name..." 
+              class="form-control"
+            >
           </div>
         </div>
         
+        <!-- Toggle Button Group -->
+        <div class="form-group toggle-group">
+          <label class="form-label">Show Inactive</label>
+          <div class="toggle-container">
+            <div class="form-group toggle-container">
+              <mat-slide-toggle [formControl]="getShowInactiveControl()" id="showInActive">
+                <span class="toggle-label">Show Inactive</span>
+              </mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Second Row: Menu Type and Access Roles -->
+      <div class="form-row">
         <!-- Menu Type -->
         <div class="form-group">
           <label class="form-label">Menu Type</label>
           <div class="select-wrapper">
             <i class="fas fa-sitemap"></i>
-            <select formControlName="isSubMenu" class="form-control">
+            <select 
+              formControlName="isSubMenu" 
+              class="form-control"
+            >
               <option value="">All Menus</option>
               <option value="true">Sub Menus Only</option>
               <option value="false">Parent Menus Only</option>
@@ -28,41 +51,38 @@
         </div>
         
         <!-- Access Roles Multi-Select Dropdown -->
-        <div class="form-group">
+        <div class="form-group access-roles-group">
           <label class="form-label">Access Roles</label>
-          <div class="multi-select-dropdown" [class.open]="accessDropdownOpen" (clickOutside)="closeAccessDropdown()">
+          <div class="dropdown-container" #dropdownContainer>
             <div class="dropdown-header" (click)="toggleAccessDropdown()">
-              <span class="selected-items">
-                {{ getSelectedAccessLabels() || 'Select roles...' }}
+              <span class="selected-values" *ngIf="selectedAccessLabels.length; else placeholder">
+                {{ getSelectedAccessLabels() }}
               </span>
+              <ng-template #placeholder>Select access roles...</ng-template>
               <i class="fas fa-chevron-down dropdown-arrow"></i>
             </div>
-            <div class="dropdown-options" *ngIf="accessDropdownOpen">
-              <div class="search-box">
+            <div class="dropdown-content" *ngIf="accessDropdownOpen">
+              <div class="search-container">
                 <i class="fas fa-search"></i>
                 <input 
                   type="text" 
+                  [(ngModel)]="accessSearchText" 
                   placeholder="Search roles..." 
-                  [(ngModel)]="accessSearchText"
+                  class="search-input"
                   (input)="filterAccessOptions()"
                   (click)="$event.stopPropagation()"
                 >
               </div>
               <div class="options-list">
-                <div 
-                  *ngFor="let option of filteredAccessOptions" 
-                  class="dropdown-option"
-                  (click)="toggleAccessOption(option.value)"
-                >
-                  <div class="option-checkbox">
+                <div class="option" *ngFor="let option of filteredAccessOptions">
+                  <label class="checkbox-container">
                     <input 
                       type="checkbox" 
-                      [checked]="filterForm.value.access.includes(option.value)"
-                      (click)="$event.stopPropagation()"
-                    >
+                      [checked]="filterForm.get('access')?.value?.includes(option.value)"
+                      (change)="toggleAccessOption(option.value, $event)">
                     <span class="checkmark"></span>
-                  </div>
-                  <span class="option-label">{{ option.label }}</span>
+                    {{ option.label }}
+                  </label>
                 </div>
                 <div *ngIf="filteredAccessOptions.length === 0" class="no-results">
                   No matching roles found
@@ -71,25 +91,14 @@
             </div>
           </div>
         </div>
-        
-        <!-- Toggle Options -->
-        <div class="form-group toggle-options">        
-          <div class="toggle-option">
-            <label class="switch">
-              <input type="checkbox" formControlName="showInActive">
-              <span class="slider round"></span>
-            </label>
-            <span class="toggle-label">Show Inactive Items</span>
-          </div>
-        </div>
       </div>
       
       <!-- Form Actions -->
       <div class="form-actions">
-        <button type="button" (click)="resetFilters()" class="btn btn-outline-secondary">
+        <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">
           <i class="fas fa-undo"></i> Reset
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
           <i class="fas fa-filter"></i> Apply Filters
         </button>
       </div>
@@ -97,120 +106,89 @@
   </form>
 
   <!-- Table -->
-  <div class="navbar-list-table-wrapper">
-    <table class="navbar-list-table">
-      <colgroup>
-        <col class="col-icon">
-        <col class="col-name">
-        <col class="col-link">
-        <col class="col-status">
-        <col class="col-status">
-        <col class="col-access">
-        <col class="col-access">
-        <col class="col-access">
-        <col class="col-access">
-        <col class="col-access">
-        <col class="col-access">
-        <col class="col-access">
-        <col class="col-access">
-        <col class="col-actions sticky-col">
-      </colgroup>
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="navbar-list-table">
+        <colgroup>
+          <col class="col-icon">
+          <col class="col-name">
+          <col class="col-link">
+          <col class="col-created">
+          <col class="col-redirect">
+          <col class="col-submenu">
+          <col class="col-access" *ngFor="let col of accessRoleColumns">
+          <col class="col-actions">
+        </colgroup>
       <thead>
         <tr>
           <th>Icon</th>
           <th>Menu Name</th>
-          <th>Menu Link</th>
+          <th>Link</th>
+          <th>Created Date</th>
           <th>Redirection</th>
           <th>Sub Menu</th>
-          <th>Master</th>
-          <th>Admin</th>
-          <th>User</th>
-          <th>Doctor</th>
-          <th>Seller</th>
-          <th>Rider</th>
-          <th>Customer Care</th>
-          <th>Guest</th>
+          <th *ngFor="let col of accessRoleColumns">{{col.label}}</th>
           <th class="sticky-col">Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of items" class="navbar-list-row">
-          <td>
-            <img *ngIf="item.svgFileDataLink" [src]="item.svgFileDataLink" alt="icon" class="navbar-svg" />
+          <!-- Icon -->
+          <td class="text-center">
+            <ng-container *ngIf="item.svgFileDataLink; else noIcon">
+              <img [src]="item.svgFileDataLink" alt="icon" class="navbar-svg" style="max-width: 24px; max-height: 24px;" />
+            </ng-container>
+            <ng-template #noIcon>
+              <div class="no-data">N/A</div>
+            </ng-template>
           </td>
-          <td>{{ item.menuName }}</td>
-          <td class="menu-link-cell">
-            <div class="menu-link">{{ item.menuLink || '-' }}</div>
-            <div class="created-date">
-              <small class="text-muted">{{ item.createdDate ? ('Created: ' + (item.createdDate | date:'mediumDate')) : '' }}</small>
-            </div>
+          
+          <!-- Menu Name -->
+          <td [class.no-data]="!item.menuName" class="text-truncate">
+            {{ item.menuName || 'NOT APPLICABLE' }}
           </td>
+          
+          <!-- Menu Link -->
+          <td [class.no-data]="!item.menuLink" class="text-truncate">
+            {{ item.menuLink || 'NOT APPLICABLE' }}
+          </td>
+          
+          <!-- Created Date -->
+          <td [class.no-data]="!item.createdDate" class="text-truncate">
+            {{ item.createdDate ? (item.createdDate | date:'medium') : 'NOT APPLICABLE' }}
+          </td>
+          
+          <!-- Redirection -->
           <td class="text-center">
             <i class="fas" 
                [ngClass]="item.doHaveRedirectionLink ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" 
                [matTooltip]="'Redirection: ' + item.doHaveRedirectionLink">
             </i>
           </td>
+          
+          <!-- Sub Menu -->
           <td class="text-center">
             <i class="fas" 
                [ngClass]="item.isASubMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
                [matTooltip]="'Submenu: ' + item.isASubMenu">
             </i>
           </td>
-          <td class="text-center">
+          
+          <!-- Access Roles -->
+          <td *ngFor="let col of accessRoleColumns" class="text-center">
             <i class="fas" 
-               [ngClass]="item.canMasterAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-               [matTooltip]="'Master Access: ' + item.canMasterAccess">
+               [ngClass]="getPropertyValue(item, col.id) ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="col.label + ': ' + getPropertyValue(item, col.id)">
             </i>
           </td>
-          <td class="text-center">
-            <i class="fas" 
-               [ngClass]="item.canAdminAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-               [matTooltip]="'Admin Access: ' + item.canAdminAccess">
-            </i>
-          </td>
-          <td class="text-center">
-            <i class="fas" 
-               [ngClass]="item.canUserAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-               [matTooltip]="'User Access: ' + item.canUserAccess">
-            </i>
-          </td>
-          <td class="text-center">
-            <i class="fas" 
-               [ngClass]="item.canDoctorAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-               [matTooltip]="'Doctor Access: ' + item.canDoctorAccess">
-            </i>
-          </td>
-          <td class="text-center">
-            <i class="fas" 
-               [ngClass]="item.canSellerAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-               [matTooltip]="'Seller Access: ' + item.canSellerAccess">
-            </i>
-          </td>
-          <td class="text-center">
-            <i class="fas" 
-               [ngClass]="item.canRiderAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-               [matTooltip]="'Rider Access: ' + item.canRiderAccess">
-            </i>
-          </td>
-          <td class="text-center">
-            <i class="fas" 
-               [ngClass]="item.customerCareAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-               [matTooltip]="'Customer Care: ' + item.customerCareAccess">
-            </i>
-          </td>
-          <td class="text-center">
-            <i class="fas" 
-               [ngClass]="item.isVisibleToGuest ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-               [matTooltip]="'Visible to Guest: ' + item.isVisibleToGuest">
-            </i>
-          </td>
+          
+          <!-- Actions -->
           <td class="sticky-col">
-            <div class="navbar-actions">
-              <button mat-icon-button (click)="editItem(item.id)" class="action-btn edit-btn" matTooltip="Edit">
+            <div class="action-buttons">
+              <button mat-icon-button (click)="$event.stopPropagation(); editItem(item.id)" class="action-btn edit-btn" matTooltip="Edit">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="viewItem(item.id)" class="action-btn view-btn" matTooltip="View">
+              <button mat-icon-button (click)="$event.stopPropagation(); viewItem(item.id)" class="action-btn view-btn" matTooltip="View">
                 <mat-icon>visibility</mat-icon>
               </button>
               <button mat-icon-button (click)="$event.stopPropagation(); deleteItem(item)" class="action-btn delete-btn" matTooltip="Delete">
@@ -221,10 +199,11 @@
         </tr>
       </tbody>
     </table>
-
+    
     <!-- State Messages -->
     <div *ngIf="loading" class="status-message">Loading...</div>
     <div *ngIf="!hasMore && !loading && items.length" class="status-message">No more records.</div>
-    <div *ngIf="!items.length && !loading" class="status-message no-records">No records found.</div>
+    <div *ngIf="!loading && !items.length" class="status-message">No records found.</div>
   </div>
+</div>
 </div>
