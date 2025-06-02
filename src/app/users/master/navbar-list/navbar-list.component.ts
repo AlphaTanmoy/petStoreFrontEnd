@@ -160,9 +160,25 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.tableContainer) {
-      this.tableContainer.nativeElement.addEventListener('scroll', this.scrollListener);
-    }
+    // Use setTimeout to ensure the view is fully rendered
+    setTimeout(() => {
+      if (this.tableContainer?.nativeElement) {
+        console.log('Attaching scroll listener to table container');
+        
+        // Remove any existing listener to prevent duplicates
+        this.tableContainer.nativeElement.removeEventListener('scroll', this.scrollListener);
+        
+        // Add the scroll listener
+        this.tableContainer.nativeElement.addEventListener('scroll', this.scrollListener);
+        
+        console.log('Scroll listener attached, checking if more items are needed...');
+        
+        // Initial check to see if we need to load more items
+        this.checkIfMoreItemsNeeded();
+      } else {
+        console.error('Table container not found for scroll listener');
+      }
+    }, 100); // Small delay to ensure the view is fully rendered
   }
 
   // Handle clicks outside dropdowns to close them
@@ -191,40 +207,66 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     document.removeEventListener('click', this.clickListener);
   }
 
-  private handleScroll(): void {
-    if (this.loading || !this.hasMore || this.isScrolling) return;
+  // Check if we need to load more items to fill the viewport
+  private checkIfMoreItemsNeeded(): void {
+    if (this.loading || !this.hasMore || !this.tableContainer?.nativeElement) {
+      return;
+    }
 
-    const element = this.tableContainer?.nativeElement;
-    if (!element) return;
-
-    // Check if we're near the bottom (within 100px)
-    const threshold = 100;
-    const position = element.scrollTop + element.clientHeight;
-    const height = element.scrollHeight;
-
-    if (position > height - threshold) {
-      this.isScrolling = true;
+    const element = this.tableContainer.nativeElement;
+    // If the content height is less than the container height, load more
+    if (element.scrollHeight <= element.clientHeight) {
       this.loadMoreItems();
     }
   }
 
-  private loadMoreItems(): Promise<void> {
-    return new Promise((resolve) => {
-      if (this.loading || !this.hasMore) {
-        resolve();
-        return;
+  private handleScroll(): void {
+    // Don't trigger if already loading, no more items, or container not ready
+    if (this.loading || !this.hasMore || !this.tableContainer?.nativeElement) {
+      return;
+    }
+    
+    const element = this.tableContainer.nativeElement;
+    const threshold = 300; // pixels from bottom to trigger load
+    const scrollPosition = element.scrollTop + element.clientHeight;
+    const scrollHeight = element.scrollHeight;
+  
+    // Check if we've scrolled near the bottom (within threshold)
+    const shouldLoadMore = scrollPosition >= scrollHeight - threshold;
+    
+    if (shouldLoadMore && !this.isScrolling) {
+      console.log('Scrolled near bottom, loading more items...');
+      this.isScrolling = true;
+      this.loadMoreItems().finally(() => {
+        this.isScrolling = false;
+      });
+    }
+  }
+
+  private async loadMoreItems(): Promise<void> {
+    // Prevent multiple simultaneous loads or if no more items
+    if (this.loading || !this.hasMore) {
+      return;
+    }
+    
+    try {
+      console.log('Loading more items with offsetToken:', this.offsetToken);
+      await this.loadItems(false);
+      
+      // After loading, check if we need to load more to fill the viewport
+      if (this.tableContainer?.nativeElement && this.hasMore) {
+        const container = this.tableContainer.nativeElement;
+        const isViewportFilled = container.scrollHeight > container.clientHeight;
+        
+        // If the content is not filling the viewport and we have more items, load more
+        if (!isViewportFilled) {
+          console.log('Viewport not filled, loading more items...');
+          await this.loadMoreItems();
+        }
       }
-      
-      this.loading = true;
-      
-      // Use setTimeout to allow UI to update
-      setTimeout(() => {
-        this.loadItems(false).finally(() => {
-          this.isScrolling = false;
-          resolve();
-        });
-      }, 100);
-    });
+    } catch (error) {
+      console.error('Error loading more items:', error);
+    }
   }
 
   // Safely get boolean property value from menu item
@@ -375,7 +417,9 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   // Load items from the API with pagination
   loadItems(reset = false): Promise<void> {
     return new Promise((resolve, reject) => {
+      // Prevent multiple simultaneous requests
       if (this.loading) {
+        console.log('Already loading, skipping duplicate request');
         resolve();
         return;
       }
@@ -385,24 +429,26 @@ export class NavbarListComponent implements OnInit, OnDestroy {
       
       // Reset items and pagination if this is a fresh load
       if (reset) {
+        console.log('Resetting items and pagination');
         this.items = [];
-        this.offsetToken = null;
+        this.offsetToken = ''; // Reset to empty string for new search
         this.hasMore = true;
-      }
-      
-      // If we've already loaded everything, don't make another request
-      if (!reset && !this.hasMore) {
+      } else if (!this.hasMore) {
+        // If we've already loaded everything, don't make another request
+        console.log('No more items to load');
         this.loading = false;
         resolve();
         return;
       }
+      
+      console.log('Loading items with offsetToken:', this.offsetToken);
       
       // Build the request parameters
       const listOfRolesCanAccess = formValue.access || [];
       const showSubMenusOnly = formValue.isSubMenu === 'true';
       const applyParentSubMenuFilter = formValue.isSubMenu === 'false';
       
-      // Map access roles
+      // Map access roles to match backend expectations
       const mappedRoles = listOfRolesCanAccess
         .filter((role: string) => role !== 'isVisibleToGuest')
         .map((role: string) => this.accessRoleMap[role])
@@ -413,9 +459,10 @@ export class NavbarListComponent implements OnInit, OnDestroy {
         mappedRoles.push(USER_ROLE.GUEST);
       }
       
+      // Prepare the request parameters
       const params: any = {
         limit: DEFAULT_PAGE_SIZE,
-        offsetToken: this.offsetToken || '',
+        offsetToken: this.offsetToken || '',  // Always pass the current offsetToken
         queryString: formValue.search || '%',
         listOfRolesCanAccess: mappedRoles.length ? mappedRoles : undefined,
         showSubMenusOnly,
@@ -424,40 +471,37 @@ export class NavbarListComponent implements OnInit, OnDestroy {
         applyParentSubMenuFilter
       };
       
-      // Call the API
+      console.log('API Request Params:', JSON.stringify(params, null, 2));
+      
+      // Make the API call
       this.navbarService.getNavbarList(params).subscribe({
         next: (response: PaginationResponse<MenuItem>) => {
-          // Append new items to the existing ones
+          console.log('API Response:', response);
+          
+          // Update items - append if not resetting, replace if resetting
           this.items = reset ? response.data : [...this.items, ...response.data];
           
           // Update pagination state
           this.offsetToken = response.offsetToken || '';
-          this.hasMore = !!this.offsetToken && response.data.length === DEFAULT_PAGE_SIZE;
+          this.hasMore = response.data.length === DEFAULT_PAGE_SIZE;
           
-          // If we got a full page of results, there might be more
-          if (response.data.length === DEFAULT_PAGE_SIZE) {
-            this.hasMore = true;
-          }
+          console.log('Updated state - hasMore:', this.hasMore, 'offsetToken:', this.offsetToken);
           
-          // Check if we need to load more to fill the viewport
-          setTimeout(() => {
-            if (this.hasMore && this.tableContainer?.nativeElement) {
-              const container = this.tableContainer.nativeElement;
-              if (container.scrollHeight <= container.clientHeight) {
-                this.loadMoreItems().finally(resolve);
-                return;
-              }
-            }
-            resolve();
-          }, 100);
+          // After updating items, check if we need to load more to fill the viewport
+          setTimeout(() => this.checkIfMoreItemsNeeded(), 0);
+          
+          resolve();
         },
-        error: (error: any) => {
+        error: (error) => {
           console.error('Error loading navbar items:', error);
           this.loading = false;
           reject(error);
         },
         complete: () => {
           this.loading = false;
+          
+          // Check again after loading is complete to handle any UI updates
+          setTimeout(() => this.checkIfMoreItemsNeeded(), 100);
         }
       });
     });

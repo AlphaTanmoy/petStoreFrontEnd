@@ -1,7 +1,7 @@
 <!-- navbar-list.component.html -->
 <div class="navbar-list-container">
   <h2 class="navbar-list-heading">Navbar List</h2>
-  
+
   <!-- Filters -->
   <form [formGroup]="filterForm" (ngSubmit)="$event.preventDefault(); applyFilters()" class="filter-form">
     <div class="filter-row">
@@ -10,15 +10,11 @@
         <label class="form-label">Search</label>
         <div class="search-input-container">
           <i class="fas fa-search"></i>
-          <input 
-            type="text" 
-            formControlName="search" 
-            class="search-input" 
-            placeholder="Search by name..."
+          <input type="text" formControlName="search" class="search-input" placeholder="Search by name..."
             (keyup.enter)="applyFilters()">
         </div>
       </div>
-      
+
       <!-- Menu Type -->
       <div class="form-group menu-type-group">
         <label class="form-label">Menu Type</label>
@@ -36,11 +32,12 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Access Control Dropdown -->
       <div class="form-group access-control-group">
         <label class="form-label">Access Roles</label>
-        <div #accessDropdown class="access-dropdown" [class.open]="accessDropdownOpen" (click)="$event.stopPropagation()">
+        <div #accessDropdown class="access-dropdown" [class.open]="accessDropdownOpen"
+          (click)="$event.stopPropagation()">
           <div class="dropdown-header" (click)="toggleAccessDropdown()">
             {{ selectedAccessLabels.length > 0 ? selectedAccessLabels.join(', ') : 'Select Access Roles' }}
             <i class="fas fa-chevron-down"></i>
@@ -48,24 +45,16 @@
           <div class="dropdown-options" *ngIf="accessDropdownOpen" (click)="$event.stopPropagation()">
             <div class="search-box">
               <i class="fas fa-search"></i>
-              <input 
-                type="text" 
-                [(ngModel)]="accessSearchText"
-                (ngModelChange)="filterAccessOptions()"
-                placeholder="Search roles..."
-                (click)="$event.stopPropagation()"
-                class="search-input"
+              <input type="text" [(ngModel)]="accessSearchText" (ngModelChange)="filterAccessOptions()"
+                placeholder="Search roles..." (click)="$event.stopPropagation()" class="search-input"
                 autocomplete="off">
             </div>
             <div class="access-options">
               <div class="options-list">
                 <label class="option" *ngFor="let option of filteredAccessOptions">
-                  <input 
-                    type="checkbox" 
-                    [value]="option.value"
+                  <input type="checkbox" [value]="option.value"
                     [checked]="filterForm.get('access')?.value?.includes(option.value)"
-                    (change)="toggleAccessOption(option.value, $event)"
-                    (click)="$event.stopPropagation()">
+                    (change)="toggleAccessOption(option.value, $event)" (click)="$event.stopPropagation()">
                   <span class="checkmark"></span>
                   <span class="option-label">{{ option.label }}</span>
                 </label>
@@ -74,14 +63,14 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Toggle Button Group -->
       <div class="form-group toggle-group">
         <mat-slide-toggle [formControl]="getShowInactiveControl()" id="showInActive" class="inactive-toggle">
           <span class="toggle-label">Show Inactive</span>
         </mat-slide-toggle>
       </div>
-      
+
       <!-- Form Actions -->
       <div class="form-actions">
         <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">
@@ -95,115 +84,121 @@
   </form>
 
   <!-- Table -->
-  <div class="table-container" #tableContainer>
-    <div class="table-responsive">
-      <table class="navbar-list-table">
-        <colgroup>
-          <col class="col-icon">
-          <col class="col-name">
-          <col class="col-link">
-          <col class="col-created">
-          <col class="col-redirect">
-          <col class="col-submenu">
-          <col class="col-access" *ngFor="let col of accessRoleColumns">
-          <col class="col-actions">
-        </colgroup>
-        <thead>
-          <tr>
-            <th>Icon</th>
-            <th>Menu Name</th>
-            <th>Link</th>
-            <th>Created Date</th>
-            <th>Redirection</th>
-            <th>Sub Menu</th>
-            <th *ngFor="let col of accessRoleColumns">{{col.label}}</th>
-            <th class="sticky-col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of items" class="navbar-list-row">
-            <!-- Icon -->
-            <td class="text-center">
-              <ng-container *ngIf="item.svgFileDataLink; else noIcon">
-                <img [src]="item.svgFileDataLink" alt="icon" class="navbar-svg" style="max-width: 24px; max-height: 24px;" />
-              </ng-container>
-              <ng-template #noIcon>
-                <div class="no-data">N/A</div>
-              </ng-template>
-            </td>
-            
-            <!-- Menu Name -->
-            <td [class.no-data]="!item.menuName" class="text-truncate">
-              {{ item.menuName || 'NOT APPLICABLE' }}
-            </td>
-            
-            <!-- Menu Link -->
-            <td [class.no-data]="!item.menuLink" class="text-truncate">
-              {{ item.menuLink || 'NOT APPLICABLE' }}
-            </td>
-            
-            <!-- Created Date -->
-            <td [class.no-data]="!item.createdDate" class="text-truncate">
-              {{ item.createdDate ? (item.createdDate | date:'medium') : 'NOT APPLICABLE' }}
-            </td>
-            
-            <!-- Redirection -->
-            <td class="text-center">
-              <i class="fas" 
-                 [ngClass]="item.doHaveRedirectionLink ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" 
-                 [matTooltip]="'Redirection: ' + item.doHaveRedirectionLink">
-              </i>
-            </td>
-            
-            <!-- Sub Menu -->
-            <td class="text-center">
-              <i class="fas" 
-                 [ngClass]="item.isASubMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-                 [matTooltip]="'Submenu: ' + item.isASubMenu">
-              </i>
-            </td>
-            
-            <!-- Access Roles -->
-            <td *ngFor="let col of accessRoleColumns" class="text-center">
-              <i class="fas" 
-                 [ngClass]="getPropertyValue(item, col.id) ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-                 [matTooltip]="col.label + ': ' + getPropertyValue(item, col.id)">
-              </i>
-            </td>
-            
-            <!-- Actions -->
-            <td class="sticky-col">
-              <div class="action-buttons">
-                <button mat-icon-button (click)="$event.stopPropagation(); editItem(item.id)" class="action-btn edit-btn" matTooltip="Edit">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button (click)="$event.stopPropagation(); viewItem(item.id)" class="action-btn view-btn" matTooltip="View">
-                  <mat-icon>visibility</mat-icon>
-                </button>
-                <button mat-icon-button (click)="$event.stopPropagation(); deleteItem(item)" class="action-btn delete-btn" matTooltip="Delete">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      
-      <!-- Loading Indicator -->
-      <div class="loading-indicator" *ngIf="loading">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
+  <div class="table-container-wrapper">
+    <div class="table-container" #tableContainer>
+      <div class="table-responsive">
+        <table class="navbar-list-table">
+          <colgroup>
+            <col class="col-icon">
+            <col class="col-name">
+            <col class="col-link">
+            <col class="col-created">
+            <col class="col-redirect">
+            <col class="col-submenu">
+            <col class="col-access" *ngFor="let col of accessRoleColumns">
+            <col class="col-actions">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Icon</th>
+              <th>Menu Name</th>
+              <th>Link</th>
+              <th>Created Date</th>
+              <th>Redirection</th>
+              <th>Sub Menu</th>
+              <th *ngFor="let col of accessRoleColumns">{{col.label}}</th>
+              <th class="sticky-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of items" class="navbar-list-row">
+              <!-- Icon -->
+              <td class="text-center">
+                <ng-container *ngIf="item.svgFileDataLink; else noIcon">
+                  <img [src]="item.svgFileDataLink" alt="icon" class="navbar-svg"
+                    style="max-width: 24px; max-height: 24px;" />
+                </ng-container>
+                <ng-template #noIcon>
+                  <div class="no-data">N/A</div>
+                </ng-template>
+              </td>
+
+              <!-- Menu Name -->
+              <td [class.no-data]="!item.menuName" class="text-truncate">
+                {{ item.menuName || 'NOT APPLICABLE' }}
+              </td>
+
+              <!-- Menu Link -->
+              <td [class.no-data]="!item.menuLink" class="text-truncate">
+                {{ item.menuLink || 'NOT APPLICABLE' }}
+              </td>
+
+              <!-- Created Date -->
+              <td [class.no-data]="!item.createdDate" class="text-truncate">
+                {{ item.createdDate ? (item.createdDate | date:'medium') : 'NOT APPLICABLE' }}
+              </td>
+
+              <!-- Redirection -->
+              <td class="text-center">
+                <i class="fas"
+                  [ngClass]="item.doHaveRedirectionLink ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+                  [matTooltip]="'Redirection: ' + item.doHaveRedirectionLink">
+                </i>
+              </td>
+
+              <!-- Sub Menu -->
+              <td class="text-center">
+                <i class="fas"
+                  [ngClass]="item.isASubMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+                  [matTooltip]="'Submenu: ' + item.isASubMenu">
+                </i>
+              </td>
+
+              <!-- Access Roles -->
+              <td *ngFor="let col of accessRoleColumns" class="text-center">
+                <i class="fas"
+                  [ngClass]="getPropertyValue(item, col.id) ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+                  [matTooltip]="col.label + ': ' + getPropertyValue(item, col.id)">
+                </i>
+              </td>
+
+              <!-- Actions -->
+              <td class="sticky-col">
+                <div class="action-buttons">
+                  <button mat-icon-button (click)="$event.stopPropagation(); editItem(item.id)"
+                    class="action-btn edit-btn" matTooltip="Edit">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="$event.stopPropagation(); viewItem(item.id)"
+                    class="action-btn view-btn" matTooltip="View">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="$event.stopPropagation(); deleteItem(item)"
+                    class="action-btn delete-btn" matTooltip="Delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" *ngIf="loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
         </div>
-      </div>
-      
-      <!-- No More Data Message -->
-      <div *ngIf="!hasMore && items.length > 0" class="no-more-data">
-        No more items to load
-      </div>
-      
-      <!-- No Records Found -->
-      <div *ngIf="!loading && items.length === 0" class="no-records">
-        No records found
+
+        <!-- No More Data Message -->
+        <div *ngIf="!hasMore && items.length > 0" class="no-more-data">
+          No more items to load
+        </div>
+
+        <!-- No Records Found -->
+        <div *ngIf="!loading && items.length === 0" class="no-records">
+          No records found
+        </div>
       </div>
     </div>
   </div>
