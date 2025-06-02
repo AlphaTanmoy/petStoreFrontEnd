@@ -22,7 +22,7 @@ export class NavbarService {
     getNavbarList(paramsObj: {
       limit?: number;
       offsetToken?: string;
-      search?: string;
+      queryString?: string;
       listOfRolesCanAccess?: string[];
       showSubMenusOnly?: boolean;
       isVisibleToGuest?: boolean;
@@ -37,7 +37,7 @@ export class NavbarService {
       if (paramsObj.offsetToken) params = params.set('offsetToken', paramsObj.offsetToken);
       
       // Add filter parameters
-      if (paramsObj.search) params = params.set('search', paramsObj.search);
+      if (paramsObj.queryString) params = params.set('queryString', paramsObj.queryString);
       if (paramsObj.showSubMenusOnly) params = params.set('showSubMenusOnly', 'true');
       if (paramsObj.isVisibleToGuest) params = params.set('isVisibleToGuest', 'true');
       if (paramsObj.showInActive) params = params.set('showInActive', 'true');

@@ -24,34 +24,56 @@
               <option value="true">Sub Menus Only</option>
               <option value="false">Parent Menus Only</option>
             </select>
-            <i class="fas fa-chevron-down"></i>
           </div>
         </div>
         
-        <!-- Access Roles -->
+        <!-- Access Roles Multi-Select Dropdown -->
         <div class="form-group">
           <label class="form-label">Access Roles</label>
-          <div class="access-options">
-            <div class="access-options-grid">
-              <label *ngFor="let option of accessOptions" class="custom-checkbox">
-                <input type="checkbox" [checked]="filterForm.value.access.includes(option.value)" (change)="onAccessCheckboxChange(option.value, $event)">
-                <span class="checkmark"></span>
-                <span class="label-text">{{ option.label }}</span>
-              </label>
+          <div class="multi-select-dropdown" [class.open]="accessDropdownOpen" (clickOutside)="closeAccessDropdown()">
+            <div class="dropdown-header" (click)="toggleAccessDropdown()">
+              <span class="selected-items">
+                {{ getSelectedAccessLabels() || 'Select roles...' }}
+              </span>
+              <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </div>
+            <div class="dropdown-options" *ngIf="accessDropdownOpen">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input 
+                  type="text" 
+                  placeholder="Search roles..." 
+                  [(ngModel)]="accessSearchText"
+                  (input)="filterAccessOptions()"
+                  (click)="$event.stopPropagation()"
+                >
+              </div>
+              <div class="options-list">
+                <div 
+                  *ngFor="let option of filteredAccessOptions" 
+                  class="dropdown-option"
+                  (click)="toggleAccessOption(option.value)"
+                >
+                  <div class="option-checkbox">
+                    <input 
+                      type="checkbox" 
+                      [checked]="filterForm.value.access.includes(option.value)"
+                      (click)="$event.stopPropagation()"
+                    >
+                    <span class="checkmark"></span>
+                  </div>
+                  <span class="option-label">{{ option.label }}</span>
+                </div>
+                <div *ngIf="filteredAccessOptions.length === 0" class="no-results">
+                  No matching roles found
+                </div>
+              </div>
             </div>
           </div>
         </div>
         
         <!-- Toggle Options -->
-        <div class="form-group toggle-options">
-          <div class="toggle-option">
-            <label class="switch">
-              <input type="checkbox" formControlName="showGuest">
-              <span class="slider round"></span>
-            </label>
-            <span class="toggle-label">Show Guest Access</span>
-          </div>
-          
+        <div class="form-group toggle-options">        
           <div class="toggle-option">
             <label class="switch">
               <input type="checkbox" formControlName="showInActive">

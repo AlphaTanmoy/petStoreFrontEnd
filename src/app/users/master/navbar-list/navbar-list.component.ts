@@ -1,19 +1,25 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NavbarService } from '../../../service/navbar.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { MenuItem } from '../../../interfaces/menu.interface';
 import { PaginationResponse } from '../../../interfaces/paginationResponse.interface';
 import { USER_ROLE } from '../../../constants/Enums';
+import { AUTH_TOKEN, DEFAULT_PAGE_SIZE } from '../../../constants/KeywordsAndConstrants';
 
 @Component({
   selector: 'app-navbar-list',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgFor, NgIf],
   templateUrl: './navbar-list.component.html',
   styleUrls: ['./navbar-list.component.css'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule]
+  encapsulation: ViewEncapsulation.None
 })
 export class NavbarListComponent implements OnInit {
+  // Multi-select dropdown state
   accessDropdownOpen = false;
+  accessSearchText = '';
+  filteredAccessOptions: { value: string; label: string }[] = [];
   // Map of form field names to USER_ROLE values
   private readonly accessRoleMap: { [key: string]: string } = {
     canMasterAccess: USER_ROLE.ROLE_MASTER,
@@ -42,7 +48,8 @@ export class NavbarListComponent implements OnInit {
   private previousIsSubMenu: string | null = null;
 
   ngOnInit() {
-    this.updateSelectedAccessLabels();
+    this.filteredAccessOptions = [...this.accessOptions];
+    this.accessDropdownOpen = false; // Don't show dropdown by default
     document.addEventListener('click', this.handleDocumentClick, true);
     this.loadItems();
   }
@@ -53,26 +60,50 @@ export class NavbarListComponent implements OnInit {
 
   toggleAccessDropdown() {
     this.accessDropdownOpen = !this.accessDropdownOpen;
+    if (this.accessDropdownOpen) {
+      this.filterAccessOptions();
+    }
   }
 
   closeAccessDropdown() {
     this.accessDropdownOpen = false;
+    this.accessSearchText = '';
+    this.filterAccessOptions();
   }
 
-  onAccessCheckboxChange(value: string, event: any) {
-    const access: string[] = this.filterForm.value.access || [];
-    if (event.target.checked) {
-      if (!access.includes(value)) {
-        access.push(value);
-      }
+  // Toggle access option selection
+  toggleAccessOption(value: string) {
+    const currentAccess = [...this.filterForm.value.access];
+    const index = currentAccess.indexOf(value);
+    
+    if (index === -1) {
+      currentAccess.push(value);
     } else {
-      const idx = access.indexOf(value);
-      if (idx > -1) {
-        access.splice(idx, 1);
-      }
+      currentAccess.splice(index, 1);
     }
-    this.filterForm.patchValue({ access });
-    this.updateSelectedAccessLabels();
+    
+    this.filterForm.patchValue({ access: currentAccess });
+  }
+
+  // Filter access options based on search text
+  filterAccessOptions() {
+    if (!this.accessSearchText) {
+      this.filteredAccessOptions = [...this.accessOptions];
+    } else {
+      const searchText = this.accessSearchText.toLowerCase();
+      this.filteredAccessOptions = this.accessOptions.filter(option =>
+        option.label.toLowerCase().includes(searchText)
+      );
+    }
+  }
+
+  // Get comma-separated list of selected access labels
+  getSelectedAccessLabels(): string {
+    const selected = this.filterForm.value.access || [];
+    return this.accessOptions
+      .filter(option => selected.includes(option.value))
+      .map(option => option.label)
+      .join(', ');
   }
 
   updateSelectedAccessLabels() {
@@ -131,9 +162,9 @@ export class NavbarListComponent implements OnInit {
       .filter((role: string | undefined): role is string => !!role);
     
     const params: any = {
-      limit: 20,
+      limit: DEFAULT_PAGE_SIZE,
       offsetToken: this.offsetToken || '',
-      search: formValue.search || '',
+      queryString: formValue.search || '%',
       listOfRolesCanAccess,
       showSubMenusOnly: formValue.isSubMenu === 'true',
       isVisibleToGuest: formValue.showGuest || false,

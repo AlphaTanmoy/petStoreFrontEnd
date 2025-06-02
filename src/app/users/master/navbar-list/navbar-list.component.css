@@ -25,7 +25,9 @@
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  z-index: 1000;
 }
 
 .filter-section {
@@ -42,13 +44,20 @@
 
 .filter-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1000;
 }
 
 .form-group {
-  margin-bottom: 0;
+  margin-bottom: 16px;
+  position: relative;
+  min-height: 72px; /* Consistent height for all filter groups */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .form-label {
@@ -75,11 +84,24 @@
 
 .input-with-icon input {
   width: 100%;
+  height: 38px;
   padding: 8px 12px 8px 40px;
   border: 1px solid #ced4da;
   border-radius: 4px;
   font-size: 14px;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  box-sizing: border-box;
+}
+
+.form-control {
+  width: 100%;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  box-sizing: border-box;
 }
 
 /* Select with icon */
@@ -99,6 +121,7 @@
 
 .select-wrapper select {
   width: 100%;
+  height: 38px;
   padding: 8px 40px 8px 40px;
   border: 1px solid #ced4da;
   border-radius: 4px;
@@ -106,6 +129,7 @@
   appearance: none;
   background-color: #fff;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .select-wrapper::after {
@@ -192,6 +216,175 @@
   display: block;
 }
 
+/* Multi-Select Dropdown */
+.multi-select-dropdown {
+  position: relative;
+  width: 100%;
+  font-size: 14px;
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  height: 38px;
+  min-height: 38px;
+  z-index: 1002;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.dropdown-header:hover {
+  border-color: #80bdff;
+}
+
+.dropdown-arrow {
+  margin-left: 8px;
+  transition: transform 0.2s;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.multi-select-dropdown.open .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  max-height: 400px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.search-box {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e9ecef;
+  position: relative;
+}
+
+.search-box i {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 6px 12px 6px 32px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-box input:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.options-list {
+  overflow-y: auto;
+  max-height: 300px;
+  padding: 8px 0;
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-option:hover {
+  background-color: #f8f9fa;
+}
+
+.option-checkbox {
+  position: relative;
+  margin-right: 10px;
+  width: 18px;
+  height: 18px;
+}
+
+.option-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.option-checkbox .checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.option-checkbox:hover .checkmark {
+  border-color: #80bdff;
+}
+
+.option-checkbox input:checked ~ .checkmark {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.option-checkbox .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.option-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.option-label {
+  font-size: 14px;
+  color: #212529;
+}
+
+.no-results {
+  padding: 12px 16px;
+  color: #6c757d;
+  font-style: italic;
+  text-align: center;
+  font-size: 13px;
+}
+
 /* Toggle switches */
 .toggle-options {
   display: flex;
@@ -203,14 +396,17 @@
 .toggle-option {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
+  min-height: 38px;
+  align-items: center;
 }
 
 .switch {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 22px;
+  width: 60px;
+  height: 30px;
 }
 
 .switch input {
@@ -234,25 +430,26 @@
 .slider:before {
   position: absolute;
   content: "";
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 3px;
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
   background-color: white;
   transition: .4s;
   border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 input:checked + .slider {
-  background-color: #007bff;
+  background-color: #2196F3;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #007bff;
+  box-shadow: 0 0 2px #2196F3;
 }
 
 input:checked + .slider:before {
-  transform: translateX(18px);
+  transform: translateX(30px);
 }
 
 .toggle-label {
@@ -579,11 +776,10 @@ select:focus {
 }
 
 /* Make the table header sticky when scrolling */
-.navbar-list-table thead th {
+.navbar-list-table thead {
   position: sticky;
   top: 0;
-  z-index: 10;
-  background: #f5f5f5;
+  z-index: 5;
 }
 
 /* Action Buttons */
