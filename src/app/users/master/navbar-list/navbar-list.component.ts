@@ -8,9 +8,12 @@ import { PaginationResponse } from '../../../interfaces/paginationResponse.inter
 import { USER_ROLE } from '../../../constants/Enums';
 import { AUTH_TOKEN, DEFAULT_PAGE_SIZE } from '../../../constants/KeywordsAndConstrants';
 import { Router } from '@angular/router';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmDialogBoxComponent } from '../../../components/confirm-dialog-box/confirm-dialog-box.component';
 
 @Component({
@@ -20,9 +23,12 @@ import { ConfirmDialogBoxComponent } from '../../../components/confirm-dialog-bo
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatTooltipModule,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule,
     MatDialogModule
   ],
   templateUrl: './navbar-list.component.html',
@@ -46,6 +52,35 @@ export class NavbarListComponent implements OnInit {
     isVisibleToGuest: USER_ROLE.GUEST
   };
   
+  // Define table columns
+  columns = [
+    { id: 'icon', label: 'Icon', sticky: false },
+    { id: 'menuName', label: 'Menu Name', sticky: false },
+    { id: 'menuLink', label: 'Menu Link', sticky: false },
+    { id: 'redirection', label: 'Redirection', sticky: false },
+    { id: 'isSubMenu', label: 'Sub Menu', sticky: false },
+  ];
+
+  // Access role columns (will be added dynamically)
+  accessRoleColumns: { id: string; label: string; sticky: boolean }[] = [
+    { id: 'canMasterAccess', label: 'Master', sticky: false },
+    { id: 'canAdminAccess', label: 'Admin', sticky: false },
+    { id: 'canUserAccess', label: 'User', sticky: false },
+    { id: 'canDoctorAccess', label: 'Doctor', sticky: false },
+    { id: 'canSellerAccess', label: 'Seller', sticky: false },
+    { id: 'canRiderAccess', label: 'Rider', sticky: false },
+    { id: 'customerCareAccess', label: 'Customer Care', sticky: false },
+    { id: 'isVisibleToGuest', label: 'Guest', sticky: false }
+  ];
+
+  // Actions column
+  actionsColumn = { id: 'actions', label: 'Actions', sticky: true };
+
+  // All columns including dynamic ones
+  get allColumns() {
+    return [...this.columns, ...this.accessRoleColumns, this.actionsColumn];
+  }
+
   accessOptions = [
     { value: 'canMasterAccess', label: 'Master' },
     { value: 'canAdminAccess', label: 'Admin' },

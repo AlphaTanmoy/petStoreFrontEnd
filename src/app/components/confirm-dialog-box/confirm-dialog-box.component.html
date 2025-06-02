@@ -1,12 +1,29 @@
 <h2 mat-dialog-title>{{ data.title }}</h2>
 <mat-dialog-content>
   <p>{{ data.message }}</p>
+  <p class="confirm-instruction">Type <strong>CONFIRM</strong> to proceed:</p>
+  <mat-form-field appearance="outline" class="w-100">
+    <input matInput 
+           [formControl]="confirmText" 
+           placeholder="Type CONFIRM"
+           (keyup.enter)="!isConfirmDisabled && onConfirm()">
+    <mat-error *ngIf="confirmText.hasError('required')">
+      Confirmation is required
+    </mat-error>
+    <mat-error *ngIf="confirmText.hasError('invalidConfirmation')">
+      Please type CONFIRM exactly as shown
+    </mat-error>
+  </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">
     {{ data.cancelText || 'Cancel' }}
   </button>
-  <button mat-button color="warn" (click)="onConfirm()">
+  <button mat-button 
+          color="warn" 
+          [disabled]="isConfirmDisabled"
+          (click)="onConfirm()"
+          matTooltip="{{ isConfirmDisabled ? 'Type CONFIRM to enable this button' : '' }}">
     {{ data.confirmText || 'Confirm' }}
   </button>
 </mat-dialog-actions>

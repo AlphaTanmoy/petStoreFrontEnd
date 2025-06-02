@@ -1,0 +1,41 @@
+.confirm-instruction {
+  margin: 16px 0 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+/* Make the dialog a bit wider to accommodate the input */
+:host {
+  display: block;
+  min-width: 350px;
+}
+
+/* Style the input to match the dialog */
+mat-form-field {
+  margin-bottom: 8px;
+}
+
+/* Style the confirm button when disabled */
+button[mat-button][disabled] {
+  opacity: 0.6;
+}
+
+/* Add some spacing between buttons */
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+}
+
+mat-dialog-actions button {
+  margin-left: 8px;
+}
+
+/* Error message styling */
+mat-error {
+  font-size: 12px;
+  margin-top: 4px;
+}

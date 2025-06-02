@@ -99,6 +99,22 @@
   <!-- Table -->
   <div class="navbar-list-table-wrapper">
     <table class="navbar-list-table">
+      <colgroup>
+        <col class="col-icon">
+        <col class="col-name">
+        <col class="col-link">
+        <col class="col-status">
+        <col class="col-status">
+        <col class="col-access">
+        <col class="col-access">
+        <col class="col-access">
+        <col class="col-access">
+        <col class="col-access">
+        <col class="col-access">
+        <col class="col-access">
+        <col class="col-access">
+        <col class="col-actions sticky-col">
+      </colgroup>
       <thead>
         <tr>
           <th>Icon</th>
@@ -114,7 +130,7 @@
           <th>Rider</th>
           <th>Customer Care</th>
           <th>Guest</th>
-          <th>Actions</th>
+          <th class="sticky-col">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -123,47 +139,84 @@
             <img *ngIf="item.svgFileDataLink" [src]="item.svgFileDataLink" alt="icon" class="navbar-svg" />
           </td>
           <td>{{ item.menuName }}</td>
-          <td>{{ item.menuLink }}</td>
-          <td class="text-center">
-            <i class="fas" [ngClass]="item.doHaveRedirectionLink ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" [title]="item.doHaveRedirectionLink ? 'Has Redirection' : 'No Redirection'"></i>
+          <td class="menu-link-cell">
+            <div class="menu-link">{{ item.menuLink || '-' }}</div>
+            <div class="created-date">
+              <small class="text-muted">{{ item.createdDate ? ('Created: ' + (item.createdDate | date:'mediumDate')) : '' }}</small>
+            </div>
           </td>
           <td class="text-center">
-            <i class="fas" [ngClass]="item.isASubMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Is Sub Menu"></i>
+            <i class="fas" 
+               [ngClass]="item.doHaveRedirectionLink ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" 
+               [matTooltip]="'Redirection: ' + item.doHaveRedirectionLink">
+            </i>
           </td>
           <td class="text-center">
-            <i class="fas" [ngClass]="item.canMasterAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Master Access"></i>
+            <i class="fas" 
+               [ngClass]="item.isASubMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="'Submenu: ' + item.isASubMenu">
+            </i>
           </td>
           <td class="text-center">
-            <i class="fas" [ngClass]="item.canAdminAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Admin Access"></i>
+            <i class="fas" 
+               [ngClass]="item.canMasterAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="'Master Access: ' + item.canMasterAccess">
+            </i>
           </td>
           <td class="text-center">
-            <i class="fas" [ngClass]="item.canUserAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="User Access"></i>
+            <i class="fas" 
+               [ngClass]="item.canAdminAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="'Admin Access: ' + item.canAdminAccess">
+            </i>
           </td>
           <td class="text-center">
-            <i class="fas" [ngClass]="item.canDoctorAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Doctor Access"></i>
+            <i class="fas" 
+               [ngClass]="item.canUserAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="'User Access: ' + item.canUserAccess">
+            </i>
           </td>
           <td class="text-center">
-            <i class="fas" [ngClass]="item.canSellerAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Seller Access"></i>
+            <i class="fas" 
+               [ngClass]="item.canDoctorAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="'Doctor Access: ' + item.canDoctorAccess">
+            </i>
           </td>
           <td class="text-center">
-            <i class="fas" [ngClass]="item.canRiderAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Rider Access"></i>
+            <i class="fas" 
+               [ngClass]="item.canSellerAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="'Seller Access: ' + item.canSellerAccess">
+            </i>
           </td>
           <td class="text-center">
-            <i class="fas" [ngClass]="item.customerCareAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Customer Care Access"></i>
+            <i class="fas" 
+               [ngClass]="item.canRiderAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="'Rider Access: ' + item.canRiderAccess">
+            </i>
           </td>
           <td class="text-center">
-            <i class="fas" [ngClass]="item.isVisibleToGuest ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Visible to Guest"></i>
+            <i class="fas" 
+               [ngClass]="item.customerCareAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="'Customer Care: ' + item.customerCareAccess">
+            </i>
           </td>
           <td class="text-center">
-            <button mat-icon-button color="primary" (click)="editItem(item.id)" matTooltip="Edit">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="accent" (click)="viewItem(item.id)" matTooltip="View" class="mx-1">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="$event.stopPropagation(); deleteItem(item)" matTooltip="Delete">
-              <mat-icon>delete</mat-icon>
-            </button>
+            <i class="fas" 
+               [ngClass]="item.isVisibleToGuest ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+               [matTooltip]="'Visible to Guest: ' + item.isVisibleToGuest">
+            </i>
+          </td>
+          <td class="sticky-col">
+            <div class="navbar-actions">
+              <button mat-icon-button (click)="editItem(item.id)" class="action-btn edit-btn" matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="viewItem(item.id)" class="action-btn view-btn" matTooltip="View">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button (click)="$event.stopPropagation(); deleteItem(item)" class="action-btn delete-btn" matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>

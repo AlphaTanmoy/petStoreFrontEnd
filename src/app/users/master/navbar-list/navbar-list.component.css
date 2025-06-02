@@ -775,39 +775,324 @@ select:focus {
   margin-bottom: 5px;
 }
 
-/* Make the table header sticky when scrolling */
-.navbar-list-table thead {
+/* Table container */
+.navbar-list-table-wrapper {
+  position: relative;
+  overflow: auto;
+  max-height: calc(100vh - 300px);
+  border: 1px solid var(--border-color, #cfd8dc);
+  border-radius: 4px;
+  background: white;
+}
+
+/* Table styles */
+.navbar-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  position: relative;
+  z-index: 1;
+  background: white;
+}
+
+/* Column Widths */
+.col-icon { width: 60px; }
+.col-name { width: 15%; min-width: 150px; }
+.col-link { width: 20%; min-width: 200px; }
+.col-status { width: 100px; }
+.col-access { width: 80px; }
+.col-actions { width: 160px; }
+
+/* Table headers */
+.navbar-list-table thead th {
   position: sticky;
   top: 0;
-  z-index: 5;
+  background: #f5f5f5;
+  z-index: 10;
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 2px solid var(--border-color, #cfd8dc);
+  font-weight: 500;
+  color: #333;
 }
 
-/* Action Buttons */
+/* Sticky action column header */
+.navbar-list-table thead th.sticky-col {
+  position: sticky;
+  right: 0;
+  z-index: 30;
+  background: #f5f5f5;
+  border-left: 1px solid var(--border-color, #cfd8dc);
+  text-align: center;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+}
+
+/* Table cells */
+.navbar-list-table tbody td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+  background: white;
+  transition: background-color 0.2s;
+  height: 60px; /* Fixed height for all rows */
+  max-height: 60px;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+  position: relative;
+}
+
+/* Ensure content doesn't overflow */
+.navbar-list-table tbody td > * {
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Center align content in status and access columns */
+.navbar-list-table tbody td.text-center,
+.navbar-list-table tbody td[class*="col-status"],
+.navbar-list-table tbody td[class*="col-access"] {
+  text-align: center;
+}
+
+/* Ensure consistent height for rows */
+.navbar-list-table tbody tr {
+  height: 60px;
+  max-height: 60px;
+}
+
+/* Sticky action column cells */
+.navbar-list-table tbody td.sticky-col {
+  position: sticky;
+  right: 0;
+  z-index: 25;
+  background: white;
+  border-left: 1px solid #eee;
+  text-align: center;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+  padding: 4px 8px;
+}
+
+/* Hover effects */
+.navbar-list-table tbody tr:hover td {
+  background-color: #f8f9fa;
+}
+
+.navbar-list-table tbody tr:hover td.sticky-col {
+  background-color: #f1f3f5;
+}
+
+/* Truncate long text */
+/* Menu link cell */
+.menu-link-cell {
+  min-width: 200px;
+  max-width: 300px;
+  padding: 8px !important;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.menu-link {
+  white-space: normal;
+  word-break: break-word;
+  width: 100%;
+  display: block;
+  line-height: 1.4;
+}
+
+.created-date {
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Action Buttons Container */
 .navbar-actions {
   display: flex;
-  gap: 8px;
   justify-content: center;
+  align-items: center;
+  padding: 0;
+  gap: 4px;
+  min-width: 140px;
+  height: 100%;
+  box-sizing: border-box;
 }
 
-.icon-btn {
-  background: none;
-  border: none;
-  color: var(--light-text);
-  font-size: 16px;
-  cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+/* Base button styles */
+.action-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  margin: 0;
+  border: none !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  cursor: pointer;
+  background: transparent !important;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  outline: none;
 }
 
-.icon-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+/* Remove any focus outlines or borders */
+.action-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Button hover effects */
+.action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Button colors */
+/* Action button colors */
+.action-btn[color="primary"] .mat-icon,
+.view-btn .mat-icon {
+  color: var(--primary-hover);
+}
+
+.action-btn[color="primary"]:hover .mat-icon,
+.view-btn:hover .mat-icon {
+  color: var(--primary-hover);
+}
+
+.action-btn[color="accent"] .mat-icon,
+.edit-btn .mat-icon {
+  color: var(--warning-color);
+}
+
+.action-btn[color="accent"]:hover .mat-icon,
+.edit-btn:hover .mat-icon {
+  color: var(--warning-hover);
+}
+
+.action-btn[color="warn"] .mat-icon,
+.delete-btn .mat-icon {
+  color: var(--danger-hover);
+}
+
+.action-btn[color="warn"]:hover .mat-icon,
+.delete-btn:hover .mat-icon {
+  color: var(--danger-hover);
+}
+
+/* Button hover states */
+.action-btn[color="primary"]:hover {
+  color: var(--primary-hover);
+  background-color: rgba(2, 88, 187, 0.08) !important;
+}
+
+.action-btn[color="accent"]:hover {
+  color: var(--warning-hover);
+  background-color: rgba(255, 153, 0, 0.08) !important;
+}
+
+.action-btn[color="warn"]:hover {
+  background-color: rgba(211, 47, 47, 0.08) !important;
+}
+
+/* Material icon overrides */
+.action-btn .mat-icon {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  font-size: 20px;
+  line-height: 20px;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Action Buttons */
+.mat-mdc-icon-button {
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  padding: 4px;
+  margin: 0 2px;
+  line-height: 1;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Style the icons inside buttons */
+.mat-mdc-icon-button mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px; /* Changed from 50% to 4px for rectangular shape */
+  border: 1px solid currentColor;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+/* Ensure Actions header doesn't wrap */
+.navbar-list-table th:last-child {
+  white-space: nowrap;
+  overflow: visible;
+  width: 1%;
+  min-width: 120px; /* Adjust based on your needs */
+}
+
+/* View button */
+.mat-mdc-icon-button[color="accent"] {
+  color: var(--success-color);
+}
+
+.mat-mfc-icon-button[color="accent"]:hover {
+  background-color: rgba(0, 173, 6, 0.1);
+  color: var(--success-hover);
+}
+
+/* Edit button */
+.mat-mdc-icon-button[color="primary"] {
+  color: var(--warning-color);
+}
+
+.mat-mdc-icon-button[color="primary"]:hover {
+  background-color: rgba(255, 153, 0, 0.1);
+  color: var(--warning-hover);
+}
+
+/* Delete button */
+.mat-mdc-icon-button[color="warn"] {
+  color: var(--danger-color);
+}
+
+.mat-mdc-icon-button[color="warn"]:hover {
+  background-color: rgba(129, 0, 0, 0.1);
+  color: var(--danger-hover);
+}
+
+/* For the checkmark and x icons in the table */
+.text-success {
+  color: var(--success-color) !important;
+}
+
+.text-danger {
+  color: var(--danger-color) !important;
+}
+
+/* Hover effects for table rows */
+.navbar-list-row:hover {
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 /* Edit button */
