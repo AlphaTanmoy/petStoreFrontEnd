@@ -152,10 +152,28 @@ export class NavbarService {
     }
 
     // Handle HTTP errors
-    private handleError<T>(operation = 'operation', result?: T) {
-        return (error: any): Observable<T> => {
-            console.error(`${operation} failed: ${error.message}`);
-            return of(result as T);
-        };
-    }
+    private handleError<T>(operation = 'operation') {
+    return (error: any): Observable<T> => {
+      console.error(`${operation} failed:`, error);
+      return throwError(() => error);
+    };
+  }
+
+  // Delete navbar item by ID
+  deleteNavbarItemById(id: string): Observable<any> {
+    const headers = new HttpHeaders({ 'Alpha': this.getAuthHeader() });
+    return this.http.delete(`${this.baseUrl}/deleteById/${id}`, { headers }).pipe(
+      tap(_ => console.log(`Deleted navbar item with id=${id}`)),
+      catchError(this.handleError('deleteNavbarItemById'))
+    );
+  }
+
+  // Get navbar item by ID
+  getNavbarItemById(id: string): Observable<MenuItem> {
+    const headers = new HttpHeaders({ 'Alpha': this.getAuthHeader() });
+    return this.http.get<MenuItem>(`${this.baseUrl}/getById/${id}`, { headers }).pipe(
+      tap(_ => console.log(`Fetched navbar item with id=${id}`)),
+      catchError(this.handleError<MenuItem>('getNavbarItemById'))
+    );
+  }
 }
