@@ -1,16 +1,30 @@
-import { Component, OnInit, HostListener, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NavbarService } from '../../../service/navbar.service';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { MenuItem } from '../../../interfaces/menu.interface';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PaginationResponse } from '../../../interfaces/paginationResponse.interface';
 import { USER_ROLE } from '../../../constants/Enums';
 import { AUTH_TOKEN, DEFAULT_PAGE_SIZE } from '../../../constants/KeywordsAndConstrants';
+import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ConfirmDialogBoxComponent } from '../../../components/confirm-dialog-box/confirm-dialog-box.component';
 
 @Component({
   selector: 'app-navbar-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgFor, NgIf],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatDialogModule
+  ],
   templateUrl: './navbar-list.component.html',
   styleUrls: ['./navbar-list.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -120,6 +134,53 @@ export class NavbarListComponent implements OnInit {
       this.closeAccessDropdown();
     }
   }
+
+  // View item details
+  viewItem(id: string): void {
+    this.router.navigate(['/navbar', 'details', id]);
+  }
+
+  // Edit item
+  editItem(id: string): void {
+    this.router.navigate(['/navbar', 'edit', id]);
+  }
+
+  // Delete item with confirmation
+  deleteItem(item: MenuItem): void {
+    const dialogRef = this.dialog.open(ConfirmDialogBoxComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirm Delete',
+        message: `Are you sure you want to delete "${item.menuName}"? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.loading = true;
+        this.navbarService.deleteNavbarItemById(item.id).subscribe({
+          next: () => {
+            // Remove the item from the list
+            this.items = this.items.filter(i => i.id !== item.id);
+            // Reset pagination since we've modified the list
+            this.offsetToken = null;
+            this.hasMore = true;
+            // Show success message or reload the list
+            this.loadItems();
+          },
+          error: (error) => {
+            console.error('Error deleting item:', error);
+            // You might want to show a user-friendly error message here
+          },
+          complete: () => {
+            this.loading = false;
+          }
+        });
+      }
+    });
+  }
   
   // Handle isSubMenu change
   onIsSubMenuChange() {
@@ -133,7 +194,9 @@ export class NavbarListComponent implements OnInit {
 
   constructor(
     private navbarService: NavbarService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router,
+    private dialog: MatDialog
   ) {
     this.filterForm = this.fb.group({
       search: [''],
@@ -145,9 +208,10 @@ export class NavbarListComponent implements OnInit {
   }
 
 
-  loadItems(reset: boolean = false) {
+  loadItems(reset = false) {
     if (this.loading || (!this.hasMore && !reset)) return;
     this.loading = true;
+    
     if (reset) {
       this.offsetToken = null;
       this.items = [];
@@ -155,12 +219,10 @@ export class NavbarListComponent implements OnInit {
     }
     
     const formValue = this.filterForm.value;
-    
-    // Map access roles to USER_ROLE values
-    const listOfRolesCanAccess = (formValue.access || [])
-      .map((access: string) => this.accessRoleMap[access])
-      .filter((role: string | undefined): role is string => !!role);
-    
+    const listOfRolesCanAccess = formValue.access?.length 
+      ? formValue.access.map((role: string) => this.accessRoleMap[role]).filter(Boolean).join(',')
+      : undefined;
+
     const params: any = {
       limit: DEFAULT_PAGE_SIZE,
       offsetToken: this.offsetToken || '',
@@ -168,78 +230,81 @@ export class NavbarListComponent implements OnInit {
       listOfRolesCanAccess,
       showSubMenusOnly: formValue.isSubMenu === 'true',
       isVisibleToGuest: formValue.showGuest || false,
-      showInActive: formValue.showInActive || false
+      showInActive: formValue.showInActive || false,
+      applyParentSubMenuFilter: false // Explicitly set to false as we're handling it in the UI
     };
 
-    // Remove empty or falsy values
-    Object.keys(params).forEach(key => {
-      if (params[key] === '' || params[key] === null || params[key] === undefined || 
-          (Array.isArray(params[key]) && params[key].length === 0)) {
-        delete params[key];
-      }
-    });
-
     this.navbarService.getNavbarList(params).subscribe({
-      next: (res: PaginationResponse<MenuItem>) => {
-        this.items = reset ? res.data : [...this.items, ...res.data];
-        this.offsetToken = res.offsetToken || '';
-        this.hasMore = !!res.offsetToken;
-        this.loading = false;
+      next: (response: PaginationResponse<MenuItem>) => {
+        try {
+          this.items = reset ? response.data : [...this.items, ...response.data];
+          this.offsetToken = response.offsetToken || '';
+          this.hasMore = !!response.offsetToken;
+        } catch (error) {
+          console.error('Error processing response:', error);
+          this.items = [];
+          this.hasMore = false;
+        }
       },
-      error: (err: any) => {
-        console.error('Error loading navbar items:', err);
+      error: (error) => {
+        console.error('Error loading items:', error);
+        this.items = [];
+        this.hasMore = false;
+      },
+      complete: () => {
         this.loading = false;
       }
     });
   }
-
-  // Apply filters and reload items
+  
+  // Apply filters and reset pagination
   applyFilters() {
     this.loadItems(true);
   }
-
-  // Reset all filters to default values
+  
+  // Reset all filters
   resetFilters() {
     this.filterForm.reset({
       search: '',
       access: [],
       isSubMenu: '',
       showGuest: false,
-      showInActive: false,
-      applyParentSubMenuFilter: false
+      showInActive: false
     });
-    this.updateSelectedAccessLabels();
     this.loadItems(true);
   }
-
-  // Legacy filter method for backward compatibility
+  
+  // Handle filter changes
   onFilter() {
     this.applyFilters();
   }
 
-  @HostListener('window:scroll', [])
-  onScroll(): void {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100 && this.hasMore && !this.loading) {
-      this.loadItems();
-    }
-  }
-
-  onEdit(item: MenuItem) {
+  onEdit(item: MenuItem): void {
     window.open(`/edit-navbar/${item.id}`, '_blank');
   }
 
-  onView(item: MenuItem) {
+  onView(item: MenuItem): void {
     window.open(`/view-navbar/${item.id}`, '_blank');
   }
 
-  onDelete(item: MenuItem) {
-    if (confirm(`Are you sure you want to delete '${item.menuName}'?`)) {
-      if (item.id) {
+  onDelete(item: MenuItem): void {
+    const dialogRef = this.dialog.open(ConfirmDialogBoxComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirm Delete',
+        message: `Are you sure you want to delete '${item.menuName}'?`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && item.id) {
         this.navbarService.deleteNavbarItem(item.id).subscribe(() => {
-          this.items = this.items.filter(i => i.id !== item.id);
+          this.items = this.items.filter((i: MenuItem) => i.id !== item.id);
         });
       }
-    }
+    });
   }
 }
 

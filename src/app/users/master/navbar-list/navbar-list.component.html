@@ -154,15 +154,15 @@
           <td class="text-center">
             <i class="fas" [ngClass]="item.isVisibleToGuest ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Visible to Guest"></i>
           </td>
-          <td class="navbar-actions">
-            <button (click)="onEdit(item)" title="Edit" class="icon-btn">
-              <i class="fas fa-edit"></i>
+          <td class="text-center">
+            <button mat-icon-button color="primary" (click)="editItem(item.id)" matTooltip="Edit">
+              <mat-icon>edit</mat-icon>
             </button>
-            <button (click)="onDelete(item)" title="Delete" class="icon-btn">
-              <i class="fas fa-trash-alt"></i>
+            <button mat-icon-button color="accent" (click)="viewItem(item.id)" matTooltip="View" class="mx-1">
+              <mat-icon>visibility</mat-icon>
             </button>
-            <button (click)="onView(item)" title="View" class="icon-btn">
-              <i class="fas fa-eye"></i>
+            <button mat-icon-button color="warn" (click)="$event.stopPropagation(); deleteItem(item)" matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
             </button>
           </td>
         </tr>

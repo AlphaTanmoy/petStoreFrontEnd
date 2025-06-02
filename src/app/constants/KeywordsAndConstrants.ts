@@ -5,5 +5,6 @@ export const RESPONSE_TYPE_COLOR = {
   ERROR: 4
 }
 
-export const AUTH_TOKEN = 'alpha'
-export const DEFAULT_PAGE_SIZE = 10
+export const AUTH_TOKEN = 'Alpha';
+export const AUTH_TOKEN_PREFIX = 'Alpha ';
+export const DEFAULT_PAGE_SIZE = 10;

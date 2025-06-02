@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { NotificationService } from './notification.service';
+import { AUTH_TOKEN, AUTH_TOKEN_PREFIX } from '../../constants/KeywordsAndConstrants';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
@@ -18,7 +19,7 @@ export class TokenInterceptor implements HttpInterceptor {
     if (token) {
       cloned = req.clone({
         setHeaders: {
-          Alpha: `Alpha ${token}`
+          [AUTH_TOKEN]: `${AUTH_TOKEN_PREFIX}${token}`
         }
       });
     }

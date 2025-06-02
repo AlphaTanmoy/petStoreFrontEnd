@@ -1,22 +1,26 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
-import { catchError, tap, map, switchMap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { AUTH_TOKEN, AUTH_TOKEN_PREFIX } from '../constants/KeywordsAndConstrants';
 import { MenuItem } from '../interfaces/menu.interface';
+import { AuthService } from '../core/services/auth.service';
+import { PaginationResponse } from '../interfaces/paginationResponse.interface';
 import { GetAPIEndpoint } from '../constants/endpoints';
 import { MICROSERVICE_NAME } from '../constants/Enums';
-
-import { PaginationResponse } from '../interfaces/paginationResponse.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NavbarService {
-    private baseUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar');
-    private navbarGetUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar/get');
-    private svgUploadUrl =GetAPIEndpoint(MICROSERVICE_NAME.S3, 's3/uploadSvgImage');
+    private readonly baseUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar');
+    private readonly navbarGetUrl = GetAPIEndpoint(MICROSERVICE_NAME.CORE, 'navbar/get');
+    private readonly svgUploadUrl = GetAPIEndpoint(MICROSERVICE_NAME.S3, 's3/uploadSvgImage');
 
-    constructor(private http: HttpClient) {}
+    constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
     // Get paginated, filtered navbar list
     getNavbarList(paramsObj: {
@@ -48,25 +52,45 @@ export class NavbarService {
         params = params.set('listOfRolesCanAccess', paramsObj.listOfRolesCanAccess.join(','));
       }
       
-      const headers = new HttpHeaders({ 'Alpha': this.getAuthHeader() });
-      return this.http.get<PaginationResponse<MenuItem>>(this.navbarGetUrl, { headers, params });
+      const headers = new HttpHeaders({ [AUTH_TOKEN]: this.getAuthHeader() });
+      return this.http.get<PaginationResponse<MenuItem>>(this.navbarGetUrl, { headers, params })
+        .pipe(
+          catchError((error: HttpErrorResponse) => {
+            console.error('Error fetching navbar list:', error);
+            return throwError(() => error);
+          })
+        );
     }
 
     // Delete a navbar item by ID
     deleteNavbarItem(id: string): Observable<any> {
-      const headers = new HttpHeaders({ 'Alpha': this.getAuthHeader() });
-      return this.http.delete(`${this.baseUrl}/delete/${id}`, { headers });
+      if (!id) {
+        return throwError(() => new Error('ID is required'));
+      }
+      const headers = new HttpHeaders({ [AUTH_TOKEN]: this.getAuthHeader() });
+      return this.http.delete(`${this.baseUrl}/delete/${id}`, { headers })
+        .pipe(
+          tap(() => console.log(`Deleted navbar item with id=${id}`)),
+          catchError((error: HttpErrorResponse) => {
+            console.error(`Error deleting navbar item with ID ${id}:`, error);
+            return throwError(() => error);
+          })
+        );
     }
 
-    // Helper to get auth token (replace with actual implementation as needed)
+    // Get auth token from AuthService with proper prefix
     private getAuthHeader(): string {
-      // TODO: Replace with actual token retrieval logic if needed
-      return 'Alpha eyJhbGciOiJIUzM4NCJ9.eyJlbWFpbCI6IjZ3M1lrdzdybnRkRGRzVlI0OFJ6QzFlMk9NY2dhdHN3S1lRQXNFOGVDLzlFY1NpbnV0T2FsWVVKbmJDU0dMOWEwUHFpdHl6WWpkWks0cGdnTmtsZDB3PT0iLCJpZCI6IjI3MDMzYmQ4LTExNjktNDU5MS05MmJiLWYwNGY4M2ZkODUwMCIsInJvbGUiOiJST0xFX01BU1RFUiIsInRpcmUiOiJUSVJFMCIsInR3b0ZhY3RvciI6dHJ1ZSwiaXNUd29GYWN0b3JWZXJpZmllZCI6dHJ1ZSwiY3JlYXRlZEF0IjoiMjAyNS0wNS0zMFQwMTo1ODowNy41MTE3MzYzMDArMDU6MzBbQXNpYS9DYWxjdXR0YV0iLCJleHBBdCI6IjIwMjUtMDUtMzBUMDI6MDM6MDcuNTExNzM2MzAwKzA1OjMwW0FzaWEvQ2FsY3V0dGFdIn0.yvQdGFTx87eiQ3n5_3BtSzUxb16mBE_rGM0iDklVIqGfXRAe3fthk6jB3TjlCD9m';
+      const token = this.authService.getToken();
+      if (!token) {
+        console.warn('No authentication token found');
+        return '';
+      }
+      return `${AUTH_TOKEN_PREFIX}${token}`;
     }
 
     // Fetch parent menu options
     getParentMenus(authToken: string): Observable<{ firstParameter: string; secondParameter: string }[]> {
-        const headers = new HttpHeaders({ 'Alpha': `Alpha ${authToken}` });
+        const headers = new HttpHeaders({ [AUTH_TOKEN]: `${AUTH_TOKEN_PREFIX}${authToken}` });
         return this.http.get<any>(`${this.baseUrl}/getParentMenu`, { headers }).pipe(
             map(res => {
                 if (res && res.status && Array.isArray(res.data)) {
@@ -82,7 +106,7 @@ export class NavbarService {
         const formData = new FormData();
         formData.append('svgFile', svgFile);
         formData.append('userRole', 'ROLE_MASTER');
-        const headers = new HttpHeaders({ 'Alpha': `Alpha ${authToken}` });
+        const headers = new HttpHeaders({ [AUTH_TOKEN]: `${AUTH_TOKEN_PREFIX}${authToken}` });
         return this.http.post<any>(this.svgUploadUrl, formData, { headers }).pipe(
             map(res => {
                 console.log('SVG upload API response:', res);
@@ -116,7 +140,7 @@ export class NavbarService {
                 };
                 console.log('Ready to call add navbar API with:', menuPayload);
                 const headers = new HttpHeaders({
-                    'Alpha': `Alpha ${authToken}`,
+                    [AUTH_TOKEN]: `${AUTH_TOKEN_PREFIX}${authToken}`,
                     'Content-Type': 'application/json'
                 });
                 return this.http.post<MenuItem>(`${this.baseUrl}/add`, menuPayload, { headers });
@@ -142,7 +166,7 @@ export class NavbarService {
         }
 
         const headers = new HttpHeaders({
-            'Alpha': `Alpha ${authToken}`
+            [AUTH_TOKEN]: `${AUTH_TOKEN_PREFIX}${authToken}`
         });
 
         return this.http.put<MenuItem>(`${this.baseUrl}/update/${id}`, formData, { headers }).pipe(
@@ -152,8 +176,8 @@ export class NavbarService {
     }
 
     // Handle HTTP errors
-    private handleError<T>(operation = 'operation') {
-    return (error: any): Observable<T> => {
+    private handleError<T>(operation = 'operation'): (error: HttpErrorResponse) => Observable<T> {
+    return (error: HttpErrorResponse): Observable<T> => {
       console.error(`${operation} failed:`, error);
       return throwError(() => error);
     };
@@ -161,7 +185,7 @@ export class NavbarService {
 
   // Delete navbar item by ID
   deleteNavbarItemById(id: string): Observable<any> {
-    const headers = new HttpHeaders({ 'Alpha': this.getAuthHeader() });
+    const headers = new HttpHeaders({ [AUTH_TOKEN]: this.getAuthHeader() });
     return this.http.delete(`${this.baseUrl}/deleteById/${id}`, { headers }).pipe(
       tap(_ => console.log(`Deleted navbar item with id=${id}`)),
       catchError(this.handleError('deleteNavbarItemById'))
@@ -170,7 +194,7 @@ export class NavbarService {
 
   // Get navbar item by ID
   getNavbarItemById(id: string): Observable<MenuItem> {
-    const headers = new HttpHeaders({ 'Alpha': this.getAuthHeader() });
+    const headers = new HttpHeaders({ [AUTH_TOKEN]: this.getAuthHeader() });
     return this.http.get<MenuItem>(`${this.baseUrl}/getById/${id}`, { headers }).pipe(
       tap(_ => console.log(`Fetched navbar item with id=${id}`)),
       catchError(this.handleError<MenuItem>('getNavbarItemById'))

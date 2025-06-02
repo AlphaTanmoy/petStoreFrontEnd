@@ -24,7 +24,6 @@ export class MenuService {
     const userRole = this.authService.getStoredUserRole() || 'GUEST';
     const userType = isLoggedIn ? userRole : 'GUEST';
     const apiUrl = `${this.baseApiUrl}?userType=${encodeURIComponent(userType)}`;
-    console.log('[MenuService] Fetching menu with userType:', userType, 'API URL:', apiUrl);
     return this.http.get<ApiResponseOrError<MenuItem[]>>(apiUrl).pipe(
       map((response: ApiResponseOrError<MenuItem[]>) => {
         if (!response.status) {
