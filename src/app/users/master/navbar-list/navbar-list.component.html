@@ -52,7 +52,6 @@
           <th>Chat</th>
           <th>Customer Care</th>
           <th>Guest</th>
-          <th>Assigned</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -95,9 +94,6 @@
           </td>
           <td class="text-center">
             <i class="fas" [ngClass]="item.isVisibleToGuest ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Visible to Guest"></i>
-          </td>
-          <td class="text-center">
-            <i class="fas" [ngClass]="item.isAssignedToParentMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Assigned to Parent Menu"></i>
           </td>
           <td class="navbar-actions">
             <button (click)="onEdit(item)" title="Edit" class="icon-btn">

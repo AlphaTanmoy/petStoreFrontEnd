@@ -24,14 +24,15 @@ export class NavbarControlComponent {
   parentMenus: { firstParameter: string; secondParameter: string }[] = [];
 
   fields = [
+    { name: 'canMasterAccess', label: 'Master Access' },
     { name: 'canAdminAccess', label: 'Admin Access' },
     { name: 'canUserAccess', label: 'User Access' },
     { name: 'canDoctorAccess', label: 'Doctor Access' },
     { name: 'canSellerAccess', label: 'Seller Access' },
     { name: 'canRiderAccess', label: 'Rider Access' },
     { name: 'chatUsersAccess', label: 'Chat Users Access' },
-    { name: 'customerCareAccess', label: 'Customer Care Access' },
     { name: 'isVisibleToGuest', label: 'Visible to Guest' },
+    { name: 'isAvailableWhileLoggedOut', label: 'Available When Logged Out' },
   ];
 
   constructor(
@@ -45,6 +46,8 @@ export class NavbarControlComponent {
       menuLink: [''],
       isASubMenu: [false],
       parentId: [null],
+      // Access control fields
+      canMasterAccess: [true], // Default to true as per DTO
       canAdminAccess: [false],
       canUserAccess: [false],
       canDoctorAccess: [false],
@@ -52,7 +55,7 @@ export class NavbarControlComponent {
       canRiderAccess: [false],
       chatUsersAccess: [false],
       isVisibleToGuest: [false],
-      customerCareAccess: [false]
+      isAvailableWhileLoggedOut: [false]
     });
 
     // Ensure logo (selectedFile) is checked on submit
@@ -136,6 +139,7 @@ export class NavbarControlComponent {
       menuLink: formValue.menuLink || null,
       isASubMenu: formValue.isASubMenu,
       parentId: formValue.parentId,
+      canMasterAccess: formValue.canMasterAccess,
       canAdminAccess: formValue.canAdminAccess,
       canUserAccess: formValue.canUserAccess,
       canDoctorAccess: formValue.canDoctorAccess,
