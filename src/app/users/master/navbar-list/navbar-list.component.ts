@@ -50,7 +50,6 @@ import { Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
   encapsulation: ViewEncapsulation.None
 })
 export class NavbarListComponent implements OnInit, OnDestroy {
-  // Component state
   items: MenuItem[] = [];
   offsetToken: string | null = null;
   loading = false;
@@ -62,14 +61,12 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   filteredAccessOptions: { value: string; label: string }[] = [];
   selectedAccessLabels: string[] = [];
   
-  // Menu Type options
   menuTypeOptions = [
     { value: '', label: 'All Menus' },
     { value: 'true', label: 'Sub Menus Only' },
     { value: 'false', label: 'Parent Menus Only' }
   ];
   
-  // Access options for the dropdown
   accessOptions = [
     { value: 'canMasterAccess', label: 'Master' },
     { value: 'canAdminAccess', label: 'Admin' },
@@ -81,13 +78,6 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     { value: 'isVisibleToGuest', label: 'Guest' }
   ];
   
-  // Track previous isSubMenu value to detect changes
-  private previousIsSubMenu: string | null = null;
-  @ViewChild('dropdownContainer') dropdownContainer!: ElementRef;
-  private subscriptions = new Subscription();
-  private clickListener: (event: MouseEvent) => void;
-
-  // Map of form field names to USER_ROLE values
   private readonly accessRoleMap: { [key: string]: string } = {
     canMasterAccess: USER_ROLE.ROLE_MASTER,
     canAdminAccess: USER_ROLE.ROLE_ADMIN,
@@ -99,7 +89,6 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     isVisibleToGuest: USER_ROLE.GUEST
   };
   
-  // Define table columns
   columns = [
     { id: 'icon', label: 'Icon', sticky: false },
     { id: 'menuName', label: 'Menu Name', sticky: false },
@@ -108,7 +97,6 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     { id: 'isSubMenu', label: 'Sub Menu', sticky: false },
   ];
 
-  // Access role columns (will be added dynamically)
   accessRoleColumns: { id: string; label: string; sticky: boolean }[] = [
     { id: 'canMasterAccess', label: 'Master', sticky: false },
     { id: 'canAdminAccess', label: 'Admin', sticky: false },
@@ -120,15 +108,140 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     { id: 'isVisibleToGuest', label: 'Guest', sticky: false }
   ];
   
-  // Actions column
   actionsColumn = { id: 'actions', label: 'Actions', sticky: true };
 
-  // Get the showInActive form control with proper typing
-  getShowInactiveControl(): FormControl {
-    return this.filterForm.get('showInActive') as FormControl;
+  @ViewChild('tableContainer') private tableContainer!: ElementRef;
+  @ViewChild('accessDropdown', { static: false }) private accessDropdownElement!: ElementRef;
+  @ViewChild('menuTypeDropdown', { static: false }) private menuTypeDropdownElement!: ElementRef;
+  
+  private subscriptions = new Subscription();
+  private scrollListener: () => void;
+  private isScrolling = false;
+  private clickListener: (event: MouseEvent) => void;
+
+  constructor(
+    private navbarService: NavbarService,
+    private fb: FormBuilder,
+    private router: Router,
+    private dialog: MatDialog,
+    private elementRef: ElementRef
+  ) {
+    this.filterForm = this.fb.group({
+      search: [''],
+      access: [[]],
+      isSubMenu: [''],
+      showGuest: [false],
+      showInActive: [false]
+    });
+    
+    this.scrollListener = () => this.handleScroll();
+    
+    // Initialize click listener for handling clicks outside dropdowns
+    this.clickListener = (event: MouseEvent) => this.handleClickOutside(event);
   }
 
-  // Toggle access option
+  ngOnInit(): void {
+    this.loadAccessOptions();
+    this.loadItems(true);
+    
+    const searchSub = this.filterForm.get('search')?.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.applyFilters();
+    });
+    
+    if (searchSub) {
+      this.subscriptions.add(searchSub);
+    }
+    
+    // Add click listener when component initializes
+    document.addEventListener('click', this.clickListener);
+  }
+
+  ngAfterViewInit() {
+    if (this.tableContainer) {
+      this.tableContainer.nativeElement.addEventListener('scroll', this.scrollListener);
+    }
+  }
+
+  // Handle clicks outside dropdowns to close them
+  private handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    
+    // Check if click is outside access dropdown
+    const isClickInsideAccessDropdown = this.accessDropdownElement?.nativeElement?.contains(target);
+    const isClickInsideMenuTypeDropdown = this.menuTypeDropdownElement?.nativeElement?.contains(target);
+    
+    if (!isClickInsideAccessDropdown && this.accessDropdownOpen) {
+      this.accessDropdownOpen = false;
+    }
+    
+    if (!isClickInsideMenuTypeDropdown && this.menuTypeDropdownOpen) {
+      this.menuTypeDropdownOpen = false;
+    }
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+    if (this.tableContainer) {
+      this.tableContainer.nativeElement.removeEventListener('scroll', this.scrollListener);
+    }
+    // Remove click listener when component is destroyed
+    document.removeEventListener('click', this.clickListener);
+  }
+
+  private handleScroll(): void {
+    if (this.loading || !this.hasMore || this.isScrolling) return;
+
+    const element = this.tableContainer?.nativeElement;
+    if (!element) return;
+
+    // Check if we're near the bottom (within 100px)
+    const threshold = 100;
+    const position = element.scrollTop + element.clientHeight;
+    const height = element.scrollHeight;
+
+    if (position > height - threshold) {
+      this.isScrolling = true;
+      this.loadMoreItems();
+    }
+  }
+
+  private loadMoreItems(): Promise<void> {
+    return new Promise((resolve) => {
+      if (this.loading || !this.hasMore) {
+        resolve();
+        return;
+      }
+      
+      this.loading = true;
+      
+      // Use setTimeout to allow UI to update
+      setTimeout(() => {
+        this.loadItems(false).finally(() => {
+          this.isScrolling = false;
+          resolve();
+        });
+      }, 100);
+    });
+  }
+
+  // Safely get boolean property value from menu item
+  getPropertyValue(item: MenuItem, property: string): boolean {
+    // Explicitly check for known boolean properties
+    const booleanProperties = [
+      'canMasterAccess', 'canAdminAccess', 'canUserAccess', 'canDoctorAccess',
+      'canSellerAccess', 'canRiderAccess', 'customerCareAccess', 'isVisibleToGuest'
+    ];
+    
+    if (booleanProperties.includes(property)) {
+      return !!(item as any)[property];
+    }
+    return false;
+  }
+
+  // Toggle access option in the filter
   toggleAccessOption(role: string, event: Event): void {
     event.stopPropagation(); // Prevent dropdown from closing
     
@@ -149,91 +262,21 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     this.updateSelectedAccessLabels();
   }
 
-  // Update the selected access labels display
-  updateSelectedAccessLabels(): void {
+  // Get the showInActive form control with proper typing
+  getShowInactiveControl(): FormControl {
+    return this.filterForm.get('showInActive') as FormControl;
+  }
+
+  // Update the selected access labels for display
+  private updateSelectedAccessLabels(): void {
     const selected = this.filterForm.get('access')?.value || [];
     this.selectedAccessLabels = this.accessOptions
-      .filter((option: { value: string; label: string }) => selected.includes(option.value))
-      .map((option: { value: string; label: string }) => option.label);
-  }
-
-  // Utility method to safely access boolean properties
-  getPropertyValue(item: MenuItem, property: string): boolean {
-    // Explicitly check for known boolean properties
-    const booleanProperties = [
-      'canMasterAccess', 'canAdminAccess', 'canUserAccess', 'canDoctorAccess',
-      'canSellerAccess', 'canRiderAccess', 'customerCareAccess', 'isVisibleToGuest'
-    ];
-    
-    if (booleanProperties.includes(property)) {
-      return !!(item as any)[property];
-    }
-    return false;
-  }
-  
-  constructor(
-    private navbarService: NavbarService,
-    private fb: FormBuilder,
-    private router: Router,
-    private dialog: MatDialog,
-    private elementRef: ElementRef
-  ) {
-    this.filterForm = this.fb.group({
-      search: [''],
-      access: [[]],
-      isSubMenu: [''],
-      showGuest: [false],
-      showInActive: [false]
-    });
-    
-    // Initialize with empty filter values
-    this.resetFilters(false);
-    
-    // Handle clicks outside dropdowns
-    this.clickListener = (event: MouseEvent) => {
-      if (this.dropdownContainer && !this.dropdownContainer.nativeElement.contains(event.target as Node)) {
-        this.accessDropdownOpen = false;
-        this.menuTypeDropdownOpen = false;
-      }
-    };
-  }
-
-  // Get all columns including dynamic ones
-  get allColumns() {
-    return [...this.columns, ...this.accessRoleColumns, this.actionsColumn];
-  }
-
-  ngOnInit(): void {
-    this.initializeForm();
-    this.loadAccessOptions();
-    this.loadItems();
-    
-    // Subscribe to search field changes with debounce
-    const searchSub = this.filterForm.get('search')?.valueChanges.pipe(
-      debounceTime(500),
-      distinctUntilChanged()
-    ).subscribe(() => {
-      if (this.filterForm.get('search')?.dirty) {
-        this.applyFilters();
-      }
-    });
-    
-    if (searchSub) {
-      this.subscriptions.add(searchSub);
-    }
-    
-    // Add click listener for outside clicks
-    document.addEventListener('click', this.clickListener);
-  }
-  
-  ngOnDestroy() {
-    // Clean up subscriptions and event listeners
-    this.subscriptions.unsubscribe();
-    document.removeEventListener('click', this.clickListener);
+      .filter(option => selected.includes(option.value))
+      .map(option => option.label);
   }
 
   // Toggle access dropdown
-  toggleAccessDropdown() {
+  toggleAccessDropdown(): void {
     this.accessDropdownOpen = !this.accessDropdownOpen;
     if (this.accessDropdownOpen) {
       this.filterAccessOptions();
@@ -241,7 +284,7 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   }
 
   // Close access dropdown
-  closeAccessDropdown() {
+  closeAccessDropdown(): void {
     this.accessDropdownOpen = false;
     this.accessSearchText = '';
     this.filterAccessOptions();
@@ -254,14 +297,14 @@ export class NavbarListComponent implements OnInit, OnDestroy {
       this.accessDropdownOpen = false;
     }
   }
-  
+
   // Get the display label for the selected menu type
   getMenuTypeLabel(): string {
     const selectedValue = this.filterForm.get('isSubMenu')?.value;
     const selectedOption = this.menuTypeOptions.find(opt => opt.value === selectedValue);
     return selectedOption ? selectedOption.label : 'Select Menu Type';
   }
-  
+
   // Handle menu type selection
   selectMenuType(value: string): void {
     this.filterForm.get('isSubMenu')?.setValue(value);
@@ -290,12 +333,9 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   // Clear all selected access roles
   clearAccessSelection(event: Event): void {
     event.stopPropagation();
-    const accessControl = this.filterForm.get('access');
-    if (accessControl) {
-      accessControl.setValue([]);
-      accessControl.markAsDirty();
-      this.updateSelectedAccessLabels();
-    }
+    this.filterForm.get('access')?.setValue([]);
+    this.selectedAccessLabels = [];
+    this.filterAccessOptions();
   }
 
   // Handle filter changes
@@ -303,104 +343,9 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
-  // Get selected access labels as string
-  getSelectedAccessLabels(): string {
-    return this.selectedAccessLabels.join(', ');
-  }
-
-  // Initialize the filter form
-  initializeForm(): void {
-    this.filterForm = this.fb.group({
-      search: [''],
-      access: [[]],
-      isSubMenu: [''],
-      showGuest: [false],
-      showInActive: [false]
-    });
-  }
-
-  // Load access options
-  loadAccessOptions(): void {
-    // In a real app, you might load these from an API
-    this.filteredAccessOptions = [...this.accessOptions];
-  }
-
-  // Load items from the API with pagination
-  loadItems(reset = false): void {
-    if (this.loading) return;
-    
-    this.loading = true;
-    
-    if (reset) {
-      this.offsetToken = null;
-      this.hasMore = true;
-      this.items = [];
-    }
-    
-    if (!this.hasMore) {
-      this.loading = false;
-      return;
-    }
-    
-    const formValue = this.filterForm.value;
-    
-    // Map access roles
-    let listOfRolesCanAccess: string[] = [];
-    if (formValue.access?.length) {
-      listOfRolesCanAccess = formValue.access
-        .filter((role: string) => role !== 'isVisibleToGuest')
-        .map((role: string) => this.accessRoleMap[role])
-        .filter(Boolean);
-    }
-    
-    // Handle guest access
-    if (formValue.showGuest) {
-      listOfRolesCanAccess.push(USER_ROLE.GUEST);
-    }
-    
-    // Prepare API parameters
-    const isSubMenu = formValue.isSubMenu;
-    const applyParentSubMenuFilter = isSubMenu !== '';
-    const showSubMenusOnly = isSubMenu === 'true';
-    
-    const params: any = {
-      limit: DEFAULT_PAGE_SIZE,
-      offsetToken: this.offsetToken || '',
-      queryString: formValue.search || '%',
-      listOfRolesCanAccess: listOfRolesCanAccess.length ? listOfRolesCanAccess : undefined,
-      showSubMenusOnly,
-      isVisibleToGuest: formValue.showGuest || false,
-      showInActive: formValue.showInActive || false,
-      applyParentSubMenuFilter
-    };
-    
-    // Call the API
-    this.navbarService.getNavbarList(params).subscribe({
-      next: (response: PaginationResponse<MenuItem>) => {
-        if (reset) {
-          this.items = [];
-        }
-        
-        this.items = [...this.items, ...response.data];
-        this.offsetToken = response.offsetToken || '';
-        this.hasMore = !!this.offsetToken;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading navbar items:', error);
-      },
-      complete: () => {
-        this.loading = false;
-      }
-    });
-  }
-  
-  // Apply filters to the data
+  // Apply filters and reload data
   applyFilters(): void {
-    if (this.loading) return;
-    this.filterForm.markAsPristine();
     this.loadItems(true);
-    this.closeAccessDropdown();
   }
 
   // Reset all filters
@@ -413,8 +358,8 @@ export class NavbarListComponent implements OnInit, OnDestroy {
       showInActive: false
     });
     
-    this.selectedAccessLabels = [];
     this.accessSearchText = '';
+    this.selectedAccessLabels = [];
     this.filterAccessOptions();
     
     if (loadItems) {
@@ -422,43 +367,137 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Load access options
+  loadAccessOptions(): void {
+    this.filteredAccessOptions = [...this.accessOptions];
+  }
+
+  // Load items from the API with pagination
+  loadItems(reset = false): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.loading) {
+        resolve();
+        return;
+      }
+      
+      this.loading = true;
+      const formValue = this.filterForm.value;
+      
+      // Reset items and pagination if this is a fresh load
+      if (reset) {
+        this.items = [];
+        this.offsetToken = null;
+        this.hasMore = true;
+      }
+      
+      // If we've already loaded everything, don't make another request
+      if (!reset && !this.hasMore) {
+        this.loading = false;
+        resolve();
+        return;
+      }
+      
+      // Build the request parameters
+      const listOfRolesCanAccess = formValue.access || [];
+      const showSubMenusOnly = formValue.isSubMenu === 'true';
+      const applyParentSubMenuFilter = formValue.isSubMenu === 'false';
+      
+      // Map access roles
+      const mappedRoles = listOfRolesCanAccess
+        .filter((role: string) => role !== 'isVisibleToGuest')
+        .map((role: string) => this.accessRoleMap[role])
+        .filter(Boolean);
+      
+      // Include guest role if selected
+      if (formValue.showGuest) {
+        mappedRoles.push(USER_ROLE.GUEST);
+      }
+      
+      const params: any = {
+        limit: DEFAULT_PAGE_SIZE,
+        offsetToken: this.offsetToken || '',
+        queryString: formValue.search || '%',
+        listOfRolesCanAccess: mappedRoles.length ? mappedRoles : undefined,
+        showSubMenusOnly,
+        isVisibleToGuest: formValue.showGuest || false,
+        showInActive: formValue.showInActive || false,
+        applyParentSubMenuFilter
+      };
+      
+      // Call the API
+      this.navbarService.getNavbarList(params).subscribe({
+        next: (response: PaginationResponse<MenuItem>) => {
+          // Append new items to the existing ones
+          this.items = reset ? response.data : [...this.items, ...response.data];
+          
+          // Update pagination state
+          this.offsetToken = response.offsetToken || '';
+          this.hasMore = !!this.offsetToken && response.data.length === DEFAULT_PAGE_SIZE;
+          
+          // If we got a full page of results, there might be more
+          if (response.data.length === DEFAULT_PAGE_SIZE) {
+            this.hasMore = true;
+          }
+          
+          // Check if we need to load more to fill the viewport
+          setTimeout(() => {
+            if (this.hasMore && this.tableContainer?.nativeElement) {
+              const container = this.tableContainer.nativeElement;
+              if (container.scrollHeight <= container.clientHeight) {
+                this.loadMoreItems().finally(resolve);
+                return;
+              }
+            }
+            resolve();
+          }, 100);
+        },
+        error: (error: any) => {
+          console.error('Error loading navbar items:', error);
+          this.loading = false;
+          reject(error);
+        },
+        complete: () => {
+          this.loading = false;
+        }
+      });
+    });
+  }
+  
   // View item details
   viewItem(id: string): void {
-    if (!id) return;
-    window.open(`/view-navbar/${id}`, '_blank');
+    this.router.navigate(['/navbar', id]);
   }
-
+  
   // Edit item
   editItem(id: string): void {
-    if (!id) return;
-    window.open(`/edit-navbar/${id}`, '_blank');
+    this.router.navigate(['/navbar', id, 'edit']);
   }
-
-  // Handle delete action
+  
+  // Delete item
   deleteItem(item: MenuItem): void {
-    if (!item?.id) return;
-    
     const dialogRef = this.dialog.open(ConfirmDialogBoxComponent, {
       width: '400px',
       data: {
         title: 'Confirm Delete',
-        message: `Are you sure you want to delete "${item.menuName}"?`,
+        message: `Are you sure you want to delete ${item.menuName}?`,
         confirmText: 'Delete',
         cancelText: 'Cancel'
       }
     });
-
+    
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.navbarService.deleteNavbarItem(item.id).subscribe({
           next: () => {
-            // Remove the item from the local array
-            this.items = this.items.filter(i => i.id !== item.id);
-            // Show success message or handle as needed
+            // Remove the item from the list
+            const index = this.items.findIndex(i => i.id === item.id);
+            if (index > -1) {
+              this.items.splice(index, 1);
+              this.items = [...this.items]; // Trigger change detection
+            }
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error deleting navbar item:', error);
-            // Show error message or handle as needed
           }
         });
       }
