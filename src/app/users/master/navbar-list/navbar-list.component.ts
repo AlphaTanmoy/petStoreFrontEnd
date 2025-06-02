@@ -101,7 +101,7 @@ export class NavbarListComponent implements OnInit {
     }
     const filters = this.filterForm.value;
     this.navbarService.getNavbarList({
-      limit: 5,
+      limit: 20,
       offsetToken: this.offsetToken || '',
       ...filters
     }).subscribe({

@@ -1,4 +1,5 @@
 <div class="navbar-list-container">
+  <h2 class="navbar-list-heading">Navbar List</h2>
   <!-- Filters -->
   <form [formGroup]="filterForm" (ngSubmit)="onFilter()" class="filter-area">
     <input formControlName="search" type="text" placeholder="Search by menu name..." />
@@ -39,10 +40,19 @@
         <tr>
           <th>Icon</th>
           <th>Menu Name</th>
-          <th>Parent ID</th>
-          <th>Redirection</th>
           <th>Menu Link</th>
-          <th>Is Sub Menu</th>
+          <th>Redirection</th>
+          <th>Sub Menu</th>
+          <th>Master</th>
+          <th>Admin</th>
+          <th>User</th>
+          <th>Doctor</th>
+          <th>Seller</th>
+          <th>Rider</th>
+          <th>Chat</th>
+          <th>Customer Care</th>
+          <th>Guest</th>
+          <th>Assigned</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -52,10 +62,43 @@
             <img *ngIf="item.svgFileDataLink" [src]="item.svgFileDataLink" alt="icon" class="navbar-svg" />
           </td>
           <td>{{ item.menuName }}</td>
-          <td>{{ item.parentId }}</td>
-          <td>{{ item.doHaveRedirectionLink ? 'Yes' : 'No' }}</td>
           <td>{{ item.menuLink }}</td>
-          <td>{{ item.isASubMenu ? 'Yes' : 'No' }}</td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.doHaveRedirectionLink ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" [title]="item.doHaveRedirectionLink ? 'Has Redirection' : 'No Redirection'"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.isASubMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Is Sub Menu"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.canMasterAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Master Access"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.canAdminAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Admin Access"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.canUserAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="User Access"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.canDoctorAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Doctor Access"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.canSellerAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Seller Access"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.canRiderAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Rider Access"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.chatUsersAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Chat Users Access"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.customerCareAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Customer Care Access"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.isVisibleToGuest ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Visible to Guest"></i>
+          </td>
+          <td class="text-center">
+            <i class="fas" [ngClass]="item.isAssignedToParentMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Assigned to Parent Menu"></i>
+          </td>
           <td class="navbar-actions">
             <button (click)="onEdit(item)" title="Edit" class="icon-btn">
               <i class="fas fa-edit"></i>
