@@ -5,17 +5,17 @@
     <div class="filter-section">
       <!-- First Row: Search and Toggle -->
       <div class="form-row">
-        <!-- Search -->
-        <div class="form-group search-group">
+        <!-- Search Input -->
+        <div class="form-group">
           <label class="form-label">Search</label>
-          <div class="input-with-icon">
+          <div class="search-input-container">
             <i class="fas fa-search"></i>
             <input 
               type="text" 
               formControlName="search" 
-              placeholder="Search by menu name..." 
-              class="form-control"
-            >
+              class="search-input" 
+              placeholder="Search by name..."
+              (keyup.enter)="applyFilters()">
           </div>
         </div>
         
@@ -37,55 +37,53 @@
         <!-- Menu Type -->
         <div class="form-group">
           <label class="form-label">Menu Type</label>
-          <div class="select-wrapper">
-            <i class="fas fa-sitemap"></i>
-            <select 
-              formControlName="isSubMenu" 
-              class="form-control"
-            >
-              <option value="">All Menus</option>
-              <option value="true">Sub Menus Only</option>
-              <option value="false">Parent Menus Only</option>
-            </select>
+          <div class="access-dropdown" (click)="$event.stopPropagation()">
+            <div class="dropdown-header" (click)="toggleMenuTypeDropdown()">
+              {{ getMenuTypeLabel() }}
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="dropdown-options no-scrollbar" *ngIf="menuTypeDropdownOpen">
+              <div class="options-list">
+                <div class="option" *ngFor="let option of menuTypeOptions" (click)="selectMenuType(option.value)">
+                  <span class="option-label">{{ option.label }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         
-        <!-- Access Roles Multi-Select Dropdown -->
-        <div class="form-group access-roles-group">
+        <!-- Access Control Dropdown -->
+        <div class="form-group">
           <label class="form-label">Access Roles</label>
-          <div class="dropdown-container" #dropdownContainer>
+          <div class="access-dropdown" [class.open]="accessDropdownOpen" (click)="$event.stopPropagation()">
             <div class="dropdown-header" (click)="toggleAccessDropdown()">
-              <span class="selected-values" *ngIf="selectedAccessLabels.length; else placeholder">
-                {{ getSelectedAccessLabels() }}
-              </span>
-              <ng-template #placeholder>Select access roles...</ng-template>
-              <i class="fas fa-chevron-down dropdown-arrow"></i>
+              {{ selectedAccessLabels.length > 0 ? selectedAccessLabels.join(', ') : 'Select Access Roles' }}
+              <i class="fas fa-chevron-down"></i>
             </div>
-            <div class="dropdown-content" *ngIf="accessDropdownOpen">
-              <div class="search-container">
+            <div class="dropdown-options" *ngIf="accessDropdownOpen" (click)="$event.stopPropagation()">
+              <div class="search-box">
                 <i class="fas fa-search"></i>
                 <input 
                   type="text" 
-                  [(ngModel)]="accessSearchText" 
-                  placeholder="Search roles..." 
-                  class="search-input"
-                  (input)="filterAccessOptions()"
+                  [(ngModel)]="accessSearchText"
+                  (ngModelChange)="filterAccessOptions()"
+                  placeholder="Search roles..."
                   (click)="$event.stopPropagation()"
-                >
+                  class="search-input"
+                  autocomplete="off">
               </div>
-              <div class="options-list">
-                <div class="option" *ngFor="let option of filteredAccessOptions">
-                  <label class="checkbox-container">
+              <div class="access-options">
+                <div class="options-list">
+                  <label class="option" *ngFor="let option of filteredAccessOptions">
                     <input 
                       type="checkbox" 
+                      [value]="option.value"
                       [checked]="filterForm.get('access')?.value?.includes(option.value)"
-                      (change)="toggleAccessOption(option.value, $event)">
+                      (change)="toggleAccessOption(option.value, $event)"
+                      (click)="$event.stopPropagation()">
                     <span class="checkmark"></span>
-                    {{ option.label }}
+                    <span class="option-label">{{ option.label }}</span>
                   </label>
-                </div>
-                <div *ngIf="filteredAccessOptions.length === 0" class="no-results">
-                  No matching roles found
                 </div>
               </div>
             </div>
