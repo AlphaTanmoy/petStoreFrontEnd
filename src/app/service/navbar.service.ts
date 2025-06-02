@@ -23,21 +23,31 @@ export class NavbarService {
       limit?: number;
       offsetToken?: string;
       search?: string;
-      access?: string[];
-      isSubMenu?: string;
-      showGuest?: boolean;
+      listOfRolesCanAccess?: string[];
+      showSubMenusOnly?: boolean;
+      isVisibleToGuest?: boolean;
+      showInActive?: boolean;
+      applyParentSubMenuFilter?: boolean;
       [key: string]: any;
     }): Observable<PaginationResponse<MenuItem>> {
       let params = new HttpParams();
+      
+      // Add pagination parameters
       if (paramsObj.limit) params = params.set('limit', paramsObj.limit.toString());
       if (paramsObj.offsetToken) params = params.set('offsetToken', paramsObj.offsetToken);
+      
+      // Add filter parameters
       if (paramsObj.search) params = params.set('search', paramsObj.search);
-      if (paramsObj.isSubMenu) params = params.set('isSubMenu', paramsObj.isSubMenu);
-      if (paramsObj.showGuest) params = params.set('isVisibleToGuest', 'true');
-      if (paramsObj.access && paramsObj.access.length) {
-        params = params.set('access', paramsObj.access.join(','));
+      if (paramsObj.showSubMenusOnly) params = params.set('showSubMenusOnly', 'true');
+      if (paramsObj.isVisibleToGuest) params = params.set('isVisibleToGuest', 'true');
+      if (paramsObj.showInActive) params = params.set('showInActive', 'true');
+      if (paramsObj.applyParentSubMenuFilter) params = params.set('applyParentSubMenuFilter', 'true');
+      
+      // Add role-based access parameters
+      if (paramsObj.listOfRolesCanAccess && paramsObj.listOfRolesCanAccess.length) {
+        params = params.set('listOfRolesCanAccess', paramsObj.listOfRolesCanAccess.join(','));
       }
-      // Add more filters as needed
+      
       const headers = new HttpHeaders({ 'Alpha': this.getAuthHeader() });
       return this.http.get<PaginationResponse<MenuItem>>(this.navbarGetUrl, { headers, params });
     }

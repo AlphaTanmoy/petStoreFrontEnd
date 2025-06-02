@@ -1,36 +1,77 @@
 <div class="navbar-list-container">
   <h2 class="navbar-list-heading">Navbar List</h2>
   <!-- Filters -->
-  <form [formGroup]="filterForm" (ngSubmit)="onFilter()" class="filter-area">
-    <input formControlName="search" type="text" placeholder="Search by menu name..." />
-
-    <select formControlName="isSubMenu">
-      <option value="">All Menus</option>
-      <option value="true">Sub Menus</option>
-      <option value="false">Main Menus</option>
-    </select>
-
-    <label class="checkbox-label">
-      <input type="checkbox" formControlName="showGuest" />
-      Visible to Guest
-    </label>
-
-    <!-- Custom Multi-Select Dropdown for Access Roles -->
-    <div class="multi-select-dropdown" [class.open]="accessDropdownOpen" tabindex="0" (click)="toggleAccessDropdown()" (blur)="closeAccessDropdown()">
-      <div class="dropdown-selected">
-        <span *ngIf="!selectedAccessLabels.length">Select Access Roles</span>
-        <span *ngIf="selectedAccessLabels.length">{{ selectedAccessLabels.join(', ') }}</span>
-        <i class="fas fa-chevron-down"></i>
+  <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-form">
+    <div class="filter-section">
+      <h3 class="filter-section-title">Search & Filter</h3>
+      <div class="filter-grid">
+        <!-- Search -->
+        <div class="form-group">
+          <label class="form-label">Search</label>
+          <div class="input-with-icon">
+            <i class="fas fa-search"></i>
+            <input type="text" formControlName="search" placeholder="Search by menu name..." class="form-control">
+          </div>
+        </div>
+        
+        <!-- Menu Type -->
+        <div class="form-group">
+          <label class="form-label">Menu Type</label>
+          <div class="select-wrapper">
+            <i class="fas fa-sitemap"></i>
+            <select formControlName="isSubMenu" class="form-control">
+              <option value="">All Menus</option>
+              <option value="true">Sub Menus Only</option>
+              <option value="false">Parent Menus Only</option>
+            </select>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+        </div>
+        
+        <!-- Access Roles -->
+        <div class="form-group">
+          <label class="form-label">Access Roles</label>
+          <div class="access-options">
+            <div class="access-options-grid">
+              <label *ngFor="let option of accessOptions" class="custom-checkbox">
+                <input type="checkbox" [checked]="filterForm.value.access.includes(option.value)" (change)="onAccessCheckboxChange(option.value, $event)">
+                <span class="checkmark"></span>
+                <span class="label-text">{{ option.label }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Toggle Options -->
+        <div class="form-group toggle-options">
+          <div class="toggle-option">
+            <label class="switch">
+              <input type="checkbox" formControlName="showGuest">
+              <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show Guest Access</span>
+          </div>
+          
+          <div class="toggle-option">
+            <label class="switch">
+              <input type="checkbox" formControlName="showInActive">
+              <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show Inactive Items</span>
+          </div>
+        </div>
       </div>
-      <div class="dropdown-list" *ngIf="accessDropdownOpen">
-        <label *ngFor="let option of accessOptions" class="dropdown-option">
-          <input type="checkbox" [checked]="filterForm.value.access.includes(option.value)" (change)="onAccessCheckboxChange(option.value, $event)" />
-          {{ option.label }}
-        </label>
+      
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" (click)="resetFilters()" class="btn btn-outline-secondary">
+          <i class="fas fa-undo"></i> Reset
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-filter"></i> Apply Filters
+        </button>
       </div>
     </div>
-
-    <button type="submit">Apply Filters</button>
   </form>
 
   <!-- Table -->
@@ -49,7 +90,6 @@
           <th>Doctor</th>
           <th>Seller</th>
           <th>Rider</th>
-          <th>Chat</th>
           <th>Customer Care</th>
           <th>Guest</th>
           <th>Actions</th>
@@ -85,9 +125,6 @@
           </td>
           <td class="text-center">
             <i class="fas" [ngClass]="item.canRiderAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Rider Access"></i>
-          </td>
-          <td class="text-center">
-            <i class="fas" [ngClass]="item.chatUsersAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Chat Users Access"></i>
           </td>
           <td class="text-center">
             <i class="fas" [ngClass]="item.customerCareAccess ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'" title="Customer Care Access"></i>
