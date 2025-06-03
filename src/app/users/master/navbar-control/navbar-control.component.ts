@@ -30,7 +30,7 @@ export class NavbarControlComponent {
     { name: 'canDoctorAccess', label: 'Doctor Access' },
     { name: 'canSellerAccess', label: 'Seller Access' },
     { name: 'canRiderAccess', label: 'Rider Access' },
-    { name: 'chatUsersAccess', label: 'Chat Users Access' },
+    { name: 'canCustomerCareAccess', label: 'Customer Care Access' },
     { name: 'isVisibleToGuest', label: 'Visible to Guest' },
     { name: 'isAvailableWhileLoggedOut', label: 'Available When Logged Out' },
   ];
@@ -53,14 +53,13 @@ export class NavbarControlComponent {
       canDoctorAccess: [false],
       canSellerAccess: [false],
       canRiderAccess: [false],
-      chatUsersAccess: [false],
+      canCustomerCareAccess: [false],
       isVisibleToGuest: [false],
       isAvailableWhileLoggedOut: [false]
     });
 
     // Ensure logo (selectedFile) is checked on submit
     // This will be handled in onSubmit()
-
 
     // Watch for changes in isASubMenu to show/hide parentId field
     this.navbarForm.get('isASubMenu')?.valueChanges.subscribe(value => {
@@ -145,9 +144,10 @@ export class NavbarControlComponent {
       canDoctorAccess: formValue.canDoctorAccess,
       canSellerAccess: formValue.canSellerAccess,
       canRiderAccess: formValue.canRiderAccess,
-      chatUsersAccess: formValue.chatUsersAccess,
+      canCustomerCareAccess: formValue.canCustomerCareAccess,
       isVisibleToGuest: formValue.isVisibleToGuest,
-      isAvailableWhileLoggedOut: formValue.isAvailableWhileLoggedOut
+      isAvailableWhileLoggedOut: formValue.isAvailableWhileLoggedOut,
+      svgFileDataLink: null // This will be set by the backend after file upload
     };
 
     this.responseMessage = 'Uploading SVG file and adding menu...';
@@ -188,12 +188,13 @@ export class NavbarControlComponent {
       doHaveRedirectionLink: false,
       isASubMenu: false,
       parentId: null,
+      canMasterAccess: true,
       canAdminAccess: false,
       canUserAccess: false,
       canDoctorAccess: false,
       canSellerAccess: false,
       canRiderAccess: false,
-      chatUsersAccess: false,
+      canCustomerCareAccess: false,
       isVisibleToGuest: false,
       isAvailableWhileLoggedOut: false
     });

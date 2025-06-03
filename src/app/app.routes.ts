@@ -47,6 +47,10 @@ import { MicroserviceActionComponent } from './dashboard/microservice-action/mic
 import { MvnRunnerListComponent } from './dashboard/mvn-runner-list/mvn-runner-list.component';
 import { ServerInfoComponent } from './dashboard/server-info/server-info.component';
 import { NavbarListComponent } from './users/master/navbar-list/navbar-list.component';
+import { RaiderDetailsComponent } from './users/raider/raider-details/raider-details.component';
+import { RaiderDashboardComponent } from './users/raider/raider-dashboard/raider-dashboard.component';
+import { ViewRaidersComponent } from './users/raider/view-raiders/view-raiders.component';
+import { RaiderProfileControlComponent } from './users/raider/raider-profile-control/raider-profile-control.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -139,6 +143,20 @@ export const routes: Routes = [
       { path: 'dashboard', component: CustomerCareDashboardComponent },
       { path: 'view-all', component: ViewCustomerCaresComponent },
       { path: 'profile-control', component: CustomerCareProfileControlComponent },
+    ]
+  },
+
+  // Raider routes (protected)
+  {
+    path: 'raider',
+    canActivate: [AuthGuard],
+    data: { roles: [USER_ROLE.ROLE_RAIDER, USER_ROLE.ROLE_ADMIN, USER_ROLE.ROLE_MASTER] },
+    children: [
+      { path: 'dashboard', component: RaiderDashboardComponent },
+      { path: 'details', component: RaiderDetailsComponent },
+      { path: 'dashboard', component: RaiderDashboardComponent },
+      { path: 'view-all', component: ViewRaidersComponent },
+      { path: 'profile-control', component: RaiderProfileControlComponent },
     ]
   },
 
