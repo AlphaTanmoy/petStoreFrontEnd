@@ -69,6 +69,7 @@
   min-height: 40px;
 }
 
+/* Base action button styles */
 .action-btn {
   width: 32px;
   height: 32px;
@@ -77,21 +78,58 @@
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
   cursor: pointer;
   border: none;
   background: transparent;
+  color: #666; /* Default icon color */
 }
 
+/* Hover state for all action buttons */
 .action-btn:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Edit button styles */
+.action-btn mat-icon[data-icon='edit'] {
+  color: #ff9900; /* Warning color for edit */
+}
+
+.action-btn:hover mat-icon[data-icon='edit'] {
+  color: #e68a00; /* Slightly darker on hover */
+}
+
+/* View button styles */
+.action-btn mat-icon[data-icon='visibility'] {
+  color: #057aff; /* Primary hover color for view */
+}
+
+.action-btn:hover mat-icon[data-icon='visibility'] {
+  color: #0468d7; /* Slightly darker on hover */
+}
+
+/* Delete button styles */
+.action-btn mat-icon[data-icon='delete'] {
+  color: #ff0000; /* Danger color for delete */
+}
+
+.action-btn:hover mat-icon[data-icon='delete'] {
+  color: #cc0000; /* Slightly darker on hover */
+}
+
+/* Icon styles */
 .action-btn mat-icon {
   width: 20px;
   height: 20px;
   font-size: 20px;
   line-height: 1;
+  transition: all 0.2s;
+}
+
+/* Hover background for all action buttons */
+.action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 /* Loading States */

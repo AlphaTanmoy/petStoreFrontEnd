@@ -184,13 +184,13 @@
           <td class="sticky-col">
             <div class="action-buttons">
               <button mat-icon-button (click)="$event.stopPropagation(); editItem(item.id)" class="action-btn" matTooltip="Edit">
-                <mat-icon>edit</mat-icon>
+                <mat-icon data-icon="edit">edit</mat-icon>
               </button>
               <button mat-icon-button (click)="$event.stopPropagation(); viewItem(item.id)" class="action-btn" matTooltip="View">
-                <mat-icon>visibility</mat-icon>
+                <mat-icon data-icon="visibility">visibility</mat-icon>
               </button>
               <button mat-icon-button (click)="$event.stopPropagation(); deleteItem(item)" class="action-btn" matTooltip="Delete">
-                <mat-icon>delete</mat-icon>
+                <mat-icon data-icon="delete">delete</mat-icon>
               </button>
             </div>
           </td>
