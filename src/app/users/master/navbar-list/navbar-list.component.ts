@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, ViewEncapsulation, Inject, isDevMode } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, Renderer2, ViewEncapsulation, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -112,21 +112,27 @@ export class NavbarListComponent implements OnInit, OnDestroy {
 
   isDevMode = isDevMode();
   
-  @ViewChild('tableContainer') private tableContainer!: ElementRef;
-  @ViewChild('accessDropdown', { static: false }) private accessDropdownElement!: ElementRef;
-  @ViewChild('menuTypeDropdown', { static: false }) private menuTypeDropdownElement!: ElementRef;
-  
-  private subscriptions = new Subscription();
-  private scrollListener: () => void;
-  private isScrolling = false;
-  private clickListener: (event: MouseEvent) => void;
+  @ViewChild('tableContainer') private tableContainer!: ElementRef
+  @ViewChild('accessDropdown', { static: false }) private accessDropdownElement!: ElementRef
+  @ViewChild('menuTypeDropdown', { static: false }) private menuTypeDropdownElement!: ElementRef
+  private subscriptions = new Subscription()
+  private scrollDebounceTimer: any
+  private readonly SCROLL_DEBOUNCE_TIME = 200
+  private readonly SCROLL_THRESHOLD = 100
+  private clickListener: (() => void) | null = null
+  private scrollListener: (() => void) | null = null
+  private isScrolling = false // Track if we're currently loading more items
+  private lastScrollTime = 0
+  private readonly SCROLL_DEBOUNCE = 200 // ms
 
   constructor(
     private navbarService: NavbarService,
     private fb: FormBuilder,
     private router: Router,
     private dialog: MatDialog,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private renderer: Renderer2,
+    private cdr: ChangeDetectorRef
   ) {
     this.filterForm = this.fb.group({
       search: [''],
@@ -136,34 +142,54 @@ export class NavbarListComponent implements OnInit, OnDestroy {
       showInActive: [false]
     });
     
-    this.scrollListener = () => this.handleScroll();
-    
-    // Initialize click listener for handling clicks outside dropdowns
-    this.clickListener = (event: MouseEvent) => this.handleClickOutside(event);
-  }
-
-  ngOnInit(): void {
-    this.loadAccessOptions();
-    this.loadItems(true);
-    
     const searchSub = this.filterForm.get('search')?.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged()
-    ).subscribe(() => {
+    )?.subscribe(() => {
       this.applyFilters();
     });
     
     if (searchSub) {
       this.subscriptions.add(searchSub);
     }
-    
-    // Add click listener when component initializes
-    document.addEventListener('click', this.clickListener);
+  }
+
+  ngOnInit(): void {
+    this.loadAccessOptions();
+    this.loadItems(true);
   }
 
   ngAfterViewInit() {
-    // Initial load of items
+    // Add click listener for dropdowns
+    this.clickListener = this.renderer.listen('document', 'click', (event: MouseEvent) => this.handleClickOutside(event));
+    
+    // Initial load
     this.loadItems(true);
+    
+    // Setup scroll listener after view is initialized
+    // Use setTimeout to ensure the view is fully rendered
+    setTimeout(() => {
+      this.setupScrollListener();
+    }, 0);
+  }
+  
+  private setupScrollListener(): void {
+    // Clean up any existing listener
+    if (this.scrollListener) {
+      this.scrollListener();
+      this.scrollListener = null;
+    }
+    
+    // Get the scroll container
+    const container = this.elementRef.nativeElement.querySelector('#navbarTableContainer');
+    if (container) {
+      // Add the scroll event listener
+      this.scrollListener = this.renderer.listen(container, 'scroll', (event: Event) => this.handleScroll(event));
+      
+      // Manually trigger a scroll event to check initial position
+      const scrollEvent = new Event('scroll');
+      container.dispatchEvent(scrollEvent);
+    }
   }
 
   // Handle clicks outside dropdowns to close them
@@ -184,56 +210,241 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    if (this.tableContainer) {
-      this.tableContainer.nativeElement.removeEventListener('scroll', this.scrollListener);
+    // Clean up event listeners
+    if (this.clickListener) {
+      this.clickListener();
     }
-    // Remove click listener when component is destroyed
-    document.removeEventListener('click', this.clickListener);
+    
+    if (this.scrollListener) {
+      this.scrollListener();
+    }
+    
+    // Clear any pending debounce timer
+    if (this.scrollDebounceTimer) {
+      clearTimeout(this.scrollDebounceTimer);
+    }
+    
+    // Unsubscribe from all subscriptions
+    this.subscriptions.unsubscribe();
   }
 
-  // Check if we need to load more items when scrolling
   private checkIfMoreItemsNeeded(): void {
     // This method is kept for backward compatibility
     // but we'll handle everything in handleScroll now
   }
 
   // Handle scroll events to load more items when near the bottom
-  handleScroll(): void {
-    // Don't trigger if already loading, no more items, or container not ready
-    if (this.loading || !this.hasMore || !this.tableContainer?.nativeElement) {
+
+  handleScroll(event: Event): void {
+    if (this.loading || !this.hasMore) {
       return;
     }
+
+    const container = event.target as HTMLElement;
+    if (!container) {
+      if (isDevMode()) {
+        console.warn('Scroll container not found');
+      }
+      return;
+    }
+
+    const now = Date.now();
     
-    const element = this.tableContainer.nativeElement;
-    const threshold = 200; // pixels from bottom to trigger load
-    const scrollPosition = element.scrollTop + element.clientHeight;
-    const scrollHeight = element.scrollHeight;
-  
-    // Check if we've scrolled near the bottom (within threshold)
-    const shouldLoadMore = scrollPosition >= scrollHeight - threshold;
+    // Debounce scroll events
+    if (now - this.lastScrollTime < this.SCROLL_DEBOUNCE) {
+      return;
+    }
+    this.lastScrollTime = now;
     
-    if (shouldLoadMore && !this.isScrolling) {
-      console.log('Scrolled near bottom, loading more items...');
-      this.isScrolling = true;
-      this.loadMoreItems().finally(() => {
-        this.isScrolling = false;
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    
+    // Calculate if we're near the bottom (within threshold)
+    const scrollPosition = scrollTop + clientHeight;
+    const distanceFromBottom = scrollHeight - scrollPosition;
+    const isNearBottom = distanceFromBottom <= this.SCROLL_THRESHOLD;
+    
+    if (isDevMode()) {
+      console.log('Scroll check:', {
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+        scrollPosition,
+        distanceFromBottom,
+        threshold: this.SCROLL_THRESHOLD,
+        isNearBottom,
+        loading: this.loading,
+        hasMore: this.hasMore,
+        itemsCount: this.items.length,
+        offsetToken: this.offsetToken
       });
     }
+    
+    if (isNearBottom && !this.isScrolling) {
+      if (isDevMode()) {
+        console.log('Scrolled near bottom, loading more items...');
+      }
+      this.loadMoreItems();
+    }
   }
-
+  
+  // Load more items when scrolling near the bottom
   private async loadMoreItems(): Promise<void> {
-    // Prevent multiple simultaneous loads or if no more items
-    if (this.loading || !this.hasMore) {
+    // Double check conditions before proceeding
+    if (this.loading || !this.hasMore || this.isScrolling) {
+      if (isDevMode()) {
+        console.log('Skipping loadMore - already loading, no more items, or already scrolling');
+      }
       return;
     }
     
     try {
-      console.log('Loading more items with offsetToken:', this.offsetToken);
+      this.isScrolling = true;
+      
+      if (isDevMode()) {
+        console.log('Loading more items...');
+      }
+      
+      // Load the next page of items
       await this.loadItems(false);
+      
+      if (isDevMode()) {
+        console.log('Finished loading more items');
+      }
     } catch (error) {
       console.error('Error loading more items:', error);
+      // Ensure we reset the loading state on error
+      this.loading = false;
+      this.isScrolling = false;
+      this.cdr.detectChanges();
     }
+  }
+  
+  // Load items from the API with pagination
+  loadItems(reset = false): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Prevent multiple simultaneous requests
+      if (this.loading) {
+        if (isDevMode()) {
+          console.log('Already loading, skipping duplicate request');
+        }
+        resolve();
+        return;
+      }
+      
+      this.loading = true;
+      const formValue = this.filterForm.value;
+      
+      // Reset items and pagination if this is a fresh load
+      if (reset) {
+        if (isDevMode()) {
+          console.log('Resetting items and pagination');
+        }
+        this.items = [];
+        this.offsetToken = ''; // Reset to empty string for new search
+        this.hasMore = true;
+      } else if (!this.hasMore) {
+        // If we've already loaded everything, don't make another request
+        if (isDevMode()) {
+          console.log('No more items to load');
+        }
+        this.loading = false;
+        resolve();
+        return;
+      }
+      
+      if (isDevMode()) {
+        console.log('Current items before load:', this.items.length);
+        console.log('Loading items with offsetToken:', this.offsetToken);
+      }
+      
+      // Build the request parameters
+      const listOfRolesCanAccess = formValue.access || [];
+      const isSubMenuSelected = formValue.isSubMenu;
+      
+      // Set filter flags based on menu type selection
+      const showSubMenusOnly = isSubMenuSelected === 'true';
+      const applyParentSubMenuFilter = isSubMenuSelected !== '';
+      
+      // Map access roles to match backend expectations
+      const mappedRoles = listOfRolesCanAccess
+        .filter((role: string) => role !== 'isVisibleToGuest')
+        .map((role: string) => this.accessRoleMap[role])
+        .filter(Boolean);
+      
+      // Include guest role if selected
+      if (formValue.showGuest) {
+        mappedRoles.push(USER_ROLE.GUEST);
+      }
+      
+      // Prepare the request parameters
+      const params: any = {
+        limit: DEFAULT_PAGE_SIZE,
+        offsetToken: this.offsetToken || '',
+        queryString: formValue.search || '%',
+        listOfRolesCanAccess: mappedRoles.length ? mappedRoles : undefined,
+        showSubMenusOnly,
+        isVisibleToGuest: formValue.showGuest || false,
+        showInActive: formValue.showInActive || false,
+        applyParentSubMenuFilter
+      };
+      
+      if (isDevMode()) {
+        console.log('API Request Params:', JSON.stringify(params, null, 2));
+        console.log('Making API call to getNavbarList...');
+      }
+      
+      // Make the API call
+      this.navbarService.getNavbarList(params).subscribe({
+        next: (response: PaginationResponse<MenuItem>) => {
+          if (!response || !Array.isArray(response.data)) {
+            console.error('Invalid response format - missing data array:', response);
+            this.items = [];
+            this.hasMore = false;
+            this.loading = false;
+            resolve();
+            return;
+          }
+          
+          // Update items - append if not resetting, replace if resetting
+          const newItems = response.data || [];
+          
+          if (isDevMode()) {
+            console.log('API Response received:', {
+              dataLength: newItems.length,
+              hasOffsetToken: !!(response?.offsetToken),
+              reset: reset
+            });
+            console.log(`Adding ${newItems.length} new items`);
+          }
+          
+          this.items = reset ? [...newItems] : [...this.items, ...newItems];
+          
+          // Update pagination state
+          this.offsetToken = response.offsetToken || '';
+          this.hasMore = newItems.length === DEFAULT_PAGE_SIZE;
+          
+          if (isDevMode()) {
+            console.log('Updated state:', {
+              totalItems: this.items.length,
+              hasMore: this.hasMore,
+              offsetToken: this.offsetToken
+            });
+          }
+          
+          this.loading = false;
+          this.isScrolling = false;
+          this.cdr.detectChanges();
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error loading navbar items:', error);
+          this.loading = false;
+          this.isScrolling = false;
+          this.cdr.detectChanges();
+          reject(error);
+        }
+      });
+    });
   }
 
   // Safely get boolean property value from menu item
@@ -381,125 +592,6 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     this.filteredAccessOptions = [...this.accessOptions];
   }
 
-  // Load items from the API with pagination
-  loadItems(reset = false): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Prevent multiple simultaneous requests
-      if (this.loading) {
-        console.log('Already loading, skipping duplicate request');
-        resolve();
-        return;
-      }
-      
-      this.loading = true;
-      const formValue = this.filterForm.value;
-      
-      // Reset items and pagination if this is a fresh load
-      if (reset) {
-        console.log('Resetting items and pagination');
-        this.items = [];
-        this.offsetToken = ''; // Reset to empty string for new search
-        this.hasMore = true;
-      } else if (!this.hasMore || !this.offsetToken) {
-        // If we've already loaded everything or don't have an offset token, don't make another request
-        console.log('No more items to load or no offset token');
-        this.loading = false;
-        resolve();
-        return;
-      }
-      
-      console.log('Current items before load:', this.items.length);
-      console.log('Loading items with offsetToken:', this.offsetToken);
-      
-      // Build the request parameters
-      const listOfRolesCanAccess = formValue.access || [];
-      const isSubMenuSelected = formValue.isSubMenu;
-      
-      // Set filter flags based on menu type selection
-      const showSubMenusOnly = isSubMenuSelected === 'true';
-      // Set applyParentSubMenuFilter to true when a specific menu type is selected (not empty string)
-      const applyParentSubMenuFilter = isSubMenuSelected !== '';
-      
-      // Map access roles to match backend expectations
-      const mappedRoles = listOfRolesCanAccess
-        .filter((role: string) => role !== 'isVisibleToGuest')
-        .map((role: string) => this.accessRoleMap[role])
-        .filter(Boolean);
-      
-      // Include guest role if selected
-      if (formValue.showGuest) {
-        mappedRoles.push(USER_ROLE.GUEST);
-      }
-      
-      // Prepare the request parameters
-      const params: any = {
-        limit: DEFAULT_PAGE_SIZE,
-        offsetToken: this.offsetToken || '',  // Always pass the current offsetToken
-        queryString: formValue.search || '%',
-        listOfRolesCanAccess: mappedRoles.length ? mappedRoles : undefined,
-        showSubMenusOnly,
-        isVisibleToGuest: formValue.showGuest || false,
-        showInActive: formValue.showInActive || false,
-        applyParentSubMenuFilter
-      };
-      
-      console.log('API Request Params:', JSON.stringify(params, null, 2));
-      
-      // Make the API call
-      console.log('Making API call to getNavbarList...');
-      this.navbarService.getNavbarList(params).subscribe({
-        next: (response: PaginationResponse<MenuItem>) => {
-          console.log('API Response received:', {
-            dataLength: response?.data?.length || 0,
-            hasOffsetToken: !!(response?.offsetToken),
-            responseKeys: Object.keys(response || {})
-          });
-          
-          if (!response || !Array.isArray(response.data)) {
-            console.error('Invalid response format - missing data array:', response);
-            this.items = [];
-            this.hasMore = false;
-            resolve();
-            return;
-          }
-          
-          // Update items - append if not resetting, replace if resetting
-          const newItems = response.data || [];
-          console.log(`Adding ${newItems.length} new items (reset: ${reset})`);
-          
-          this.items = reset ? [...newItems] : [...this.items, ...newItems];
-          
-          // Update pagination state
-          this.offsetToken = response.offsetToken || '';
-          this.hasMore = newItems.length === DEFAULT_PAGE_SIZE;
-          
-          console.log('Updated state:', {
-            totalItems: this.items.length,
-            hasMore: this.hasMore,
-            offsetToken: this.offsetToken
-          });
-          
-          // After updating items, check if we need to load more to fill the viewport
-          setTimeout(() => this.checkIfMoreItemsNeeded(), 0);
-          
-          resolve();
-        },
-        error: (error) => {
-          console.error('Error loading navbar items:', error);
-          this.loading = false;
-          reject(error);
-        },
-        complete: () => {
-          console.log('API call completed');
-          this.loading = false;
-          
-          // Check again after loading is complete to handle any UI updates
-          setTimeout(() => this.checkIfMoreItemsNeeded(), 100);
-        }
-      });
-    });
-  }
-  
   // View item details
   viewItem(id: string): void {
     this.router.navigate(['/navbar', id]);

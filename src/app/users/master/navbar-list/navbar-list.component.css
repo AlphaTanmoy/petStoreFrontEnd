@@ -1,16 +1,7 @@
 /* Table Container & Structure */
 .table-container-wrapper {
-  width: 100%;
-  max-height: calc(100vh - 300px);
-  overflow-y: auto;
-  overflow-x: auto;
-  margin: 1rem 0;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  -webkit-overflow-scrolling: touch;
-  position: relative;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 /* Table Styles */
@@ -112,17 +103,14 @@
 }
 
 .loading-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  color: #1976d2;
-  background: rgba(25, 118, 210, 0.05);
-  border-radius: 4px;
-  margin: 0.5rem 1rem;
   position: sticky;
   bottom: 0;
-  z-index: 20;
+  background: white;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
 }
 
 .no-more-data {
@@ -997,6 +985,7 @@ select:focus {
   border: 1px solid #e0e0e0;
   max-height: 80vh;
   display: block;
+  table-layout: fixed;
 }
 
 .navbar-list-table {
@@ -1959,4 +1948,108 @@ thead th.col-actions {
     width: 22px;
     height: 22px;
   }
+}
+
+/* Main container for the table with fixed header and scrollable body */
+.scrollable-container {
+  height: 60vh;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: white;
+  padding: 0;
+  margin: 0;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Ensure the table takes full width */
+.scrollable-container table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+}
+
+/* Loading indicator */
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.98);
+  position: sticky;
+  bottom: 0;
+  z-index: 1000; /* Higher than all other elements */
+  box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(3px);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: -1px; /* Ensure it covers the border */
+}
+
+.loading-indicator .spinner-border {
+  margin-right: 0.5rem;
+}
+
+/* No more items indicator */
+.no-more-data {
+  text-align: center;
+  padding: 1rem;
+  color: #6c757d;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.98);
+  position: sticky;
+  bottom: 0;
+  z-index: 1000; /* Match loading indicator z-index */
+  box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: -1px; /* Ensure it covers the border */
+}
+
+/* Ensure the table takes full width and handles overflow */
+.navbar-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 0;
+  padding: 0;
+}
+
+/* Make the table header sticky */
+.navbar-list-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 10;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading indicator at the bottom */
+.loading-indicator {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-top: 1px solid #e0e0e0;
+  margin: 0;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.loading-indicator .spinner-border {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-width: 0.2em;
+  margin-right: 0.5rem;
+}
+
+.loading-indicator span {
+  color: #666;
+  font-size: 0.9rem;
 }
