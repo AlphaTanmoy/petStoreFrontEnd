@@ -84,122 +84,129 @@
   </form>
 
   <!-- Table -->
-  <div class="table-container-wrapper">
-    <div class="table-container" #tableContainer>
-      <div class="table-responsive">
-        <table class="navbar-list-table">
-          <colgroup>
-            <col class="col-icon">
-            <col class="col-name">
-            <col class="col-link">
-            <col class="col-created">
-            <col class="col-redirect">
-            <col class="col-submenu">
-            <col class="col-access" *ngFor="let col of accessRoleColumns">
-            <col class="col-actions">
-          </colgroup>
-          <thead>
-            <tr>
-              <th>Icon</th>
-              <th>Menu Name</th>
-              <th>Link</th>
-              <th>Created Date</th>
-              <th>Redirection</th>
-              <th>Sub Menu</th>
-              <th *ngFor="let col of accessRoleColumns">{{col.label}}</th>
-              <th class="sticky-col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of items" class="navbar-list-row">
-              <!-- Icon -->
-              <td class="text-center">
-                <ng-container *ngIf="item.svgFileDataLink; else noIcon">
-                  <img [src]="item.svgFileDataLink" alt="icon" class="navbar-svg"
-                    style="max-width: 24px; max-height: 24px;" />
-                </ng-container>
-                <ng-template #noIcon>
-                  <div class="no-data">N/A</div>
-                </ng-template>
-              </td>
+  <div #tableContainer class="table-container-wrapper" (scroll)="handleScroll()">
+    <table class="navbar-list-table">
+      <colgroup>
+        <col style="width: 50px">  <!-- Icon -->
+        <col style="width: 180px">  <!-- Menu Name -->
+        <col style="width: 220px">  <!-- Link -->
+        <col style="width: 200px">  <!-- Created Date -->
+        <col style="width: 100px">  <!-- Redirection -->
+        <col style="width: 100px">  <!-- Sub Menu -->
+        <col *ngFor="let col of accessRoleColumns" style="width: 100px">  <!-- Access Roles -->
+        <col style="width: 180px" class="sticky-col">  <!-- Actions -->
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Icon</th>
+          <th>Menu Name</th>
+          <th>Link</th>
+          <th>Created Date</th>
+          <th>Redirection</th>
+          <th>Sub Menu</th>
+          <th *ngFor="let col of accessRoleColumns">{{col.label}}</th>
+          <th class="sticky-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Loading State -->
+        <tr *ngIf="loading && items.length === 0" class="loading-row">
+          <td [attr.colspan]="columns.length + accessRoleColumns.length + 1" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="mt-2">Loading data...</div>
+          </td>
+        </tr>
 
-              <!-- Menu Name -->
-              <td [class.no-data]="!item.menuName" class="text-truncate">
-                {{ item.menuName || 'NOT APPLICABLE' }}
-              </td>
+        <!-- No Data State -->
+        <tr *ngIf="!loading && items.length === 0">
+          <td [attr.colspan]="columns.length + accessRoleColumns.length + 1" class="text-center py-4">
+            No data available
+          </td>
+        </tr>
 
-              <!-- Menu Link -->
-              <td [class.no-data]="!item.menuLink" class="text-truncate">
-                {{ item.menuLink || 'NOT APPLICABLE' }}
-              </td>
+        <!-- Data Rows -->
+        <tr *ngFor="let item of items" class="navbar-list-row">
+          <!-- Icon -->
+          <td class="text-center">
+            <ng-container *ngIf="item?.svgFileDataLink; else noIcon">
+              <img [src]="item.svgFileDataLink" alt="icon" class="navbar-svg" style="width: 24px; height: 24px;" />
+            </ng-container>
+            <ng-template #noIcon>
+              <div class="no-data">N/A</div>
+            </ng-template>
+          </td>
 
-              <!-- Created Date -->
-              <td [class.no-data]="!item.createdDate" class="text-truncate">
-                {{ item.createdDate ? (item.createdDate | date:'medium') : 'NOT APPLICABLE' }}
-              </td>
+          <!-- Menu Name -->
+          <td [class.no-data]="!item.menuName" [title]="item.menuName || 'NOT APPLICABLE'">
+            {{ item.menuName || 'NOT APPLICABLE' }}
+          </td>
 
-              <!-- Redirection -->
-              <td class="text-center">
-                <i class="fas"
-                  [ngClass]="item.doHaveRedirectionLink ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-                  [matTooltip]="'Redirection: ' + item.doHaveRedirectionLink">
-                </i>
-              </td>
+          <!-- Menu Link -->
+          <td [class.no-data]="!item.menuLink" [title]="item.menuLink || 'NOT APPLICABLE'">
+            {{ item.menuLink || 'NOT APPLICABLE' }}
+          </td>
 
-              <!-- Sub Menu -->
-              <td class="text-center">
-                <i class="fas"
-                  [ngClass]="item.isASubMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-                  [matTooltip]="'Submenu: ' + item.isASubMenu">
-                </i>
-              </td>
+          <!-- Created Date -->
+          <td [class.no-data]="!item.createdDate" [title]="item.createdDate ? (item.createdDate | date:'medium') : 'NOT APPLICABLE'">
+            {{ item.createdDate ? (item.createdDate | date:'medium') : 'NOT APPLICABLE' }}
+          </td>
 
-              <!-- Access Roles -->
-              <td *ngFor="let col of accessRoleColumns" class="text-center">
-                <i class="fas"
-                  [ngClass]="getPropertyValue(item, col.id) ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
-                  [matTooltip]="col.label + ': ' + getPropertyValue(item, col.id)">
-                </i>
-              </td>
+          <!-- Redirection -->
+          <td class="text-center">
+            <i class="fas"
+              [ngClass]="item.doHaveRedirectionLink ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+              [matTooltip]="'Redirection: ' + item.doHaveRedirectionLink">
+            </i>
+          </td>
 
-              <!-- Actions -->
-              <td class="sticky-col">
-                <div class="action-buttons">
-                  <button mat-icon-button (click)="$event.stopPropagation(); editItem(item.id)"
-                    class="action-btn edit-btn" matTooltip="Edit">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  <button mat-icon-button (click)="$event.stopPropagation(); viewItem(item.id)"
-                    class="action-btn view-btn" matTooltip="View">
-                    <mat-icon>visibility</mat-icon>
-                  </button>
-                  <button mat-icon-button (click)="$event.stopPropagation(); deleteItem(item)"
-                    class="action-btn delete-btn" matTooltip="Delete">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <!-- Sub Menu -->
+          <td class="text-center">
+            <i class="fas"
+              [ngClass]="item.isASubMenu ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+              [matTooltip]="'Submenu: ' + item.isASubMenu">
+            </i>
+          </td>
 
-        <!-- Loading Indicator -->
-        <div class="loading-indicator" *ngIf="loading">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-        </div>
+          <!-- Access Roles -->
+          <ng-container *ngFor="let col of accessRoleColumns">
+            <td class="text-center">
+              <i class="fas"
+                [ngClass]="getPropertyValue(item, col.id) ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"
+                [matTooltip]="col.label + ': ' + getPropertyValue(item, col.id)">
+              </i>
+            </td>
+          </ng-container>
 
-        <!-- No More Data Message -->
-        <div *ngIf="!hasMore && items.length > 0" class="no-more-data">
-          No more items to load
-        </div>
-
-        <!-- No Records Found -->
-        <div *ngIf="!loading && items.length === 0" class="no-records">
-          No records found
-        </div>
-      </div>
+          <!-- Actions -->
+          <td class="sticky-col">
+            <div class="action-buttons">
+              <button mat-icon-button (click)="$event.stopPropagation(); editItem(item.id)" class="action-btn" matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="$event.stopPropagation(); viewItem(item.id)" class="action-btn" matTooltip="View">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button (click)="$event.stopPropagation(); deleteItem(item)" class="action-btn" matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Loading More Indicator -->
+  <div class="loading-indicator" *ngIf="loading && items.length > 0">
+    <div class="spinner-border spinner-border-sm text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
+    <span class="ms-2">Loading more...</span>
+  </div>
+  
+  <div *ngIf="!hasMore && items.length > 0" class="no-more-data">
+    No more items to load
   </div>
 </div>

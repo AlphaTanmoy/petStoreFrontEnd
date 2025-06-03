@@ -1,3 +1,337 @@
+/* Table Container & Structure */
+.table-container-wrapper {
+  width: 100%;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+/* Table Styles */
+.navbar-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Table Header */
+.navbar-list-table thead th {
+  background-color: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Table Cells */
+.navbar-list-table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
+  line-height: 1.4;
+}
+
+/* Hover & Interactive States */
+.navbar-list-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.navbar-list-table tbody tr:hover .sticky-col {
+  background-color: #f1f3f5;
+}
+
+/* Sticky Actions Column */
+.sticky-col {
+  position: sticky;
+  right: 0;
+  background: white;
+  z-index: 5;
+  padding: 12px 16px !important;
+  width: 120px;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 40px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+.action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.action-btn mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Loading States */
+.loading-row td {
+  text-align: center;
+  padding: 2rem !important;
+  background-color: rgba(0, 0, 0, 0.02);
+  color: #666;
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: #1976d2;
+  background: rgba(25, 118, 210, 0.05);
+  border-radius: 4px;
+  margin: 0.5rem 1rem;
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+}
+
+.no-more-data {
+  text-align: center;
+  padding: 1rem;
+  color: #666;
+  font-style: italic;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  margin: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+/* Text Utilities */
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: #1976d2;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Dropdowns */
+.access-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.option {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  display: block;
+}
+
+.option:hover {
+  background-color: #f8f9fa;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.btn-outline-secondary {
+  background: white;
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background: #f8f9fa;
+}
+
+.btn-primary {
+  background: #1976d2;
+  color: white;
+  border-color: #1976d2;
+}
+
+.btn-primary:hover {
+  background: #1565c0;
+  border-color: #1565c0;
+}
+
+.btn[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Icons */
+.fas, .mat-icon {
+  margin-right: 0.25rem;
+  position: relative;
+  z-index: 1; /* Same as table data */
+}
+
+/* Ensure action buttons have proper z-index */
+.action-buttons .mat-icon {
+  z-index: auto;
+}
+
+/* No Data */
+.no-data {
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .table-container-wrapper {
+    max-height: calc(100vh - 350px);
+  }
+}
+
+@media (max-width: 992px) {
+  .table-container-wrapper {
+    max-height: calc(100vh - 400px);
+  }
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+/* Sticky Column */
+.sticky-col {
+  position: sticky;
+  right: 0;
+  background-color: white;
+  z-index: 5;
+}
+
+/* Debug Info */
+.debug-info {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
+  font-family: monospace;
+  font-size: 14px;
+  color: #333;
+}
+
+.debug-info h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #495057;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 5px;
+}
+
+.debug-info div {
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+.debug-info pre {
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 5px 0 0 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 .navbar-list-container {
   width: 100%;
   margin: 1rem 0;
@@ -17,11 +351,12 @@
   border-bottom: 2px solid #f0f0f0;
 }
 
+/* Filter Form */
 .filter-form {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
   padding: 20px;
 }
 
@@ -852,18 +1187,75 @@ select:focus {
   margin: 1rem 0;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-  background: white;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  background: #fff;
+}
+
+.table-container {
+  min-width: 100%;
+  width: max-content;
   position: relative;
 }
 
+/* Ensure the table takes full width and handles overflow */
 .table-responsive {
-  width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  max-height: 70vh;
-  display: block;
-  position: relative;
+  width: 100%;
+}
+
+/* Style the scrollbar for better UX */
+.table-container-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-container-wrapper::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.table-container-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+/* Ensure table cells don't wrap and handle overflow */
+.navbar-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.navbar-list-table th,
+.navbar-list-table td {
+  white-space: nowrap;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Add some styling to the sticky header */
+.navbar-list-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f5f5f5;
+  z-index: 10;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Style the sticky action column */
+.sticky-col {
+  position: sticky;
+  right: 0;
+  background-color: #fff;
+  z-index: 5;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
 }
 
 /* Table styles */

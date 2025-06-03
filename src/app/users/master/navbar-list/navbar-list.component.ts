@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, ViewEncapsulation, Inject, isDevMode } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -110,6 +110,8 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   
   actionsColumn = { id: 'actions', label: 'Actions', sticky: true };
 
+  isDevMode = isDevMode();
+  
   @ViewChild('tableContainer') private tableContainer!: ElementRef;
   @ViewChild('accessDropdown', { static: false }) private accessDropdownElement!: ElementRef;
   @ViewChild('menuTypeDropdown', { static: false }) private menuTypeDropdownElement!: ElementRef;
@@ -160,25 +162,8 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    // Use setTimeout to ensure the view is fully rendered
-    setTimeout(() => {
-      if (this.tableContainer?.nativeElement) {
-        console.log('Attaching scroll listener to table container');
-        
-        // Remove any existing listener to prevent duplicates
-        this.tableContainer.nativeElement.removeEventListener('scroll', this.scrollListener);
-        
-        // Add the scroll listener
-        this.tableContainer.nativeElement.addEventListener('scroll', this.scrollListener);
-        
-        console.log('Scroll listener attached, checking if more items are needed...');
-        
-        // Initial check to see if we need to load more items
-        this.checkIfMoreItemsNeeded();
-      } else {
-        console.error('Table container not found for scroll listener');
-      }
-    }, 100); // Small delay to ensure the view is fully rendered
+    // Initial load of items
+    this.loadItems(true);
   }
 
   // Handle clicks outside dropdowns to close them
@@ -207,27 +192,21 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     document.removeEventListener('click', this.clickListener);
   }
 
-  // Check if we need to load more items to fill the viewport
+  // Check if we need to load more items when scrolling
   private checkIfMoreItemsNeeded(): void {
-    if (this.loading || !this.hasMore || !this.tableContainer?.nativeElement) {
-      return;
-    }
-
-    const element = this.tableContainer.nativeElement;
-    // If the content height is less than the container height, load more
-    if (element.scrollHeight <= element.clientHeight) {
-      this.loadMoreItems();
-    }
+    // This method is kept for backward compatibility
+    // but we'll handle everything in handleScroll now
   }
 
-  private handleScroll(): void {
+  // Handle scroll events to load more items when near the bottom
+  handleScroll(): void {
     // Don't trigger if already loading, no more items, or container not ready
     if (this.loading || !this.hasMore || !this.tableContainer?.nativeElement) {
       return;
     }
     
     const element = this.tableContainer.nativeElement;
-    const threshold = 300; // pixels from bottom to trigger load
+    const threshold = 200; // pixels from bottom to trigger load
     const scrollPosition = element.scrollTop + element.clientHeight;
     const scrollHeight = element.scrollHeight;
   
@@ -252,18 +231,6 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     try {
       console.log('Loading more items with offsetToken:', this.offsetToken);
       await this.loadItems(false);
-      
-      // After loading, check if we need to load more to fill the viewport
-      if (this.tableContainer?.nativeElement && this.hasMore) {
-        const container = this.tableContainer.nativeElement;
-        const isViewportFilled = container.scrollHeight > container.clientHeight;
-        
-        // If the content is not filling the viewport and we have more items, load more
-        if (!isViewportFilled) {
-          console.log('Viewport not filled, loading more items...');
-          await this.loadMoreItems();
-        }
-      }
     } catch (error) {
       console.error('Error loading more items:', error);
     }
@@ -433,20 +400,25 @@ export class NavbarListComponent implements OnInit, OnDestroy {
         this.items = [];
         this.offsetToken = ''; // Reset to empty string for new search
         this.hasMore = true;
-      } else if (!this.hasMore) {
-        // If we've already loaded everything, don't make another request
-        console.log('No more items to load');
+      } else if (!this.hasMore || !this.offsetToken) {
+        // If we've already loaded everything or don't have an offset token, don't make another request
+        console.log('No more items to load or no offset token');
         this.loading = false;
         resolve();
         return;
       }
       
+      console.log('Current items before load:', this.items.length);
       console.log('Loading items with offsetToken:', this.offsetToken);
       
       // Build the request parameters
       const listOfRolesCanAccess = formValue.access || [];
-      const showSubMenusOnly = formValue.isSubMenu === 'true';
-      const applyParentSubMenuFilter = formValue.isSubMenu === 'false';
+      const isSubMenuSelected = formValue.isSubMenu;
+      
+      // Set filter flags based on menu type selection
+      const showSubMenusOnly = isSubMenuSelected === 'true';
+      // Set applyParentSubMenuFilter to true when a specific menu type is selected (not empty string)
+      const applyParentSubMenuFilter = isSubMenuSelected !== '';
       
       // Map access roles to match backend expectations
       const mappedRoles = listOfRolesCanAccess
@@ -474,18 +446,38 @@ export class NavbarListComponent implements OnInit, OnDestroy {
       console.log('API Request Params:', JSON.stringify(params, null, 2));
       
       // Make the API call
+      console.log('Making API call to getNavbarList...');
       this.navbarService.getNavbarList(params).subscribe({
         next: (response: PaginationResponse<MenuItem>) => {
-          console.log('API Response:', response);
+          console.log('API Response received:', {
+            dataLength: response?.data?.length || 0,
+            hasOffsetToken: !!(response?.offsetToken),
+            responseKeys: Object.keys(response || {})
+          });
+          
+          if (!response || !Array.isArray(response.data)) {
+            console.error('Invalid response format - missing data array:', response);
+            this.items = [];
+            this.hasMore = false;
+            resolve();
+            return;
+          }
           
           // Update items - append if not resetting, replace if resetting
-          this.items = reset ? response.data : [...this.items, ...response.data];
+          const newItems = response.data || [];
+          console.log(`Adding ${newItems.length} new items (reset: ${reset})`);
+          
+          this.items = reset ? [...newItems] : [...this.items, ...newItems];
           
           // Update pagination state
           this.offsetToken = response.offsetToken || '';
-          this.hasMore = response.data.length === DEFAULT_PAGE_SIZE;
+          this.hasMore = newItems.length === DEFAULT_PAGE_SIZE;
           
-          console.log('Updated state - hasMore:', this.hasMore, 'offsetToken:', this.offsetToken);
+          console.log('Updated state:', {
+            totalItems: this.items.length,
+            hasMore: this.hasMore,
+            offsetToken: this.offsetToken
+          });
           
           // After updating items, check if we need to load more to fill the viewport
           setTimeout(() => this.checkIfMoreItemsNeeded(), 0);
@@ -498,6 +490,7 @@ export class NavbarListComponent implements OnInit, OnDestroy {
           reject(error);
         },
         complete: () => {
+          console.log('API call completed');
           this.loading = false;
           
           // Check again after loading is complete to handle any UI updates
