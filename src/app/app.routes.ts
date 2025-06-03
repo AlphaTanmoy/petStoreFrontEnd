@@ -46,11 +46,6 @@ import { AboutUsComponent } from './components/about-us/about-us.component';
 import { MicroserviceActionComponent } from './dashboard/microservice-action/microservice-action.component';
 import { MvnRunnerListComponent } from './dashboard/mvn-runner-list/mvn-runner-list.component';
 import { ServerInfoComponent } from './dashboard/server-info/server-info.component';
-import { AppPaginatedRecordsComponent } from './test/app-paginated-records/app-paginated-records.component';
-import { ProductViewComponent } from './test/product-view/product-view.component';
-import { ProductDetailsComponent } from './test/product-details/product-details.component';
-import { CartComponent} from './test/cart/cart.component';
-import { PaymentComponent } from './test/payment/payment.component';
 import { NavbarListComponent } from './users/master/navbar-list/navbar-list.component';
 
 export const routes: Routes = [
@@ -61,10 +56,6 @@ export const routes: Routes = [
   { path: 'about-dev', component: AboutDev },
   { path: 'contact-us', component: ContactUsComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'product-view', component: ProductViewComponent },
-  { path: 'product-details', component: ProductDetailsComponent },
-  { path: 'cart', component: CartComponent },
-  { path: 'payment', component: PaymentComponent },
   //error routes
   { path: 'un-authorized', component: UnAuthorizeComponent },
 
@@ -210,10 +201,6 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { roles: Object.values(USER_ROLE).filter(role => role !== USER_ROLE.GUEST) }
   },
-
-  {
-    path: 'test', component: AppPaginatedRecordsComponent
- },
 
   // Catch-all route must be at the end
   { path: '**', component: ErrorPageComponent }
