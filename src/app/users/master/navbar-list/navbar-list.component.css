@@ -19,7 +19,29 @@
   white-space: nowrap;
   position: sticky;
   top: 0;
+  z-index: 20; /* Increased z-index to stay above other elements */
+  box-shadow: 0 1px 0 #dee2e6; /* Add shadow for better visual separation */
+}
+
+/* Ensure the first column (icon) header is sticky */
+.navbar-list-table thead th:first-child {
+  left: 0;
+  z-index: 21; /* Slightly higher than other headers */
+  box-shadow: 1px 0 0 #dee2e6; /* Add right border */
+}
+
+/* Add background to the sticky column in the body */
+.navbar-list-table tbody td:first-child {
+  position: sticky;
+  left: 0;
+  background: white;
   z-index: 10;
+  box-shadow: 1px 0 0 #dee2e6; /* Add right border */
+}
+
+/* Add hover effect for the sticky column */
+.navbar-list-table tbody tr:hover td:first-child {
+  background-color: #f8f9fa; /* Match the hover background */
 }
 
 /* Table Cells */
@@ -146,16 +168,26 @@
 }
 
 .no-more-data {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  margin: 0;
+  padding: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 40; /* Increased from 10 to be above sticky columns */
+  min-width: fit-content;
+}
+
+.no-more-content {
+  width: 100%;
   text-align: center;
   padding: 1rem;
   color: #666;
   font-style: italic;
   background: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-  margin: 0;
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
 }
 
 /* Text Utilities */
@@ -390,11 +422,17 @@
 .form-group {
   flex: 1;
   min-width: 200px;
+  margin-right: 15px;
+}
+
+/* Remove the extra margin from the last form group */
+.form-group:last-child {
+  margin-right: 0;
 }
 
 .search-group {
-  flex: 2;
-  min-width: 250px;
+  flex: 1;
+  min-width: 200px;
 }
 
 .access-control-group {
@@ -531,10 +569,14 @@
   margin-bottom: 4px;
 }
 
+/* Form group styles */
+/* Form group styles are defined below in the file */
+
 /* Search input with icon */
 .search-input-container {
   position: relative;
   margin-bottom: 8px;
+  width: 100%;
 }
 
 .search-input {

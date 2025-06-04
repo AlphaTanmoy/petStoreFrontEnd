@@ -110,8 +110,6 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   
   actionsColumn = { id: 'actions', label: 'Actions', sticky: true };
 
-  isDevMode = isDevMode();
-  
   @ViewChild('tableContainer') private tableContainer!: ElementRef
   @ViewChild('accessDropdown', { static: false }) private accessDropdownElement!: ElementRef
   @ViewChild('menuTypeDropdown', { static: false }) private menuTypeDropdownElement!: ElementRef
@@ -242,9 +240,6 @@ export class NavbarListComponent implements OnInit, OnDestroy {
 
     const container = event.target as HTMLElement;
     if (!container) {
-      if (isDevMode()) {
-        console.warn('Scroll container not found');
-      }
       return;
     }
 
@@ -263,26 +258,7 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     const distanceFromBottom = scrollHeight - scrollPosition;
     const isNearBottom = distanceFromBottom <= this.SCROLL_THRESHOLD;
     
-    if (isDevMode()) {
-      console.log('Scroll check:', {
-        scrollTop,
-        scrollHeight,
-        clientHeight,
-        scrollPosition,
-        distanceFromBottom,
-        threshold: this.SCROLL_THRESHOLD,
-        isNearBottom,
-        loading: this.loading,
-        hasMore: this.hasMore,
-        itemsCount: this.items.length,
-        offsetToken: this.offsetToken
-      });
-    }
-    
     if (isNearBottom && !this.isScrolling) {
-      if (isDevMode()) {
-        console.log('Scrolled near bottom, loading more items...');
-      }
       this.loadMoreItems();
     }
   }
@@ -291,25 +267,15 @@ export class NavbarListComponent implements OnInit, OnDestroy {
   private async loadMoreItems(): Promise<void> {
     // Double check conditions before proceeding
     if (this.loading || !this.hasMore || this.isScrolling) {
-      if (isDevMode()) {
-        console.log('Skipping loadMore - already loading, no more items, or already scrolling');
-      }
       return;
     }
     
     try {
       this.isScrolling = true;
       
-      if (isDevMode()) {
-        console.log('Loading more items...');
-      }
-      
       // Load the next page of items
       await this.loadItems(false);
       
-      if (isDevMode()) {
-        console.log('Finished loading more items');
-      }
     } catch (error) {
       console.error('Error loading more items:', error);
       // Ensure we reset the loading state on error
@@ -324,9 +290,6 @@ export class NavbarListComponent implements OnInit, OnDestroy {
     return new Promise((resolve, reject) => {
       // Prevent multiple simultaneous requests
       if (this.loading) {
-        if (isDevMode()) {
-          console.log('Already loading, skipping duplicate request');
-        }
         resolve();
         return;
       }
@@ -336,25 +299,14 @@ export class NavbarListComponent implements OnInit, OnDestroy {
       
       // Reset items and pagination if this is a fresh load
       if (reset) {
-        if (isDevMode()) {
-          console.log('Resetting items and pagination');
-        }
         this.items = [];
         this.offsetToken = ''; // Reset to empty string for new search
         this.hasMore = true;
       } else if (!this.hasMore) {
         // If we've already loaded everything, don't make another request
-        if (isDevMode()) {
-          console.log('No more items to load');
-        }
         this.loading = false;
         resolve();
         return;
-      }
-      
-      if (isDevMode()) {
-        console.log('Current items before load:', this.items.length);
-        console.log('Loading items with offsetToken:', this.offsetToken);
       }
       
       // Build the request parameters
@@ -388,16 +340,10 @@ export class NavbarListComponent implements OnInit, OnDestroy {
         applyParentSubMenuFilter
       };
       
-      if (isDevMode()) {
-        console.log('API Request Params:', JSON.stringify(params, null, 2));
-        console.log('Making API call to getNavbarList...');
-      }
-      
       // Make the API call
       this.navbarService.getNavbarList(params).subscribe({
         next: (response: PaginationResponse<MenuItem>) => {
           if (!response || !Array.isArray(response.data)) {
-            console.error('Invalid response format - missing data array:', response);
             this.items = [];
             this.hasMore = false;
             this.loading = false;
@@ -408,28 +354,11 @@ export class NavbarListComponent implements OnInit, OnDestroy {
           // Update items - append if not resetting, replace if resetting
           const newItems = response.data || [];
           
-          if (isDevMode()) {
-            console.log('API Response received:', {
-              dataLength: newItems.length,
-              hasOffsetToken: !!(response?.offsetToken),
-              reset: reset
-            });
-            console.log(`Adding ${newItems.length} new items`);
-          }
-          
           this.items = reset ? [...newItems] : [...this.items, ...newItems];
           
           // Update pagination state
           this.offsetToken = response.offsetToken || '';
           this.hasMore = newItems.length === DEFAULT_PAGE_SIZE;
-          
-          if (isDevMode()) {
-            console.log('Updated state:', {
-              totalItems: this.items.length,
-              hasMore: this.hasMore,
-              offsetToken: this.offsetToken
-            });
-          }
           
           this.loading = false;
           this.isScrolling = false;
@@ -437,7 +366,7 @@ export class NavbarListComponent implements OnInit, OnDestroy {
           resolve();
         },
         error: (error) => {
-          console.error('Error loading navbar items:', error);
+          
           this.loading = false;
           this.isScrolling = false;
           this.cdr.detectChanges();
@@ -626,7 +555,7 @@ export class NavbarListComponent implements OnInit, OnDestroy {
             }
           },
           error: (error: any) => {
-            console.error('Error deleting navbar item:', error);
+            
           }
         });
       }
