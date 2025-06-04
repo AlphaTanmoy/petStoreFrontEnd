@@ -8,13 +8,9 @@ export interface Customer {
   createdDate: string;
 }
 
-export interface CustomerResponse {
-  data: Customer[];
-  offsetToken: string;
-  recordCount: number;
-  filterUsed: Array<{
-    key: string;
-    value: string;
-    id: string;
-  }>;
+export interface CustomerFilter {
+  searchTerm?: string;
+  isPrimeMember?: boolean;
+  tireCodes?: string[];
+  offsetToken?: string | null;
 }
