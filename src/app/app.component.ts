@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
   userProfileImage = 'assets/images/default-profile.png'; 
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private loaderService: LoaderService,
     public notificationService: NotificationService
   ) {

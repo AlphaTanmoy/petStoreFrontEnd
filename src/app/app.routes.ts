@@ -30,7 +30,7 @@ import { LivenessDetailsComponent } from './microservices/kyc/liveness/liveness-
 import { CustomerDetailsComponent } from './users/customer/customer-details/customer-details.component';
 import { ViewAdminsComponent } from './users/admin/view-admins/view-admins.component';
 import { CustomerRegisterComponent } from './users/customer/customer-register/customer-register.component';
-import { ViewCustomersComponent } from './users/customer/view-customers/view-customers.component';
+import { ViewCustomerComponent } from './users/customer/view-customer/view-customer.component';
 import { CustomerProfileControlComponent } from './users/customer/customer-profile-control/cutomer-profile-control.component';
 import { CustomerCareDashboardComponent } from './users/customerCare/customer-care-dashboard/customer-care-dashboard.component';
 import { CustomerCareDetailsComponent } from './users/customerCare/customer-care-details/customer-care-details.component';
@@ -127,7 +127,7 @@ export const routes: Routes = [
     children: [
       { path: 'details', component: CustomerDetailsComponent },
       { path: 'register', component: CustomerRegisterComponent },
-      { path: 'view-all', component: ViewCustomersComponent },
+      { path: 'view-all', component: ViewCustomerComponent },
       { path: 'profile-control', component: CustomerProfileControlComponent },
     ]
   },

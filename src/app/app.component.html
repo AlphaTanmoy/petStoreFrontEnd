@@ -37,6 +37,6 @@
     </div>
     <router-outlet></router-outlet>
     <app-notification-stack [notifications]="notificationService.notifications"></app-notification-stack>
-    <app-footer></app-footer>
+    <app-footer *ngIf="!isLoggedIn || authService.getUserRole() === 'ROLE_CUSTOMER'"></app-footer>
   </div>
 </div>
