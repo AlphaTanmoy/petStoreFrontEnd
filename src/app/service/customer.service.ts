@@ -5,6 +5,7 @@ import { Customer } from '../interfaces/customer.interface';
 import { PaginationResponse, FilterOption } from '../interfaces/paginationResponse.interface';
 import { GetAPIEndpoint } from '../constants/endpoints';
 import { MICROSERVICE_NAME } from '../constants/Enums';
+import { DEFAULT_PAGE_SIZE } from '../constants/KeywordsAndConstrants';
 
 interface CustomerFilter {
   searchTerm?: string;
@@ -24,6 +25,9 @@ export class CustomerService {
   getCustomers(filter: CustomerFilter = {}): Observable<PaginationResponse<Customer>> {
     let params = new HttpParams();
 
+    // Always include giveCount to get total record count
+    params = params.set('giveCount', 'true');
+
     // Add filter parameters if they exist
     if (filter.searchTerm) {
       params = params.set('searchTerm', filter.searchTerm);
@@ -42,6 +46,9 @@ export class CustomerService {
     if (filter.offsetToken) {
       params = params.set('offsetToken', filter.offsetToken);
     }
+    
+    // Always set page size
+    params = params.set('limit', DEFAULT_PAGE_SIZE.toString());
 
     return this.http.get<PaginationResponse<Customer>>(`${this.apiUrl}/getAll`, { params });
   }

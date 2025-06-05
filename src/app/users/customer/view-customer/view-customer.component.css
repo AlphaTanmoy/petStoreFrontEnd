@@ -1,0 +1,328 @@
+/* Table styles */
+.table {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding: 0.75rem 1rem;
+}
+
+.table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-color: #edf2f7;
+}
+
+.table tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+/* Badge styles */
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+  font-size: 0.75em;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+
+/* Card styles */
+.card {
+  border: none;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+  padding: 1.25rem 1.5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #edf2f7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header h5 {
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Form controls */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+  font-size: 0.85rem;
+}
+
+.form-control,
+.form-select {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  height: calc(1.5em + 0.75rem + 2px);
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: #a0aec0;
+  box-shadow: 0 0 0 0.2rem rgba(66, 153, 225, 0.15);
+}
+
+/* Multi-select */
+select[multiple] {
+  min-height: 120px;
+  padding: 0.5rem;
+}
+
+select[multiple] option {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  margin-bottom: 0.25rem;
+  transition: all 0.2s;
+}
+
+select[multiple] option:checked {
+  background-color: #4299e1;
+  color: white;
+}
+
+/* Loading state */
+.loading-indicator {
+  padding: 1.5rem;
+  text-align: center;
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+.loading-indicator .spinner-border {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-width: 0.15em;
+  margin-right: 0.5rem;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #718096;
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #cbd5e0;
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1.25rem;
+  }
+  
+  .table-responsive {
+    border: none;
+    margin: 0 -1.25rem;
+    width: calc(100% + 2.5rem);
+  }
+  
+  .table {
+    font-size: 0.85rem;
+  }
+  
+  .table thead th,
+  .table tbody td {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Animation for loading more items */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.customer-row {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Scroll container styles */
+.customer-scroll-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.customer-table-wrapper {
+  min-height: 100%;
+  padding-bottom: 60px; /* Space for loading indicator */
+}
+
+/* Loading indicator at bottom */
+.loading-indicator-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  z-index: 10;
+}
+
+/* Ensure table takes full width */
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Make table rows take full width */
+.table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+/* Ensure the scroll container takes full height */
+:host {
+  display: block;
+  height: 100%;
+}
+
+/* Make sure the card body takes full height */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
+
+/* Fix for last row not showing */
+.table tbody tr:last-child td {
+  border-bottom: 1px solid #edf2f7;
+}
+
+/* Status badges */
+.badge.bg-success {
+  background-color: #38a169 !important;
+}
+
+.badge.bg-secondary {
+  background-color: #a0aec0 !important;
+}
+
+/* Form switch */
+.form-switch .form-check-input {
+  width: 2.5em;
+  margin-left: -2.7em;
+  background-color: #e2e8f0;
+  border: none;
+  height: 1.4em;
+  margin-top: 0.1em;
+}
+
+.form-switch .form-check-input:checked {
+  background-color: #4299e1;
+}
+
+/* Filter section */
+.filter-section {
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-section h5 {
+  color: #2d3748;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #edf2f7;
+}
+
+/* Action buttons */
+.btn {
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: #4299e1;
+  border-color: #4299e1;
+}
+
+.btn-primary:hover {
+  background-color: #3182ce;
+  border-color: #3182ce;
+}
+
+.btn-outline-secondary {
+  color: #4a5568;
+  border-color: #e2e8f0;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f7fafc;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
