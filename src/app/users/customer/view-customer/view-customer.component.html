@@ -23,7 +23,7 @@
         Filter Customers
       </h3>
     </div>
-    
+
     <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-form">
       <div class="filter-row">
         <!-- Search Input -->
@@ -31,51 +31,66 @@
           <label class="form-label">Search</label>
           <div class="search-input-container">
             <i class="fas fa-search"></i>
-            <input type="text" 
-                   formControlName="search" 
-                   class="search-input" 
-                   placeholder="Search by name or email..." 
-                   (keyup.enter)="applyFilters()">
+            <input type="text" formControlName="search" class="search-input" placeholder="Search by name or email..."
+              (keyup.enter)="applyFilters()">
           </div>
         </div>
 
-
-        <!-- Status Filter -->
+        <!-- Status Filter (Now Multi-Select) -->
         <div class="form-group">
           <label class="form-label">Status</label>
-          <select class="form-select" formControlName="status">
-            <option value="all">All Status</option>
-            <option *ngFor="let status of statusOptions" [value]="status.value">
-              {{ status.label }}
-            </option>
-          </select>
-        </div>
-
-
-        <!-- Tire Code Selector -->
-        <div class="form-group">
-          <label class="form-label">Tire Code</label>
-          <select class="form-select" formControlName="tireCodes">
-            <option value="">Select Tire Code</option>
-            <option *ngFor="let tire of tireOptions" 
-                    [value]="tire" 
-                    [disabled]="filterForm.get('selectedTires')?.value?.includes(tire)">
-              {{ tire }}
-            </option>
-          </select>
-          <div class="selected-tires">
-            <span *ngFor="let tire of filterForm.get('selectedTires')?.value" class="badge">
-              {{ tire }}
-              <button type="button" 
-                      class="btn-close" 
-                      (click)="removeTire(tire)"
-                      aria-label="Remove tire">
+          <div class="multi-select-container">
+            <div class="multi-select-header" (click)="toggleStatusDropdown()">
+              <span class="selected-values">
+                {{ getStatusDisplayText() }}
+              </span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="multi-select-dropdown" *ngIf="statusDropdownOpen">
+              <div class="search-box" *ngIf="statusOptions.length > 5">
+                <i class="fas fa-search"></i>
+                <input type="text" [(ngModel)]="statusSearchText" (ngModelChange)="filterStatusOptions()"
+                  placeholder="Search statuses..." class="search-input">
+              </div>
+              <div class="options-list">
+                <label class="option" *ngFor="let status of filteredStatusOptions">
+                  <input type="checkbox" [checked]="isStatusSelected(status.value)"
+                    (change)="toggleStatusSelection(status.value)">
+                  <span class="checkmark"></span>
+                  <span class="option-label">{{ status.label }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="selected-chips">
+            <span *ngFor="let status of getSelectedStatuses()" class="badge">
+              {{ getStatusLabel(status) }}
+              <button type="button" class="btn-close" (click)="removeStatus(status)">
                 <i class="fas fa-times"></i>
               </button>
             </span>
           </div>
         </div>
 
+        <!-- Tire Code Selector -->
+        <div class="form-group">
+          <label class="form-label">Tire Code</label>
+          <select class="form-select" formControlName="tireCodes">
+            <option value="">Select Tire Code</option>
+            <option *ngFor="let tire of tireOptions" [value]="tire"
+              [disabled]="filterForm.get('selectedTires')?.value?.includes(tire)">
+              {{ tire }}
+            </option>
+          </select>
+          <div class="selected-tires">
+            <span *ngFor="let tire of filterForm.get('selectedTires')?.value" class="badge">
+              {{ tire }}
+              <button type="button" class="btn-close" (click)="removeTire(tire)">
+                <i class="fas fa-times"></i>
+              </button>
+            </span>
+          </div>
+        </div>
 
         <!-- Prime Member Toggle -->
         <div class="form-group toggle-group">
@@ -84,18 +99,12 @@
           </mat-slide-toggle>
         </div>
 
-
         <!-- Form Actions -->
         <div class="form-actions">
-          <button type="button" 
-                  class="btn btn-outline" 
-                  (click)="resetFilters()"
-                  [disabled]="loading">
+          <button type="button" class="btn btn-outline" (click)="resetFilters()" [disabled]="loading">
             <i class="fas fa-undo"></i> Reset
           </button>
-          <button type="submit" 
-                  class="btn btn-primary" 
-                  [disabled]="loading">
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
             <i class="fas fa-filter"></i> Apply
           </button>
         </div>

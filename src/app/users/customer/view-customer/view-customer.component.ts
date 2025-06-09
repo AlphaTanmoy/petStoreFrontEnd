@@ -37,8 +37,8 @@ import { PaginationResponse } from '../../../interfaces/paginationResponse.inter
     MatSnackBarModule
   ]
 })
-export class ViewCustomerComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('tableContainer') tableContainer!: ElementRef;
+export class ViewCustomerComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('tableContainer') private tableContainer!: ElementRef;
 
   customers: Customer[] = [];
   loading = false;
@@ -46,7 +46,7 @@ export class ViewCustomerComponent implements OnInit, OnDestroy, AfterViewInit {
   totalRecords = 0;
   loadedRecords = 0;
   offsetToken: string | null = null;
-  
+
   // Filter options
   tireOptions = ['TIRE0', 'TIRE1', 'TIRE2', 'TIRE3', 'TIRE4'];
   statusOptions = [
@@ -56,14 +56,19 @@ export class ViewCustomerComponent implements OnInit, OnDestroy, AfterViewInit {
   ];
 
   filterForm: FormGroup;
-  
+
+  // Status filter properties
+  statusDropdownOpen = false;
+  statusSearchText = '';
+  filteredStatusOptions: { value: string; label: string }[] = [];
+
   private destroy$ = new Subject<void>();
   private readonly SCROLL_THRESHOLD = 100;
   private readonly SCROLL_DEBOUNCE = 200;
   private lastScrollTime = 0;
 
   private snackBar = inject(MatSnackBar);
-  private scrollSubscription: Subscription | null = null;
+  private scrollSubscription?: Subscription;
 
   constructor(
     private customerService: CustomerService,
@@ -80,6 +85,9 @@ export class ViewCustomerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.initializeForm();
+    this.filteredStatusOptions = [...this.statusOptions];
+    
     // Watch for tire code changes
     this.filterForm.get('tireCodes')?.valueChanges
       .pipe(takeUntil(this.destroy$))
@@ -99,6 +107,12 @@ export class ViewCustomerComponent implements OnInit, OnDestroy, AfterViewInit {
         distinctUntilChanged()
       )
       .subscribe(() => this.applyFilters());
+      
+    // Initialize status as array if it's not 'all'
+    const currentStatus = this.filterForm.get('status')?.value;
+    if (currentStatus && currentStatus !== 'all' && !Array.isArray(currentStatus)) {
+      this.filterForm.get('status')?.setValue([currentStatus]);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -203,7 +217,96 @@ export class ViewCustomerComponent implements OnInit, OnDestroy, AfterViewInit {
       status: 'all',
       isPrimeMember: false
     });
+    this.statusSearchText = '';
+    this.filteredStatusOptions = [...this.statusOptions];
     this.loadCustomers(true);
+  }
+  
+  // Status filter methods
+  toggleStatusDropdown(): void {
+    this.statusDropdownOpen = !this.statusDropdownOpen;
+    if (this.statusDropdownOpen) {
+      this.filterStatusOptions();
+    }
+  }
+
+  filterStatusOptions(): void {
+    if (!this.statusSearchText) {
+      this.filteredStatusOptions = [...this.statusOptions];
+    } else {
+      const searchText = this.statusSearchText.toLowerCase();
+      this.filteredStatusOptions = this.statusOptions.filter(option => 
+        option.label.toLowerCase().includes(searchText)
+      );
+    }
+  }
+
+  isStatusSelected(statusValue: string): boolean {
+    const selectedStatuses = this.filterForm.get('status')?.value;
+    if (selectedStatuses === 'all') return false;
+    return Array.isArray(selectedStatuses) 
+      ? selectedStatuses.includes(statusValue)
+      : selectedStatuses === statusValue;
+  }
+
+  toggleStatusSelection(statusValue: string): void {
+    let currentStatus = this.filterForm.get('status')?.value;
+    
+    if (statusValue === 'all') {
+      this.filterForm.get('status')?.setValue('all');
+      return;
+    }
+
+    if (currentStatus === 'all') {
+      currentStatus = [];
+    } else if (!Array.isArray(currentStatus)) {
+      currentStatus = currentStatus ? [currentStatus] : [];
+    }
+
+    const index = currentStatus.indexOf(statusValue);
+    if (index === -1) {
+      currentStatus.push(statusValue);
+    } else {
+      currentStatus.splice(index, 1);
+    }
+
+    // If no status selected, default to 'all'
+    this.filterForm.get('status')?.setValue(currentStatus.length ? currentStatus : 'all');
+  }
+
+
+  getStatusDisplayText(): string {
+    const selected = this.filterForm.get('status')?.value;
+    if (selected === 'all' || (Array.isArray(selected) && !selected.length)) {
+      return 'All Statuses';
+    }
+    
+    if (Array.isArray(selected)) {
+      return selected.length === 1 
+        ? this.getStatusLabel(selected[0])
+        : `${selected.length} selected`;
+    }
+    
+    return this.getStatusLabel(selected);
+  }
+
+  getStatusLabel(statusValue: string): string {
+    const status = this.statusOptions.find(s => s.value === statusValue);
+    return status ? status.label : statusValue;
+  }
+
+  getSelectedStatuses(): string[] {
+    const selected = this.filterForm.get('status')?.value;
+    if (selected === 'all') return [];
+    return Array.isArray(selected) ? selected : [selected];
+  }
+
+  removeStatus(statusValue: string): void {
+    this.toggleStatusSelection(statusValue);
+  }
+  
+  private initializeForm(): void {
+    // Form initialization logic if needed
   }
 
   removeTire(tire: string): void {
