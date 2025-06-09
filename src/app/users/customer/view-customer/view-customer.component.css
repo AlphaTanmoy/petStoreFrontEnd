@@ -10,7 +10,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1rem;
+  padding: 0 var(--spacing-unit);
 }
 
 .page-title {
@@ -34,7 +34,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius);
 }
 
 /* Filter Section */
@@ -49,7 +49,7 @@
 
 .filter-header {
   padding: 0.75rem 1.25rem;
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: var(--background-color);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -89,8 +89,8 @@
 .filter-group {
   flex: 1;
   min-width: 200px;
-  padding: 0 0.5rem;
-  margin-bottom: 0.5rem;
+  padding: 0 calc(var(--spacing-unit) / 2);
+  margin-bottom: calc(var(--spacing-unit) / 2);
 }
 
 .filter-group .form-label {
@@ -264,20 +264,24 @@ input:checked + .slider:before {
 /* Action buttons hover effects */
 .btn-outline-primary {
   color: var(--primary-color);
-  border-color: rgba(2, 88, 187, 0.2);
-  background-color: rgba(2, 88, 187, 0.05);
+  border-color: var(--primary-color);
+  background-color: transparent;
+  opacity: 0.8;
+  transition: var(--transition);
 }
 
 .btn-outline-primary:hover {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
   color: white;
+  opacity: 1;
 }
 
 .btn-outline-secondary {
   color: var(--light-text);
   border-color: var(--border-color);
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: var(--background-color);
+  transition: var(--transition);
 }
 
 .btn-outline-secondary:hover {
@@ -522,12 +526,12 @@ td:last-child {
 
 /* Table Styles */
 .table-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
   overflow: hidden;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  background-color: #ffffff;
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+  background: var(--card-background);
+  transition: var(--transition);
 }
 
 .table {
@@ -766,9 +770,15 @@ td:last-child {
 }
 
 .btn-primary {
-  color: #ffffff;
-  background-color: #4f46e5;
-  border-color: #4f46e5;
+  color: white;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
 .btn-primary:hover {
@@ -1153,17 +1163,19 @@ select[multiple] option:checked {
 }
 
 .btn-primary:hover {
-  background-color: #3182ce;
-  border-color: #3182ce;
+  background-color: var(--primary-hover-color);
+  border-color: var(--primary-hover-color);
 }
 
 .btn-outline-secondary {
-  color: #4a5568;
-  border-color: #e2e8f0;
+  color: var(--light-text);
+  border-color: var(--border-color);
+  transition: var(--transition);
 }
 
 .btn-outline-secondary:hover {
-  background-color: #f7fafc;
-  border-color: #cbd5e0;
-  color: #2d3748;
+  background-color: var(--background-color);
+  border-color: var(--border-focus);
+  color: var(--text-color);
+  opacity: 1;
 }

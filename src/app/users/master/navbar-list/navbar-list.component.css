@@ -6,81 +6,92 @@
   min-width: 100%;
   margin: 0;
   padding: 0;
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  overflow: hidden;
 }
 
 /* Table Header */
 .navbar-list-table thead th {
-  background-color: #f8f9fa;
-  color: #333;
+  background-color: var(--background-color);
+  color: var(--text-color);
   font-weight: 600;
-  padding: 12px 16px;
+  padding: 0.75rem 1rem;
   text-align: left;
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 1px solid var(--border-color);
   white-space: nowrap;
   position: sticky;
   top: 0;
-  z-index: 20; /* Increased z-index to stay above other elements */
-  box-shadow: 0 1px 0 #dee2e6; /* Add shadow for better visual separation */
+  z-index: 20;
+  box-shadow: 0 1px 0 var(--border-color);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Ensure the first column (icon) header is sticky */
 .navbar-list-table thead th:first-child {
   left: 0;
-  z-index: 21; /* Slightly higher than other headers */
-  box-shadow: 1px 0 0 #dee2e6; /* Add right border */
+  z-index: 21;
+  box-shadow: 1px 0 0 var(--border-color);
+  padding-left: 1.5rem;
 }
 
 /* Add background to the sticky column in the body */
 .navbar-list-table tbody td:first-child {
   position: sticky;
   left: 0;
-  background: white;
+  background: var(--card-background);
   z-index: 10;
-  box-shadow: 1px 0 0 #dee2e6; /* Add right border */
+  box-shadow: 1px 0 0 var(--border-color);
+  padding-left: 1.5rem;
 }
 
 /* Add hover effect for the sticky column */
 .navbar-list-table tbody tr:hover td:first-child {
-  background-color: #f8f9fa; /* Match the hover background */
+  background-color: var(--background-color);
 }
 
 /* Table Cells */
 .navbar-list-table tbody td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #eee;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   box-sizing: border-box;
-  line-height: 1.4;
+  line-height: 1.5;
+  color: var(--text-color);
+  font-size: var(--font-size-sm);
 }
 
 /* Hover & Interactive States */
 .navbar-list-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: var(--background-color);
 }
 
 .navbar-list-table tbody tr:hover .sticky-col {
-  background-color: #f1f3f5;
+  background-color: var(--background-color);
 }
 
 /* Sticky Actions Column */
 .sticky-col {
   position: sticky;
   right: 0;
-  background: white;
+  background: var(--card-background);
   z-index: 5;
-  padding: 12px 16px !important;
-  width: 120px;
+  padding: 0.75rem 1rem !important;
+  width: 180px;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+  text-align: right;
 }
 
 /* Action Buttons */
 .action-buttons {
   display: flex;
-  gap: 4px;
-  justify-content: flex-start;
+  gap: 0.5rem;
+  justify-content: flex-end;
   align-items: center;
   min-height: 40px;
 }
@@ -90,15 +101,56 @@
   width: 32px;
   height: 32px;
   padding: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: all 0.2s;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
   cursor: pointer;
-  border: none;
+  border: 1px solid var(--border-color);
   background: transparent;
-  color: #666; /* Default icon color */
+  color: var(--light-text);
+  opacity: 0.8;
+}
+
+.action-btn:hover {
+  opacity: 1;
+  background-color: var(--background-color);
+  border-color: var(--border-focus);
+}
+
+.action-btn i {
+  font-size: 1rem;
+}
+
+.action-btn.view-btn {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.action-btn.edit-btn {
+  color: var(--warning-color);
+  border-color: var(--warning-color);
+}
+
+.action-btn.delete-btn {
+  color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.action-btn.view-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.action-btn.edit-btn:hover {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.action-btn.delete-btn:hover {
+  background-color: var(--danger-color);
+  color: white;
 }
 
 /* Hover state for all action buttons */
@@ -388,28 +440,44 @@
   width: 100%;
   margin: 1rem 0;
   padding: 1.5rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
   box-sizing: border-box;
+  border: 1px solid var(--border-color);
 }
 
 .navbar-list-heading {
   margin: 0 0 1.5rem 0;
-  color: #333;
-  font-size: 1.75rem;
+  color: var(--text-color);
+  font-size: 1.5rem;
   font-weight: 600;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar-list-heading i {
+  color: var(--primary-color);
+  background: rgba(2, 88, 187, 0.1);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
 }
 
 /* Filter Form */
 .filter-form {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 1.5rem;
-  padding: 20px;
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  border: 1px solid var(--border-color);
 }
 
 .filter-row {
@@ -2032,19 +2100,15 @@ thead th.col-actions {
   border-collapse: collapse;
 }
 
-/* Loading indicator */
-.loading-indicator {
+/* Loading and Empty States */
+.loading-indicator,
+.no-data {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.98);
-  position: sticky;
-  bottom: 0;
-  z-index: 1000; /* Higher than all other elements */
-  box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(3px);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  color: var(--light-text);
   margin-top: -1px; /* Ensure it covers the border */
 }
 
@@ -2070,10 +2134,343 @@ thead th.col-actions {
 /* Ensure the table takes full width and handles overflow */
 .navbar-list-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   table-layout: fixed;
   margin: 0;
   padding: 0;
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.navbar-list-table th,
+.navbar-list-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  transition: var(--transition);
+}
+
+.navbar-list-table th {
+  background-color: var(--background-color);
+  color: var(--light-text);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.navbar-list-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.navbar-list-table tbody tr:hover td {
+  background-color: var(--background-color);
+}
+
+/* Sticky first column */
+.navbar-list-table th:first-child,
+.navbar-list-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--card-background);
+  box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Sticky action column */
+.navbar-list-table th:last-child,
+.navbar-list-table td:last-child {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: var(--card-background);
+  box-shadow: -2px 0 5px -2px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 120px;
+}
+
+/* Status indicators */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-active {
+  background-color: rgba(0, 200, 83, 0.1);
+  color: var(--success-color);
+}
+
+.status-inactive {
+  background-color: rgba(158, 158, 158, 0.1);
+  color: var(--light-text);
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--light-text);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  padding: 0;
+}
+
+.action-btn i {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.action-btn:hover {
+  background-color: var(--background-color);
+  color: var(--primary-color);
+}
+
+/* View button */
+.action-btn.view {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.action-btn.view:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Edit button */
+.action-btn.edit {
+  color: var(--warning-color);
+  border-color: var(--warning-color);
+}
+
+.action-btn.edit:hover {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+/* Delete button */
+.action-btn.delete {
+  color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.action-btn.delete:hover {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+/* Disabled state */
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Loading state */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  border-radius: var(--border-radius);
+}
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--light-text);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.5rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.empty-state p {
+  margin: 0 0 1.5rem;
+  max-width: 30rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-form {
+    padding: 1rem;
+  }
+  
+  .filter-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+  
+  .form-actions {
+    margin-top: 0.5rem;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .navbar-list-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    border-radius: 0;
+    box-shadow: none;
+    border: 1px solid var(--border-color);
+  }
+  
+  .navbar-list-table th,
+  .navbar-list-table td {
+    min-width: 120px;
+  }
+  
+  .navbar-list-table th:first-child,
+  .navbar-list-table td:first-child,
+  .navbar-list-table th:last-child,
+  .navbar-list-table td:last-child {
+    position: static;
+    box-shadow: none;
+    background: transparent;
+  }
+  
+  .action-buttons {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+  
+  .empty-state i {
+    font-size: 2.5rem;
+  }
+  
+  .empty-state h3 {
+    font-size: 1.25rem;
+  }
+  
+  .empty-state p {
+    font-size: 0.9375rem;
+  }
+}
+
+/* Small devices (phones, 576px and up) */
+@media (max-width: 576px) {
+  .navbar-list-container {
+    padding: 1rem;
+  }
+  
+  .navbar-list-heading {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .filter-form {
+    padding: 0.75rem;
+  }
+  
+  .form-group {
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .action-buttons {
+    gap: 0.25rem;
+  }
+  
+  .action-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .empty-state {
+    padding: 1.5rem 1rem;
+  }
+  
+  .empty-state i {
+    font-size: 2rem;
+  }
+  
+  .empty-state h3 {
+    font-size: 1.125rem;
+  }
+  
+  .empty-state p {
+    font-size: 0.875rem;
+  }
 }
 
 /* Make the table header sticky */
