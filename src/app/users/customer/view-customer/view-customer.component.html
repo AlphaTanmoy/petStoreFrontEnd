@@ -16,25 +16,49 @@
   </div>
 
   <!-- Filter Section -->
-  <form [formGroup]="filterForm" class="filter-form">
-    <div class="filter-row">
-      <!-- Search Input -->
-      <div class="form-group">
-        <label class="form-label">Search</label>
-        <div class="search-input-container">
-          <i class="fas fa-search"></i>
-          <input type="text" formControlName="search" class="search-input" 
-                 placeholder="Search by name or email..." (keyup.enter)="applyFilters()">
+  <div class="filter-card">
+    <div class="filter-header">
+      <h3 class="filter-title">
+        <i class="fas fa-filter"></i>
+        Filter Customers
+      </h3>
+    </div>
+    
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-form">
+      <div class="filter-row">
+        <!-- Search Input -->
+        <div class="form-group">
+          <label class="form-label">Search</label>
+          <div class="search-input-container">
+            <i class="fas fa-search"></i>
+            <input type="text" 
+                   formControlName="search" 
+                   class="search-input" 
+                   placeholder="Search by name or email..." 
+                   (keyup.enter)="applyFilters()">
+          </div>
         </div>
-      </div>
 
-      <!-- Tire Code Selector -->
-      <div class="form-group">
-        <label class="form-label">Tire Code</label>
-        <div class="multi-select-container">
+
+        <!-- Status Filter -->
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" formControlName="status">
+            <option value="all">All Status</option>
+            <option *ngFor="let status of statusOptions" [value]="status.value">
+              {{ status.label }}
+            </option>
+          </select>
+        </div>
+
+
+        <!-- Tire Code Selector -->
+        <div class="form-group">
+          <label class="form-label">Tire Code</label>
           <select class="form-select" formControlName="tireCodes">
             <option value="">Select Tire Code</option>
-            <option *ngFor="let tire of tireOptions" [value]="tire" 
+            <option *ngFor="let tire of tireOptions" 
+                    [value]="tire" 
                     [disabled]="filterForm.get('selectedTires')?.value?.includes(tire)">
               {{ tire }}
             </option>
@@ -42,41 +66,42 @@
           <div class="selected-tires">
             <span *ngFor="let tire of filterForm.get('selectedTires')?.value" class="badge">
               {{ tire }}
-              <button type="button" class="btn-close" (click)="removeTire(tire)"></button>
+              <button type="button" 
+                      class="btn-close" 
+                      (click)="removeTire(tire)"
+                      aria-label="Remove tire">
+                <i class="fas fa-times"></i>
+              </button>
             </span>
           </div>
         </div>
-      </div>
 
-      <!-- Status Filter -->
-      <div class="form-group">
-        <label class="form-label">Status</label>
-        <select class="form-select" formControlName="status">
-          <option value="all">All Status</option>
-          <option *ngFor="let status of statusOptions" [value]="status.value">
-            {{ status.label }}
-          </option>
-        </select>
-      </div>
 
-      <!-- Prime Member Toggle -->
-      <div class="form-group toggle-group">
-        <mat-slide-toggle formControlName="isPrimeMember">
-          <span class="toggle-label">Prime Member</span>
-        </mat-slide-toggle>
-      </div>
+        <!-- Prime Member Toggle -->
+        <div class="form-group toggle-group">
+          <mat-slide-toggle formControlName="isPrimeMember" color="primary">
+            <span class="toggle-label">Prime Member</span>
+          </mat-slide-toggle>
+        </div>
 
-      <!-- Form Actions -->
-      <div class="form-actions">
-        <button type="button" class="btn btn-outline" (click)="resetFilters()">
-          <i class="fas fa-undo"></i> Reset
-        </button>
-        <button type="submit" class="btn btn-primary" [disabled]="loading">
-          <i class="fas fa-filter"></i> Apply
-        </button>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" 
+                  class="btn btn-outline" 
+                  (click)="resetFilters()"
+                  [disabled]="loading">
+            <i class="fas fa-undo"></i> Reset
+          </button>
+          <button type="submit" 
+                  class="btn btn-primary" 
+                  [disabled]="loading">
+            <i class="fas fa-filter"></i> Apply
+          </button>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 
   <!-- Customer Table -->
   <div class="table-container">
