@@ -136,7 +136,7 @@
   </div>
 
   <!-- Customer Table -->
-  <!-- Debug Info (remove after fixing) -->
+  <!-- Loading and Error States -->
 <div *ngIf="isLoading || errorLoading" class="alert" 
      [ngClass]="errorLoading ? 'alert-danger' : 'alert-info'" role="alert">
   <div *ngIf="isLoading">
@@ -147,15 +147,6 @@
   </div>
 </div>
 
-<!-- Debug Info: Show current state -->
-<div class="alert alert-secondary small mb-3" *ngIf="customers">
-  <div>Total Records: {{ totalRecords }}</div>
-  <div>Loaded: {{ loadedRecords }}</div>
-  <div>Has More: {{ hasMore }}</div>
-  <div>Offset Token: {{ offsetToken || 'None' }}</div>
-  <div>Customers Array Length: {{ customers.length }}</div>
-</div>
-
 <div class="card table-card">
     <div class="card-body p-0">
       <div class="table-responsive">
@@ -164,11 +155,11 @@
               <thead class="table-light">
                 <tr class="table-header">
                   <th class="ps-4">Customer Name</th>
-                  <th>Email</th>
-                  <th>Tire Code</th>
-                  <th>User Role</th>
-                  <th>Prime Member</th>
-                  <th>Created Date</th>
+                  <th class="ps-3">Email</th>
+                  <th class="ps-3">Tire Code</th>
+                  <th class="ps-3">User Role</th>
+                  <th class="ps-3 text-center">Prime Member</th>
+                  <th class="ps-3">Created Date</th>
                   <th class="text-end pe-4">Actions</th>
                 </tr>
               </thead>
@@ -183,7 +174,7 @@
                   </td>
                 </tr>
                 <tr *ngFor="let customer of customers; trackBy: trackByCustomerId" class="customer-row">
-                  <td class="ps-4">
+                  <td class="ps-4 align-middle">
                     <div class="d-flex align-items-center">
                       <div class="avatar-sm me-2">
                         <div class="avatar-title bg-soft-primary rounded-circle">
@@ -192,31 +183,30 @@
                       </div>
                       <div>
                         <h6 class="mb-0">{{ customer.fullName }}</h6>
-                        <small class="text-muted">{{ customer.id }}</small>
                       </div>
                     </div>
                   </td>
-                  <td>
+                  <td class="align-middle">
                     <a href="mailto:{{ customer.emailId }}" class="text-primary">
                       {{ customer.emailId }}
                     </a>
                   </td>
-                  <td>
+                  <td class="align-middle">
                     <span class="badge bg-soft-primary">{{ customer.tireCode || 'N/A' }}</span>
                   </td>
-                  <td>
+                  <td class="align-middle">
                     {{ customer.userRole }}
                   </td>
-                  <td>
+                  <td class="text-center align-middle">
                     <span class="badge" [ngClass]="customer.isPrimeMember ? 'bg-success' : 'bg-secondary'">
                       {{ customer.isPrimeMember ? 'Yes' : 'No' }}
                     </span>
                   </td>
-                  <td>
+                  <td class="align-middle">
                     {{ customer.createdDate | date:'mediumDate' }}
                     <small class="d-block text-muted">{{ customer.createdDate | date:'shortTime' }}</small>
                   </td>
-                  <td class="text-end pe-4">
+                  <td class="text-end pe-4 align-middle">
                     <div class="btn-group" role="group">
                       <button class="btn btn-sm btn-outline-primary" (click)="viewDetails(customer)" title="View">
                         <i class="fas fa-eye"></i>
