@@ -53,5 +53,15 @@ export class CustomerService {
     return this.http.get<PaginationResponse<Customer>>(`${this.apiUrl}/getAll`, { params });
   }
 
+  /**
+   * Delete a customer by ID
+   * @param customerId The ID of the customer to delete
+   * @returns Observable that emits when the operation is complete
+   */
+  deleteCustomer(customerId: string): Observable<void> {
+    const url = `${this.apiUrl}/${customerId}`;
+    return this.http.delete<void>(url);
+  }
+
   // Add more methods as needed for CRUD operations
 }

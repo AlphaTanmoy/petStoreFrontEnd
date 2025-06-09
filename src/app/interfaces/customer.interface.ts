@@ -12,5 +12,6 @@ export interface CustomerFilter {
   searchTerm?: string;
   isPrimeMember?: boolean;
   tireCodes?: string[];
+  status?: string;
   offsetToken?: string | null;
 }
